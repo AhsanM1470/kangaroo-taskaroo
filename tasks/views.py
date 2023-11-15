@@ -8,7 +8,7 @@ from django.shortcuts import redirect, render
 from django.views import View
 from django.views.generic.edit import FormView, UpdateView
 from django.urls import reverse
-from tasks.forms import LogInForm, PasswordForm, UserForm, SignUpForm
+from tasks.forms import LogInForm, PasswordForm, UserForm, SignUpForm, CreateTeamForm
 from tasks.helpers import login_prohibited
 
 
@@ -141,7 +141,7 @@ class SignUpView(LoginProhibitedMixin, FormView):
     """Display the sign up screen and handle sign ups."""
 
     form_class = SignUpForm
-    template_name = "sign_up.html"
+    template_name = 'sign_up.html'
     redirect_when_logged_in_url = settings.REDIRECT_URL_WHEN_LOGGED_IN
 
     def form_valid(self, form):
@@ -151,3 +151,37 @@ class SignUpView(LoginProhibitedMixin, FormView):
 
     def get_success_url(self):
         return reverse(settings.REDIRECT_URL_WHEN_LOGGED_IN)
+    
+class CreateTeamView(LoginRequiredMixin, FormView):
+    """"Display the create team screen and handle team creation"""
+    
+    form_class = CreateTeamForm
+    template_name = "create_team.html"
+    model = CreateTeamForm
+
+    def get_form_kwargs(self, **kwargs):
+        """Pass the current user to the creat team form."""
+
+        kwargs = super().get_form_kwargs(**kwargs)
+        kwargs.update({'user': self.request.user})
+        return kwargs
+    
+    def form_valid(self, form):
+        """Handle valid form by saving the new team."""
+
+        form.save()
+        return super().form_valid(form)
+    
+    def get_success_url(self):
+        #
+        return reverse('dashboard')
+    
+# FormView
+class TeamsView(LoginRequiredMixin, FormView):
+    """"Display the screen showing all the teams the user is part of. Handle team management."""
+    template_name = "view_teams.html"
+    
+    # context = {'joined_teams'}
+    
+    # def get(self, request):
+    #     return render(request, self.template_name, context)

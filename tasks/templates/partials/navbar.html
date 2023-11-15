@@ -1,8 +1,26 @@
+<style>
+  a{
+    text-decoration: none;
+    font-size: 1rem;
+    border-radius: 2px;
+    color: white;
+    margin-right: 10px;
+  }
+
+  .team-btn{
+    width:auto;
+    padding:5px;
+  }
+</style>
+
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-3">
   <div class="container">
     <a class="navbar-brand" href="{% url 'dashboard' %}">
-      Task Manager
+      Kangaroo Manager
     </a>
+    <a class="team-btn" href="{% url 'create_team' %}" style="background-color: #787878;">Add Team</a>
+    <a class="team-btn" href="{% url 'teams' %}" style="background-color: #787878;">View Teams</a>
+
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
