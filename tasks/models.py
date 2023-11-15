@@ -41,5 +41,5 @@ class User(AbstractUser):
         
         return self.gravatar(size=60)
     
-# class Team(models.Model):
-#     name = models.Charfield(max_length=100)
+class Team(models.Model):
+    name = models.CharField(max_length=100)

@@ -1,12 +1,68 @@
 {% extends 'base_content.html' %}
 {% block content %}
 
+<style>
+  /* .{
+    width: 100%;
+    height: 100vh;
+    background-image: url(https://images.unsplash.com/photo-1465101162946-4377e57745c3?q=80&w=1178&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D);
+    background-position: center;
+    background-size: cover;
+    margin:
+  } */
+
+  .task-board{
+    display: flex;
+    align-items: flex-start;
+    justify-content: start;
+    gap: 16px;
+  }
+
+  .lane{
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    background: rgb(190, 190, 190);
+    box-shadow: 0px 5px 15px rgba(0,0,0,0.25);
+
+    padding: 12px;
+    border-radius: 4px;
+    width: 225px;
+    min-height: 120px;
+  }
+
+  .task{
+    background: rgb(210, 210, 210);
+    box-shadow: 0px 5px 15px rgba(0,0,0,0.1);
+    padding: 5px;
+    border-radius: 4px;
+
+    font-size: 15px;
+    cursor: move;
+  }
+</style>
+
 <div class="container">
   <div class="row">
     <div class="col-12" style="display: inline;">
       <h1>Welcome to your dashboard {{ user.username }}</h1>
     </div>
-
+  
+    <div class="task-board">
+      <div class="lane">
+        <h3>Backlog</h3>
+        <p class="task">Do Thing</p>
+      </div>
+      <div class="lane">
+        <h3>In Progress</h3>
+        <p class="task">Do Thing</p>
+        </div>
+      <div class="lane">
+        <h3>Complete</h3>
+        <p class="task">Do Thing</p>
+      </div>
+    </div>
   </div>
 </div>
 {% endblock %}
