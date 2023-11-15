@@ -40,3 +40,12 @@ class User(AbstractUser):
         """Return a URL to a miniature version of the user's gravatar."""
         
         return self.gravatar(size=60)
+    
+class Task(models.Model):
+    """Model used for tasks and information related to them"""
+    
+    alphanumeric = RegexValidator(r'^[0-9a-zA-Z]{3,}$', 'Only alphanumeric characters are allowed.')
+    name = models.CharField(max_length=30, blank=False, unique=True, validators=[alphanumeric])
+    description = models.CharField(max_length=530, blank=True)
+    due_date = models.DateTimeField()
+    created_at = models.DateTimeField(auto_now_add=True);
