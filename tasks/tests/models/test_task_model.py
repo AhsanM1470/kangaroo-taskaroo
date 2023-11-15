@@ -10,13 +10,13 @@ class TaskModelTestCase(TestCase):
         self.task = Task.objects.create(
             name = 'Task1',
             description = 'Amys first task within task manager!',
-            due_date = datetime(2023, 11, 28, 10, 0),
+            due_date = datetime.datetime(2023, 11, 28, 10, 0),
         )
         
         self.task2 = Task.objects.create(
             name = 'Task2',
             description = 'Amys second task within task manager!',
-            due_date = datetime(2023, 12, 28, 10, 0),
+            due_date = datetime.datetime(2023, 12, 28, 10, 0),
         )
         
     def test_valid_user(self):
@@ -49,7 +49,28 @@ class TaskModelTestCase(TestCase):
         self.task.name = 'Ta'
         self._assert_task_is_invalid
         
-    # Description 
+    # Description Tests
+    
+    def test_description_can_be_blank(self):
+        self.task.description = ''
+        self._assert_task_is_valid
+        
+    def test_description_may_already_exist(self):
+        self.task.description = 'Description'
+        self.task2.description = 'Description'
+        self._assert_task_is_valid
+        
+    def test_description_can_be_530_characters_long(self):
+        self.task.description = '1' + 'x' * 529
+        self._assert_task_is_valid
+        
+    def test_description_cannot_be_over_530_characters_long(self):
+        self.task.description = '1' + 'x' * 530
+        self._assert_task_is_invalid
+        
+    # Due Date Tests
+    
+    # I dont know what tests to do, not sure if i can test if due_date is after created_at     
         
     # Assertions:
     
