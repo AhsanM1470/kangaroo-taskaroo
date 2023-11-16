@@ -40,3 +40,18 @@ class User(AbstractUser):
         """Return a URL to a miniature version of the user's gravatar."""
         
         return self.gravatar(size=60)
+
+class Notification(models.Model): 
+    """Model used to represent a notification"""
+
+    class NotificationType(models.TextChoices):
+        ASSIGNMENT = "AS"
+        DEADLINE = "DL"
+
+    task_name = models.CharField(max_length=50)
+
+    def display(self,notification_type):
+        if notification_type== self.NotificationType.ASSIGNMENT:
+            return f'{self.task_name} has been assigned to you.'
+        elif notification_type == self.NotificationType.DEADLINE:
+            return f"{self.task_name}'s deadline is approaching."
