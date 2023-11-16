@@ -8,7 +8,7 @@ from django.shortcuts import redirect, render
 from django.views import View
 from django.views.generic.edit import FormView, UpdateView
 from django.urls import reverse
-from tasks.forms import LogInForm, PasswordForm, UserForm, SignUpForm
+from tasks.forms import LogInForm, PasswordForm, UserForm, SignUpForm, CreateTeamForm
 from tasks.helpers import login_prohibited
 
 
@@ -18,6 +18,14 @@ def dashboard(request):
 
     current_user = request.user
     return render(request, 'dashboard.html', {'user': current_user})
+
+@login_required
+def create_team(request):
+    if request == "POST":
+        # Create the team
+        team = CreateTeamForm(request.POST)
+        team.save()
+    # Maybe redirect to the "your teams page"
 
 
 @login_prohibited
