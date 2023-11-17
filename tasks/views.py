@@ -10,6 +10,9 @@ from django.views.generic.edit import FormView, UpdateView
 from django.urls import reverse
 from tasks.forms import LogInForm, PasswordForm, UserForm, SignUpForm
 from tasks.helpers import login_prohibited
+from django.urls import reverse_lazy
+from django.views.generic.edit import FormView
+from .forms import TaskForm
 
 
 @login_required
@@ -152,3 +155,24 @@ class SignUpView(LoginProhibitedMixin, FormView):
     def get_success_url(self):
         return reverse(settings.REDIRECT_URL_WHEN_LOGGED_IN)
     
+
+class CreateTaskView(LoginProhibitedMixin, FormView):
+   
+    form_class = TaskForm
+    template_name = 'create_task.html'  # Create a template for your task form
+    redirect_when_logged_in_url = settings.REDIRECT_URL_WHEN_LOGGED_IN
+    success_url = reverse_lazy('dashboard')  # Redirect to the dashboard after successful form submission
+    form_title = 'Create Task'
+
+    
+    
+    def form_valid(self, form):
+        self.object = form.save()
+        login(self.request, self.object)
+        return super().form_valid(form)
+    
+    def get_success_url(self):
+        """Return redirect URL after successful update."""
+        messages.add_message(self.request, messages.SUCCESS, "Task created!")
+        return reverse(settings.REDIRECT_URL_WHEN_LOGGED_IN)
+
