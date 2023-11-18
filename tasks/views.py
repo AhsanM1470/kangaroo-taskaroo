@@ -173,11 +173,7 @@ class CreateTaskView(LoginRequiredMixin, FormView):
         """Return redirect URL after successful update."""
         messages.add_message(self.request, messages.SUCCESS, "Task created!")
         return reverse('dashboard')
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['form'] = self.get_form()  # Adjust this line based on your logic
-        return context
+
     
     
     
