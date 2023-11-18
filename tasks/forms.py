@@ -117,16 +117,15 @@ class TaskForm(forms.ModelForm):
         model = Task
         fields = ["name", "description", "due_date"]
         widgets = {
-            'description' : forms.Textarea
+            'description' : forms.Textarea()
         }
         
-    def save(self):
-        """Create a new task"""
+    #def save(self):
+    #    """Create a new task"""
         
-        super().save(commit=False)
-        task = Task.objects.create(
-            name = self.cleaned_data.get('name'),
-            description = self.cleaned_data.get('description'),
-            due_date = self.cleaned_data.get('due_date'),
-        )
-        return task
+    #    task = Task.objects.create(
+    #        name = self.cleaned_data.get('name'),
+    #        description = self.cleaned_data.get('description'),
+    #        due_date = self.cleaned_data.get('due_date'),
+    #    )
+    #    return task

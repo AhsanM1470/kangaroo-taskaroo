@@ -156,23 +156,29 @@ class SignUpView(LoginProhibitedMixin, FormView):
         return reverse(settings.REDIRECT_URL_WHEN_LOGGED_IN)
     
 
-class CreateTaskView(LoginProhibitedMixin, FormView):
+class CreateTaskView(LoginRequiredMixin, FormView):
    
     form_class = TaskForm
-    template_name = 'create_task.html'  # Create a template for your task form
-    redirect_when_logged_in_url = settings.REDIRECT_URL_WHEN_LOGGED_IN
+    template_name = 'task_create.html'  # Create a template for your task form
+    #redirect_when_logged_in_url = settings.REDIRECT_URL_WHEN_LOGGED_IN
     success_url = reverse_lazy('dashboard')  # Redirect to the dashboard after successful form submission
     form_title = 'Create Task'
-
-    
     
     def form_valid(self, form):
         self.object = form.save()
-        login(self.request, self.object)
+        #login(self.request, self.object)
         return super().form_valid(form)
     
     def get_success_url(self):
         """Return redirect URL after successful update."""
         messages.add_message(self.request, messages.SUCCESS, "Task created!")
-        return reverse(settings.REDIRECT_URL_WHEN_LOGGED_IN)
+        return reverse('dashboard')
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['form'] = self.get_form()  # Adjust this line based on your logic
+        return context
+    
+    
+    
 
