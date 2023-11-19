@@ -44,27 +44,56 @@ class User(AbstractUser):
         """Returns a query set of set of teams this user is a part of"""
 
         return self.team_set.all()
+    
+    def get_invites(self):
+        """Returns a query set of all the invites this user has received"""
+
+        return self.invite_set.all()
+
+    
 
 class Team(models.Model):
     """Model used to hold teams of different users and their relevant information"""
     
     team_name = models.CharField(max_length=50, unique=True, blank=False)
-    users = models.ManyToManyField(User)
+    team_members = models.ManyToManyField(User)
     description = models.TextField(max_length=200, blank=True)
-
+        
     def add_team_member(self, newUser):
         """Add a new user to the users field"""
         
-        self.users.add(newUser)
+        self.team_members.add(newUser)
         self.save()
     
     def remove_team_member(self, user_to_remove):
         """Removes user from team"""
 
-        self.users.remove(user_to_remove)
+        self.team_members.remove(user_to_remove)
         self.save()
     
     def get_team_members(self):
         """Returns query set containing all the users in team"""
 
-        return self.users.all()
+        return self.team_members.all()
+
+class Invite(models.Model):
+    """Model used to hold information about invites"""
+    invited_users = models.ManyToManyField(User)
+    inviting_team = models.ManyToManyField(Team)
+    invite_message = models.TextField(max_length=100, blank=True)
+
+    def __str__(self):
+        """Prints out the invite in nice formatting"""
+        return ""
+    
+    def send_invite(self):
+        for user in self.invited_users:
+            user.invite_set.add(self)
+
+    def delete_invite(self):
+        """Delete invite because 1. Invite has been completed, or 2. The inviter wants to undo the invitation"""
+        #team = Team.objects.get(team_name=self.inviting_team_name)
+        self.delete()
+
+        
+

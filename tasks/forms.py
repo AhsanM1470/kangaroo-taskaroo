@@ -2,7 +2,7 @@
 from django import forms
 from django.contrib.auth import authenticate
 from django.core.validators import RegexValidator
-from .models import User, Team
+from .models import User, Team, Invite
 
 class LogInForm(forms.Form):
     """Form enabling registered users to log in."""
@@ -116,14 +116,43 @@ class CreateTeamForm(forms.ModelForm):
         """Form options."""
 
         model = Team
-        fields = ['team_name', 'description', 'users']
+        fields = ['team_name', 'description', 'team_members']
+    
+    def __init__(self, user=None, **kwargs):
+        """Construct new form instance with a user instance."""
+        
+        super().__init__(**kwargs)
+        self.user = user
     
     def create_team(self):
         """Create a new team"""
+
+        print("ssjdhsjd")
+        team_members = self.cleaned_data.get("team_members")
+        team_members.add(self.user)
+        # for each team member, send them an invite
         
         team = Team.objects.create_team(
             team_name=self.cleaned_data.get("team_name"),
             description=self.cleaned_data.get("description"),
-            users=self.cleaned_data.get("users")
+            team_members=team_members,
         )
-        return team
+        team.save()
+
+class InviteForm(forms.ModelForm):
+    """Form enabling a user to create and send an invite to another user"""
+
+    class Meta:
+        """Form options."""
+
+        model = Invite
+        fields = ['invited_users', 'invite_message']
+    
+    def invite_user(self, user_team):
+        """Create a new invite"""
+        invite = Invite.objects.create_invite(
+            invited_users=self.cleaned_data.get("users"),
+            inviting_team=user_team,
+            invite_message=self.cleaned_data.get("invite_message")
+        )
+        return invite

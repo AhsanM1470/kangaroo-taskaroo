@@ -23,9 +23,21 @@ def dashboard(request):
 def create_team(request):
     if request == "POST":
         # Create the team
-        team = CreateTeamForm(request.POST)
-        team.save()
+        current_user = request.user
+        team = CreateTeamForm(request.POST, user=current_user)
+        if team.is_valid():
+            team.create_team()
     # Maybe redirect to the "your teams page"
+    return redirect("my_teams")
+
+
+@login_required
+def my_teams(request):
+    current_user = request.user
+    user_teams = current_user.get_teams()
+    user_invites = current_user.get_invites()
+    form = CreateTeamForm()
+    return render(request, 'my_teams.html', {'teams': user_teams, 'invites': user_invites, 'form': form})
 
 
 @login_prohibited
