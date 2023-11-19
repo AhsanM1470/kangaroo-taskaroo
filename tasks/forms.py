@@ -2,7 +2,9 @@
 from django import forms
 from django.contrib.auth import authenticate
 from django.core.validators import RegexValidator
+from django.core.exceptions import ValidationError
 from .models import User, Task
+from django.utils import timezone
 
 class LogInForm(forms.Form):
     """Form enabling registered users to log in."""
@@ -119,6 +121,12 @@ class TaskForm(forms.ModelForm):
         widgets = {
             'description' : forms.Textarea()
         }
+        
+    def clean_due_date(self):
+        due_date = self.cleaned_data.get('due_date')
+        if due_date and due_date < timezone.now():
+            raise ValidationError("Due date must be in the future!")
+        return due_date
         
 class TaskDeleteForm(forms.Form):
     confirm_deletion = forms.BooleanField(

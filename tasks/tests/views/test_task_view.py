@@ -21,12 +21,6 @@ class TaskCreateViewTestCase(TestCase, LogInTester):
             due_date=datetime(2023, 11, 28, 10, 0),
         )
         
-        #self.task_data = {
-        #    'name': self.task.name,
-        #    'description': self.task.description,
-        #    'due_date': self.task.due_date, 
-        #}
-        
         self.form_input = {
             'name': 'Task5',
             'description': 'Amys fifth task within task manager!',
