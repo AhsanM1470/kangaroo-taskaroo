@@ -3,6 +3,8 @@ from .models import User, Team, Invite
 
 # Register your models here.
 
+"""These haven't been fully finished, but seem to work for what is needed so far"""
+
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
     """Configuration of the adminstrative interface for users"""

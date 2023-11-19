@@ -8,7 +8,7 @@ class TeamModelTestCase(TestCase):
 
     def setUp(self):
         self.user = User.objects.get(username='@johndoe')
-        self.team = Team.objects.
+        self.team = Team.objects.get(team_name="kangaroo")
 
     def test_valid_user(self):
         self._assert_user_is_valid()

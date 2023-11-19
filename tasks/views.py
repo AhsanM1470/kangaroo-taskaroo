@@ -21,13 +21,15 @@ def dashboard(request):
 
 @login_required
 def create_team(request):
-    if request == "POST":
+    if request.method == "POST":
         # Create the team
         current_user = request.user
-        team = CreateTeamForm(request.POST, user=current_user)
+        team = CreateTeamForm(request.POST)
+        team.set_user(user=current_user)
         if team.is_valid():
             team.create_team()
-    # Maybe redirect to the "your teams page"
+        else:
+            messages.add_message(request, messages.ERROR, "That team name has already been taken!")
     return redirect("my_teams")
 
 

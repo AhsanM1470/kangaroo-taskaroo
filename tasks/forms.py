@@ -118,25 +118,23 @@ class CreateTeamForm(forms.ModelForm):
         model = Team
         fields = ['team_name', 'description', 'team_members']
     
-    def __init__(self, user=None, **kwargs):
-        """Construct new form instance with a user instance."""
-        
-        super().__init__(**kwargs)
+    def set_user(self, user):
+        """Link this form's instance with a user instance."""
+
         self.user = user
     
     def create_team(self):
         """Create a new team"""
 
-        print("ssjdhsjd")
         team_members = self.cleaned_data.get("team_members")
-        team_members.add(self.user)
-        # for each team member, send them an invite
+        # Maybe for each team member, send them an invite instead of doing it automatically
         
-        team = Team.objects.create_team(
+        team = Team.objects.create(
             team_name=self.cleaned_data.get("team_name"),
             description=self.cleaned_data.get("description"),
-            team_members=team_members,
         )
+        team.add_team_member(self.user) # This user is the first member of the team
+        team.add_team_member(team_members) 
         team.save()
 
 class InviteForm(forms.ModelForm):

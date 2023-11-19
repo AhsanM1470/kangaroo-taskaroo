@@ -56,20 +56,22 @@ class Team(models.Model):
     """Model used to hold teams of different users and their relevant information"""
     
     team_name = models.CharField(max_length=50, unique=True, blank=False)
-    team_members = models.ManyToManyField(User)
+    team_members = models.ManyToManyField(User, blank=True)
     description = models.TextField(max_length=200, blank=True)
         
-    def add_team_member(self, newUser):
-        """Add a new user to the users field"""
+    def add_team_member(self, **new_team_members):
+        """Add new team member/s to the team"""
         
-        self.team_members.add(newUser)
-        self.save()
+        for new_member in new_team_members:
+            self.team_members.add(new_member)
+            self.save()
     
-    def remove_team_member(self, user_to_remove):
-        """Removes user from team"""
+    def remove_team_member(self, **users_to_remove):
+        """Removes user/s from team"""
 
-        self.team_members.remove(user_to_remove)
-        self.save()
+        for user_to_remove in users_to_remove:
+            self.team_members.remove(user_to_remove)
+            self.save()
     
     def get_team_members(self):
         """Returns query set containing all the users in team"""
