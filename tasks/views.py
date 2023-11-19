@@ -14,6 +14,7 @@ from django.urls import reverse_lazy
 from django.views.generic.edit import FormView
 from .forms import TaskForm, TaskDeleteForm
 from .models import Task
+from datetime import datetime
 
 
 @login_required
@@ -188,6 +189,24 @@ class TaskView(LoginRequiredMixin, FormView):
             delete_form = TaskDeleteForm()
             
         return render(request, 'task_deletion.html', {'task':task, 'delete_form': delete_form})
+
+    def create_task(request):
+        if request.method == 'POST':
+            # Retrieve form data
+            task_name = request.POST.get('task_name')
+            description = request.POST.get('description')
+            due_date_str = request.POST.get('due_date')
+
+            # Convert due date string to datetime object
+            due_date = datetime.strptime(due_date_str, '%Y-%m-%d')
+
+            # Create Task instance and set fields
+            task = Task(name=task_name, description=description, due_date=due_date)
+            task.save()
+
+            return redirect('dashboard')
+
+        return render(request, 'task_form.html')
 
     
     

@@ -44,7 +44,16 @@ class User(AbstractUser):
     
 class Task(models.Model):
     """Model used for tasks and information related to them"""
-    
+
+    class Task(models.Model):
+        """Model used for tasks and information related to them"""
+
+        alphanumeric = RegexValidator(r'^[0-9a-zA-Z]{3,}$', 'Only alphanumeric characters are allowed.')
+        name = models.CharField(max_length=30, blank=False, unique=True, validators=[alphanumeric])
+        description = models.CharField(max_length=530, blank=True)
+        due_date = models.DateTimeField(default=datetime.datetime(1, 1, 1))
+        created_at = models.DateTimeField(auto_now_add=True)
+        # Could add a boolean field to indicate if the task has expired?
     alphanumeric = RegexValidator(r'^[0-9a-zA-Z]{3,}$', 'Only alphanumeric characters are allowed.')
     name = models.CharField(max_length=30, blank=False, unique=True, validators=[alphanumeric])
     description = models.CharField(max_length=530, blank=True)
