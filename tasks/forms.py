@@ -118,12 +118,7 @@ class CreateTeamForm(forms.ModelForm):
         model = Team
         fields = ['team_name', 'description', 'team_members']
     
-    def set_user(self, user):
-        """Link this form's instance with a user instance."""
-
-        self.user = user
-    
-    def create_team(self):
+    def create_team(self, user):
         """Create a new team"""
 
         team_members = self.cleaned_data.get("team_members")
@@ -133,9 +128,11 @@ class CreateTeamForm(forms.ModelForm):
             team_name=self.cleaned_data.get("team_name"),
             description=self.cleaned_data.get("description"),
         )
-        team.add_team_member(self.user) # This user is the first member of the team
-        team.add_team_member(team_members) 
-        team.save()
+        team.add_creator(user) # This user is the first member of the team
+
+        if len(team_members) != 0: # If you had members you added in the form
+            team.add_team_member(team_members) 
+        return team
 
 class InviteForm(forms.ModelForm):
     """Form enabling a user to create and send an invite to another user"""
@@ -144,13 +141,23 @@ class InviteForm(forms.ModelForm):
         """Form options."""
 
         model = Invite
-        fields = ['invited_users', 'invite_message']
+        fields = ['invited_users', 'invite_message', "inviting_team"]
     
-    def invite_user(self, user_team):
+    def __init__(self, user=None, **kwargs):
+        """Makes sure only teams that the current user belongs to are given as options"""
+
+        super().__init__(**kwargs)
+        self.user = user
+        if self.user != None:
+            username = self.user.username
+            self.fields['inviting_team'].queryset = Team.objects.filter(
+                team_member_names__contains=username)
+    
+    def send_invite(self):
         """Create a new invite"""
         invite = Invite.objects.create_invite(
-            invited_users=self.cleaned_data.get("users"),
-            inviting_team=user_team,
+            invited_users=self.cleaned_data.get("invited_users"),
+            inviting_team=self.cleaned_data.get("inviting_team"),
             invite_message=self.cleaned_data.get("invite_message")
         )
         return invite

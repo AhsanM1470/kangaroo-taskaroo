@@ -8,7 +8,7 @@ from django.shortcuts import redirect, render
 from django.views import View
 from django.views.generic.edit import FormView, UpdateView
 from django.urls import reverse
-from tasks.forms import LogInForm, PasswordForm, UserForm, SignUpForm, CreateTeamForm
+from tasks.forms import LogInForm, PasswordForm, UserForm, SignUpForm, CreateTeamForm, InviteForm
 from tasks.helpers import login_prohibited
 
 
@@ -25,21 +25,20 @@ def create_team(request):
         # Create the team
         current_user = request.user
         team = CreateTeamForm(request.POST)
-        team.set_user(user=current_user)
         if team.is_valid():
-            team.create_team()
+            team.create_team(user=current_user)
         else:
             messages.add_message(request, messages.ERROR, "That team name has already been taken!")
     return redirect("my_teams")
-
 
 @login_required
 def my_teams(request):
     current_user = request.user
     user_teams = current_user.get_teams()
     user_invites = current_user.get_invites()
-    form = CreateTeamForm()
-    return render(request, 'my_teams.html', {'teams': user_teams, 'invites': user_invites, 'form': form})
+    team_form = CreateTeamForm()
+    invite_form = InviteForm()
+    return render(request, 'my_teams.html', {'teams': user_teams, 'invites': user_invites, 'team_form': team_form, "invite_form" : invite_form})
 
 
 @login_prohibited
@@ -173,3 +172,40 @@ class SignUpView(LoginProhibitedMixin, FormView):
 
     def get_success_url(self):
         return reverse(settings.REDIRECT_URL_WHEN_LOGGED_IN)
+
+class InviteView(LoginRequiredMixin, FormView):
+    """Display invite form"""
+
+    template_name = 'my_teams.html'
+    form_class = InviteForm
+
+    def get_form_kwargs(self, **kwargs):
+        """Pass the current user to the invite form."""
+
+        print("sdjhsdjhsjdhsdsd")
+        kwargs = super().get_form_kwargs(**kwargs)
+        print(self.request.user)
+        kwargs.update({'user': self.request.user})
+        return kwargs
+
+    def form_valid(self, form):
+        """Handle valid form by saving the invite."""
+
+        form.save()
+        login(self.request, self.request.user)
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        """Redirect the user after successful password change."""
+
+        messages.add_message(self.request, messages.SUCCESS, "Password updated!")
+        return reverse('dashboard')
+
+    def post(self, request):
+        # Send the invite
+        invite = InviteForm(request.POST)
+        if invite.is_valid():
+            invite.send_invite()
+        else:
+            messages.add_message(request, messages.ERROR, "Must fill in all fields of the form!")
+        return redirect("my_teams")

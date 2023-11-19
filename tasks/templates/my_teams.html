@@ -17,8 +17,14 @@
       <h1>Create Team</h1>
       <form action ="{%url 'create_team'%}" method="post">
         {% csrf_token %}
-        {% include 'partials/bootstrap_form.html' with form=form %}
+        {% include 'partials/bootstrap_form.html' with form=team_form %}
       <input type="submit" value="Create Team" class="btn btn-primary">
+      </form>
+      <h1>Make an invite</h1>
+      <form action ="{%url 'create_invite'%}" method="post">
+        {% csrf_token %}
+        {% include 'partials/bootstrap_form.html' with form=invite_form %}
+      <input type="submit" value="Create Invite" class="btn btn-primary">
       </form>
     </div>
   </div>

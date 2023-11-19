@@ -57,21 +57,32 @@ class Team(models.Model):
     
     team_name = models.CharField(max_length=50, unique=True, blank=False)
     team_members = models.ManyToManyField(User, blank=True)
+    team_member_names = models.TextField(blank=True)
     description = models.TextField(max_length=200, blank=True)
+    
+    def add_creator(self, user):
+        """Add the creator of the team to the team"""
         
-    def add_team_member(self, **new_team_members):
+        # May have administrator rights or something
+        self.team_members.add(user)
+        self.team_member_names += user.username 
+        self.save()
+
+    def add_team_member(self, new_team_members):
         """Add new team member/s to the team"""
         
-        for new_member in new_team_members:
-            self.team_members.add(new_member)
+        for new_team_member in new_team_members.all():
+            self.team_members.add(new_team_member)
+            self.team_member_names += ", " + new_team_member.username 
             self.save()
     
-    def remove_team_member(self, **users_to_remove):
+    def remove_team_member(self, user_to_remove):
         """Removes user/s from team"""
 
-        for user_to_remove in users_to_remove:
-            self.team_members.remove(user_to_remove)
-            self.save()
+        # Maybe use a query set for this too
+
+        self.team_members.remove(user_to_remove)
+        self.save()
     
     def get_team_members(self):
         """Returns query set containing all the users in team"""
@@ -80,8 +91,8 @@ class Team(models.Model):
 
 class Invite(models.Model):
     """Model used to hold information about invites"""
-    invited_users = models.ManyToManyField(User)
-    inviting_team = models.ManyToManyField(Team)
+    invited_users = models.ManyToManyField(User, blank=False)
+    inviting_team = models.ManyToManyField(Team, blank=False)
     invite_message = models.TextField(max_length=100, blank=True)
 
     def __str__(self):
@@ -89,7 +100,7 @@ class Invite(models.Model):
         return ""
     
     def send_invite(self):
-        for user in self.invited_users:
+        for user in self.invited_users.all():
             user.invite_set.add(self)
 
     def delete_invite(self):
