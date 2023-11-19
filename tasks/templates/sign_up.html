@@ -2,7 +2,7 @@
 {% block content %}
 <div class="container">
   <div class="row">
-    <div class="col-12">
+    <div class="col-sm-12 col-md-6 offset-md-3">
       <h1>Sign up</h1>
       <form action="{% url 'sign_up' %}" method="post">
         {% csrf_token %}
