@@ -120,12 +120,9 @@ class TaskForm(forms.ModelForm):
             'description' : forms.Textarea()
         }
         
-    #def save(self):
-    #    """Create a new task"""
-        
-    #    task = Task.objects.create(
-    #        name = self.cleaned_data.get('name'),
-    #        description = self.cleaned_data.get('description'),
-    #        due_date = self.cleaned_data.get('due_date'),
-    #    )
-    #    return task
+class TaskDeleteForm(forms.Form):
+    confirm_deletion = forms.BooleanField(
+        required=True,
+        help_text="Check to confirm deletion of this task",
+    )
+    

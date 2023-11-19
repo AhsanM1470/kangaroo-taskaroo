@@ -4,7 +4,7 @@ from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ImproperlyConfigured
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect, render, get_object_or_404
 from django.views import View
 from django.views.generic.edit import FormView, UpdateView
 from django.urls import reverse
@@ -12,7 +12,8 @@ from tasks.forms import LogInForm, PasswordForm, UserForm, SignUpForm
 from tasks.helpers import login_prohibited
 from django.urls import reverse_lazy
 from django.views.generic.edit import FormView
-from .forms import TaskForm
+from .forms import TaskForm, TaskDeleteForm
+from .models import Task
 
 
 @login_required
@@ -156,7 +157,7 @@ class SignUpView(LoginProhibitedMixin, FormView):
         return reverse(settings.REDIRECT_URL_WHEN_LOGGED_IN)
     
 
-class CreateTaskView(LoginRequiredMixin, FormView):
+class TaskView(LoginRequiredMixin, FormView):
    
     form_class = TaskForm
     template_name = 'task_create.html'  # Create a template for your task form
@@ -173,6 +174,20 @@ class CreateTaskView(LoginRequiredMixin, FormView):
         """Return redirect URL after successful update."""
         messages.add_message(self.request, messages.SUCCESS, "Task created!")
         return reverse('dashboard')
+    
+    def delete_task(request, task_id):
+        task = get_object_or_404(Task, pk=task_id)
+        
+        if request.method == 'POST':
+            delete_form = TaskDeleteForm(request.POST)
+            if delete_form.is_valid():
+                if delete_form.cleaned_data['confirm_deletion']:
+                    task.delete()
+                    return redirect('dashboard')
+        else:
+            delete_form = TaskDeleteForm()
+            
+        return render(request, 'task_deletion.html', {'task':task, 'delete_form': delete_form})
 
     
     

@@ -27,7 +27,7 @@ class TaskCreateViewTestCase(TestCase, LogInTester):
         #    'due_date': self.task.due_date, 
         #}
         
-        self.task_data = {
+        self.form_input = {
             'name': 'Task5',
             'description': 'Amys fifth task within task manager!',
             'due_date': '2023-12-19 15:30',
@@ -71,8 +71,7 @@ class TaskCreateViewTestCase(TestCase, LogInTester):
 
     def test_successful_task_create(self):
         before_count = Task.objects.count()
-        response = self.client.post(self.url, data=self.task_data, follow=True)
-        #Task.objects.create(name='Test3',description='Testing',due_date='2023-12-31')
+        response = self.client.post(self.url, data=self.form_input, follow=True)
         after_count = Task.objects.count()
         self.assertEqual(after_count, before_count + 1)
         redirect_url = reverse('dashboard')
@@ -112,5 +111,6 @@ class TaskCreateViewTestCase(TestCase, LogInTester):
     #     form = response.context['form']
     #     self.assertTrue(isinstance(form, TaskForm))
     #     self.assertFalse(form.is_bound)
+
         
     
