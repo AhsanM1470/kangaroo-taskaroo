@@ -21,6 +21,7 @@ def dashboard(request):
 
 @login_required
 def create_team(request):
+    """Form that allows user to create a new team"""
     if request.method == "POST":
         # Create the team
         current_user = request.user
@@ -33,6 +34,8 @@ def create_team(request):
 
 @login_required
 def my_teams(request):
+    """Display the user's teams page and their invites"""
+
     current_user = request.user
     user_teams = current_user.get_teams()
     user_invites = current_user.get_invites()
@@ -182,30 +185,31 @@ class InviteView(LoginRequiredMixin, FormView):
     def get_form_kwargs(self, **kwargs):
         """Pass the current user to the invite form."""
 
-        print("sdjhsdjhsjdhsdsd")
         kwargs = super().get_form_kwargs(**kwargs)
-        print(self.request.user)
+        print(f"User : {self.request.user}")
         kwargs.update({'user': self.request.user})
         return kwargs
 
+    """ 
     def form_valid(self, form):
-        """Handle valid form by saving the invite."""
 
         form.save()
-        login(self.request, self.request.user)
+        return super().form_valid(form)
+
+    def get_success_url(self):
+
+        messages.add_message(self.request, messages.SUCCESS, "Password updated!")
+        return reverse('dashboard')
+    """
+    def form_valid(self, form):
+        """Handle valid form by saving the new password."""
+
+        form.save()
+        form.send_invite()
         return super().form_valid(form)
 
     def get_success_url(self):
         """Redirect the user after successful password change."""
 
-        messages.add_message(self.request, messages.SUCCESS, "Password updated!")
-        return reverse('dashboard')
-
-    def post(self, request):
-        # Send the invite
-        invite = InviteForm(request.POST)
-        if invite.is_valid():
-            invite.send_invite()
-        else:
-            messages.add_message(request, messages.ERROR, "Must fill in all fields of the form!")
-        return redirect("my_teams")
+        messages.add_message(self.request, messages.SUCCESS, "Invite Sent!")
+        return reverse('my_teams')

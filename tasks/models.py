@@ -57,7 +57,6 @@ class Team(models.Model):
     
     team_name = models.CharField(max_length=50, unique=True, blank=False)
     team_members = models.ManyToManyField(User, blank=True)
-    team_member_names = models.TextField(blank=True)
     description = models.TextField(max_length=200, blank=True)
     
     def add_creator(self, user):
@@ -76,13 +75,13 @@ class Team(models.Model):
             self.team_member_names += ", " + new_team_member.username 
             self.save()
     
-    def remove_team_member(self, user_to_remove):
+    def remove_team_member(self, users_to_remove):
         """Removes user/s from team"""
 
         # Maybe use a query set for this too
-
-        self.team_members.remove(user_to_remove)
-        self.save()
+        for user in users_to_remove:
+            self.team_members.remove(user)
+            self.save()
     
     def get_team_members(self):
         """Returns query set containing all the users in team"""
@@ -98,8 +97,29 @@ class Invite(models.Model):
     def __str__(self):
         """Prints out the invite in nice formatting"""
         return ""
+
+    def set_invited_users(self, users):
+        """Set the invited users of the invite"""
+
+        for user in users.all():
+            self.invited_users.add(user)
+            self.save()
+
+    def set_team(self, teams):
+        """Set the team that will send the invite"""
+        
+        for team in teams.all():
+            self.inviting_team.add(team)
+            self.save()
+    
+    def get_inviting_team(self):
+        """Return the inviting team"""
+
+        return self.inviting_team.get(pk=1)
     
     def send_invite(self):
+        """Send the invite to each user"""
+
         for user in self.invited_users.all():
             user.invite_set.add(self)
 

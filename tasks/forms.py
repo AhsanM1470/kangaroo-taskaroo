@@ -149,15 +149,21 @@ class InviteForm(forms.ModelForm):
         super().__init__(**kwargs)
         self.user = user
         if self.user != None:
-            username = self.user.username
+            print(f"{self.user} Bsd")
             self.fields['inviting_team'].queryset = Team.objects.filter(
-                team_member_names__contains=username)
+                team_members=self.user)
     
     def send_invite(self):
         """Create a new invite"""
-        invite = Invite.objects.create_invite(
-            invited_users=self.cleaned_data.get("invited_users"),
-            inviting_team=self.cleaned_data.get("inviting_team"),
+
+        users = self.cleaned_data.get("invited_users")
+        team = self.cleaned_data.get("inviting_team")
+        # Need to change this so that all the users and the team is passed into the invite object
+
+        invite = Invite.objects.create(
             invite_message=self.cleaned_data.get("invite_message")
         )
+        invite.set_invited_users(users)
+        invite.set_team(team)
+        
         return invite

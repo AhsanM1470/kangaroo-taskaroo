@@ -11,7 +11,7 @@
       {% endfor %}
       <h1>Invite List</h1>
       {% for invite in invites %}
-      <p>Team Name: <b> {{ invite.inviting_team.team_name }} </b></p>
+      <p>Team Name: <b> {{ invite.get_inviting_team.team_name }} </b></p>
       <p>Invite Message: <b> {{ invite.invite_message }} </b></p>
       {% endfor %}
       <h1>Create Team</h1>
