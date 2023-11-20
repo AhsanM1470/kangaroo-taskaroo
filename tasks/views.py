@@ -190,23 +190,28 @@ class TaskView(LoginRequiredMixin, FormView):
             
         return render(request, 'task_deletion.html', {'task':task, 'delete_form': delete_form})
 
+    from datetime import datetime
+    from django.shortcuts import render, redirect
+    from .models import Task
+
     def create_task(request):
         if request.method == 'POST':
-            # Retrieve form data
-            task_name = request.POST.get('task_name')
-            description = request.POST.get('description')
-            due_date_str = request.POST.get('due_date')
+            if request.method == 'POST':
+                # Use TaskForm to handle form data, including validation and cleaning
+                form = TaskForm(request.POST or None)
 
-            # Convert due date string to datetime object
-            due_date = datetime.strptime(due_date_str, '%Y-%m-%d')
+                # Check if the form is valid
+                if form.is_valid():
+                    # Save the form data to create a new Task instance
+                    form.save()
 
-            # Create Task instance and set fields
-            task = Task(name=task_name, description=description, due_date=due_date)
-            task.save()
+                    # Redirect to the dashboard or another page
+                    return redirect('dashboard')
 
-            return redirect('dashboard')
+        # Fetch all tasks for rendering the form initially
+        all_tasks = Task.objects.all()
 
-        return render(request, 'task_form.html')
+        return render(request, 'task_form.html', {'tasks': all_tasks})
 
     
     
