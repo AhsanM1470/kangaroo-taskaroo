@@ -211,7 +211,7 @@ class TaskView(LoginRequiredMixin, FormView):
         # Fetch all tasks for rendering the form initially
         all_tasks = Task.objects.all()
 
-        return render(request, 'task_form.html', {'tasks': all_tasks})
+        return render(request, 'task_create.html', {'tasks': all_tasks})
 
     
     

@@ -72,7 +72,7 @@ class TaskCreateViewTestCase(TestCase, LogInTester):
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
         self.assertTemplateUsed(response, 'dashboard.html')
         created_task = Task.objects.filter(name='Task5').first()
-        self.assertIsNotNone(created_task, "Task1 should be created")
+        self.assertIsNotNone(created_task, "Task5 should be created")
         self.assertEqual(created_task.description, 'Amys fifth task within task manager!')
         
     def test_unsuccesful_task_create(self):
