@@ -59,12 +59,17 @@ class Team(models.Model):
     team_members = models.ManyToManyField(User, blank=True)
     description = models.TextField(max_length=200, blank=True)
     
+    def __str__(self):
+        """Overrides string to show the team's name"""
+        
+        return self.team_name
+
+
     def add_creator(self, user):
         """Add the creator of the team to the team"""
         
         # May have administrator rights or something
         self.team_members.add(user)
-        self.team_member_names += user.username 
         self.save()
 
     def add_team_member(self, new_team_members):
@@ -72,8 +77,13 @@ class Team(models.Model):
         
         for new_team_member in new_team_members.all():
             self.team_members.add(new_team_member)
-            self.team_member_names += ", " + new_team_member.username 
             self.save()
+        
+    def add_invited_member(self, user):
+        """Add a new team member from an invite"""
+
+        self.team_members.add(user)
+        self.save()
     
     def remove_team_member(self, users_to_remove):
         """Removes user/s from team"""
@@ -88,44 +98,49 @@ class Team(models.Model):
 
         return self.team_members.all()
 
+    def get_team_members_list(self):
+        """Return a string which shows the list of all the users in team"""
+
+        output_str = ""
+        users = self.get_team_members()
+
+        for user in users:
+            output_str += f'{user.username} '
+        return output_str
+
 class Invite(models.Model):
     """Model used to hold information about invites"""
     invited_users = models.ManyToManyField(User, blank=False)
     inviting_team = models.ManyToManyField(Team, blank=False)
     invite_message = models.TextField(max_length=100, blank=True)
-
-    def __str__(self):
-        """Prints out the invite in nice formatting"""
-        return ""
+    status = models.CharField(max_length=30, default="Reject")
 
     def set_invited_users(self, users):
         """Set the invited users of the invite"""
 
         for user in users.all():
             self.invited_users.add(user)
-            self.save()
 
-    def set_team(self, teams):
+    def set_team(self, team):
         """Set the team that will send the invite"""
-        
-        for team in teams.all():
-            self.inviting_team.add(team)
-            self.save()
+
+        self.inviting_team.add(team)
     
     def get_inviting_team(self):
         """Return the inviting team"""
 
         return self.inviting_team.get(pk=1)
-    
-    def send_invite(self):
-        """Send the invite to each user"""
 
-        for user in self.invited_users.all():
-            user.invite_set.add(self)
+    def close(self, user_to_invite=None):
+        """Closes the invite and perform relevant behavior for
+        1. invite has been accepted/rejected
+        2. If the inviter wants to withdraw the invitation"""
 
-    def delete_invite(self):
-        """Delete invite because 1. Invite has been completed, or 2. The inviter wants to undo the invitation"""
-        #team = Team.objects.get(team_name=self.inviting_team_name)
+        if self.status == "Accept":
+            if user_to_invite:
+                self.get_inviting_team().add_invited_member(user_to_invite)   
+        elif self.status == "Reject":
+            print("Rejected Invite!")
         self.delete()
 
         

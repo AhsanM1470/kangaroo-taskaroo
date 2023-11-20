@@ -5,14 +5,24 @@
     <div class="col-12">
       <h1>Team List</h1>
       {% for team in teams %}
-      <p>Team Name: <b> {{ team.team_name }} </b></p>
-      <p>Team Description: <b> {{ team.description }} </b></p>
-      <p>List of Team Members: <b> {{ team.get_team_members }} </b></p>
+        <h3> {{ team.team_name }} </h3>
+        <p>Team Description: <b> {{ team.description }} </b></p>
+        <p>List of Team Members: <b> {{ team.get_team_members_list }} </b></p>
+      {% empty %}
+        <p>You currently are not part of any teams 0-0</p>
       {% endfor %}
       <h1>Invite List</h1>
       {% for invite in invites %}
-      <p>Team Name: <b> {{ invite.get_inviting_team.team_name }} </b></p>
-      <p>Invite Message: <b> {{ invite.invite_message }} </b></p>
+        <p>Team Name: <b> {{ invite.get_inviting_team.team_name }} </b></p>
+        <p>Invite Message: <b> {{ invite.invite_message }} </b></p>
+        <form action ="{%url 'press_invite'%}" method="post">
+          {% csrf_token %}
+          <input type="submit" value="Accept" name="status">
+          <input type="submit" value="Reject" name="status">
+          <input type="hidden" name="id" value= {{ invite.id }}>
+        </form> 
+      {% empty %}
+        <p>You have no new invites right now</p>
       {% endfor %}
       <h1>Create Team</h1>
       <form action ="{%url 'create_team'%}" method="post">

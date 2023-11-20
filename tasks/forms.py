@@ -141,23 +141,24 @@ class InviteForm(forms.ModelForm):
         """Form options."""
 
         model = Invite
-        fields = ['invited_users', 'invite_message', "inviting_team"]
+        fields = ['invited_users', 'invite_message', "team_to_join"]
+    
+    team_to_join = forms.ModelChoiceField(queryset=Team.objects.all())
     
     def __init__(self, user=None, **kwargs):
         """Makes sure only teams that the current user belongs to are given as options"""
 
         super().__init__(**kwargs)
         self.user = user
+        
         if self.user != None:
-            print(f"{self.user} Bsd")
-            self.fields['inviting_team'].queryset = Team.objects.filter(
-                team_members=self.user)
+            self.fields['team_to_join'].queryset.filter(team_members=self.user)
     
     def send_invite(self):
         """Create a new invite"""
 
         users = self.cleaned_data.get("invited_users")
-        team = self.cleaned_data.get("inviting_team")
+        team = self.cleaned_data.get("team_to_join")
         # Need to change this so that all the users and the team is passed into the invite object
 
         invite = Invite.objects.create(
@@ -165,5 +166,6 @@ class InviteForm(forms.ModelForm):
         )
         invite.set_invited_users(users)
         invite.set_team(team)
-        
+        invite.save()
+
         return invite

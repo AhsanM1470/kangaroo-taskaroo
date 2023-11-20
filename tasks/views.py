@@ -10,6 +10,7 @@ from django.views.generic.edit import FormView, UpdateView
 from django.urls import reverse
 from tasks.forms import LogInForm, PasswordForm, UserForm, SignUpForm, CreateTeamForm, InviteForm
 from tasks.helpers import login_prohibited
+from tasks.models import Invite
 
 
 @login_required
@@ -43,6 +44,21 @@ def my_teams(request):
     invite_form = InviteForm()
     return render(request, 'my_teams.html', {'teams': user_teams, 'invites': user_invites, 'team_form': team_form, "invite_form" : invite_form})
 
+@login_required
+def press_invite(request):
+    """Functionality for the accept/reject buttons of invite"""
+    
+    if request.method == "POST":
+        invite = Invite.objects.get(id=request.POST.get('id'))
+        user = request.user
+
+        if request.POST.get('status'):
+            invite.status = request.POST.get('status')
+            invite.close(user)
+        else:
+            messages.add_message(request, messages.ERROR, "A choice wasn't made!")
+
+    return redirect("my_teams")
 
 @login_prohibited
 def home(request):
@@ -189,22 +205,10 @@ class InviteView(LoginRequiredMixin, FormView):
         print(f"User : {self.request.user}")
         kwargs.update({'user': self.request.user})
         return kwargs
-
-    """ 
+    
     def form_valid(self, form):
+        """Handle valid invite by sending it."""
 
-        form.save()
-        return super().form_valid(form)
-
-    def get_success_url(self):
-
-        messages.add_message(self.request, messages.SUCCESS, "Password updated!")
-        return reverse('dashboard')
-    """
-    def form_valid(self, form):
-        """Handle valid form by saving the new password."""
-
-        form.save()
         form.send_invite()
         return super().form_valid(form)
 
