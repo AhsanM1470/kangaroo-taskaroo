@@ -10,14 +10,40 @@ from django.views.generic.edit import FormView, UpdateView
 from django.urls import reverse
 from tasks.forms import LogInForm, PasswordForm, UserForm, SignUpForm, CreateTeamForm
 from tasks.helpers import login_prohibited
+from django.views.decorators.http import require_POST
 
 
 @login_required
-def dashboard(request):
-    """Display the current user's dashboard."""
+# def dashboard(request):
+#     """Display the current user's dashboard."""
 
+#     current_user = request.user
+#     return render(request, 'dashboard.html', {'user': current_user})
+
+def add_lane(lanes):
+    new_lane = {'name': 'New Lane'}
+    lanes.append(new_lane)
+    return lanes
+
+def dashboard(request):
+    """Display and modify the current user's dashboard."""
+
+    # Initialize lanes in the session if they don't exist
+    if 'lanes' not in request.session:
+        request.session['lanes'] = ['Backlog', 'In Progress', 'Complete']
+
+    # Handle form submission for adding a new lane
+    if request.method == 'POST' and 'add_lane' in request.POST:
+        new_lane_name = 'New Lane'  # Or dynamically generate the name
+        request.session['lanes'].append(new_lane_name)
+        request.session.modified = True  # Mark session as modified to save it
+        return redirect('dashboard')  # Redirect to the same page to show the updated lanes
+
+    # Retrieve current user and lanes
     current_user = request.user
-    return render(request, 'dashboard.html', {'user': current_user})
+    lanes = request.session['lanes']
+
+    return render(request, 'dashboard.html', {'user': current_user, 'lanes': lanes})
 
 
 @login_prohibited
