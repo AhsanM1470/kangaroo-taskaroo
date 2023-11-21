@@ -52,49 +52,19 @@
     <div class="col-12" style="display: inline;">
       <h1>Welcome to your dashboard {{ user.username }}</h1>
     </div>
-  
-    <div class="task-board">
-      {% for lane in lanes %}
-        <div class="lane">
-          <h3>{{ lane.name }}</h3>
-          <p class="task">Do Thing</p>
-        </div>
-      {% endfor %}
-    </div>
-
-    <form method="post">
-      {% csrf_token %}
-      <button type="submit" name="add_lane">Add Lane</button>
-    </form>
-  </div>
-</div>
-
-<!--
-<div class="container">
-  <div class="row">
-    <div class="col-12" style="display: inline;">
-      <h1>Welcome to your dashboard {{ user.username }}</h1>
-    </div>
 
     <div class="d-flex align-items-start">
       <div class="task-board">
-        <div class="lane">
-          <h3>Backlog</h3>
-          <p class="task">Do Thing</p>
-        </div>
-        <div class="lane">
-          <h3>In Progress</h3>
-          <p class="task">Do Thing</p>
-        </div>
-        <div class="lane">
-          <h3>Complete</h3>
-          <p class="task">Do Thing</p>
-        </div>
-        
         {% for lane in lanes %}
         <div class="lane">
           <h3>{{ lane }}</h3>
           <p class="task">Do Thing</p>
+
+          <form method="post" style="display: inline;">
+            {% csrf_token %}
+            <input type="hidden" name="delete_lane" value="{{ lane }}">
+            <button type="submit" class="btn btn-danger">Delete</button>
+          </form>
         </div>
         {% endfor %}
       </div>
@@ -106,7 +76,7 @@
     </div>
   </div>
 </div>
--->
+
 
 
 {% endblock %}

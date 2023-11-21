@@ -20,11 +20,6 @@ from django.views.decorators.http import require_POST
 #     current_user = request.user
 #     return render(request, 'dashboard.html', {'user': current_user})
 
-def add_lane(lanes):
-    new_lane = {'name': 'New Lane'}
-    lanes.append(new_lane)
-    return lanes
-
 def dashboard(request):
     """Display and modify the current user's dashboard."""
 
@@ -33,16 +28,23 @@ def dashboard(request):
         request.session['lanes'] = ['Backlog', 'In Progress', 'Complete']
 
     # Handle form submission for adding a new lane
-    if request.method == 'POST' and 'add_lane' in request.POST:
-        new_lane_name = 'New Lane'  # Or dynamically generate the name
-        request.session['lanes'].append(new_lane_name)
-        request.session.modified = True  # Mark session as modified to save it
+    if request.method == 'POST':
+        if 'add_lane' in request.POST:
+            new_lane_name = 'New Lane'  # Or dynamically generate the name
+            request.session['lanes'].append(new_lane_name)
+            request.session.modified = True  # Mark session as modified to save it
+
+        elif 'delete_lane' in request.POST:
+                lane_to_delete = request.POST.get('delete_lane')
+                if lane_to_delete in request.session['lanes']:
+                    request.session['lanes'].remove(lane_to_delete)
+                    request.session.modified = True
+
         return redirect('dashboard')  # Redirect to the same page to show the updated lanes
 
     # Retrieve current user and lanes
     current_user = request.user
     lanes = request.session['lanes']
-
     return render(request, 'dashboard.html', {'user': current_user, 'lanes': lanes})
 
 
