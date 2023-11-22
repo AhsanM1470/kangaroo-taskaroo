@@ -333,7 +333,7 @@ class InviteView(LoginRequiredMixin, FormView):
         return kwargs
     
     def form_valid(self, form):
-    """Handle valid invite by sending it."""
+        """Handle valid invite by sending it."""
 
         form.send_invite()
         return super().form_valid(form)
