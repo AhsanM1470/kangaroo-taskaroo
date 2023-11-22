@@ -2,7 +2,10 @@
 from django import forms
 from django.contrib.auth import authenticate
 from django.core.validators import RegexValidator
-from .models import User, Team, Invite
+from django.core.exceptions import ValidationError
+from .models import User, Task, Team, Invite
+from django.utils import timezone
+
 
 class LogInForm(forms.Form):
     """Form enabling registered users to log in."""
@@ -108,6 +111,29 @@ class SignUpForm(NewPasswordMixin, forms.ModelForm):
             password=self.cleaned_data.get('new_password'),
         )
         return user
+    
+class TaskForm(forms.ModelForm):
+    """Form to input task information"""
+    
+    class Meta:
+        """Form options"""
+        model = Task
+        fields = ["name", "description", "due_date"]
+        widgets = {
+            'description' : forms.Textarea()
+        }
+        
+    def clean_due_date(self):
+        due_date = self.cleaned_data.get('due_date')
+        if due_date and due_date < timezone.now():
+            raise ValidationError("Due date must be in the future!")
+        return due_date
+        
+class TaskDeleteForm(forms.Form):
+    confirm_deletion = forms.BooleanField(
+        required=True,
+        help_text="Check to confirm deletion of this task",
+    )
 
 
 class CreateTeamForm(forms.ModelForm):
