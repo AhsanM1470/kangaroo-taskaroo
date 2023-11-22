@@ -21,6 +21,9 @@ from tasks import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.home, name='home'),
+    path("create_team/", views.create_team, name="create_team"),
+    path("create_invite/", views.InviteView.as_view(), name="create_invite"),
+    path("press_invite/", views.press_invite, name="press_invite"),
     path('dashboard/', views.dashboard, name='dashboard'),
     path('log_in/', views.LogInView.as_view(), name='log_in'),
     path('log_out/', views.log_out, name='log_out'),
@@ -29,5 +32,5 @@ urlpatterns = [
     path('sign_up/', views.SignUpView.as_view(), name='sign_up'),
     path('task_create/', views.TaskView.as_view(), name='task_create'),
     path('task/<int:task_id>/', views.TaskView.as_view(), name='task_delete'),
-    path('task_form/', views.TaskView.as_view(), name='task_form'),
+    path('my_teams/', views.my_teams, name="my_teams")
 ]
