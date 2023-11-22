@@ -109,6 +109,7 @@ class SignUpForm(NewPasswordMixin, forms.ModelForm):
         )
         return user
 
+
 class CreateTeamForm(forms.ModelForm):
     """Form enabling a user to create a team"""
 

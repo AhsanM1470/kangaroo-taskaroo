@@ -11,14 +11,80 @@ from django.urls import reverse
 from tasks.forms import LogInForm, PasswordForm, UserForm, SignUpForm, CreateTeamForm, InviteForm
 from tasks.helpers import login_prohibited
 from tasks.models import Invite
-
+from django.views.decorators.http import require_POST
 
 @login_required
 def dashboard(request):
-    """Display the current user's dashboard."""
+    """Display and modify the current user's dashboard."""
 
+    # Initialize lanes in the session if they don't exist
+    if 'lanes' not in request.session:
+        request.session['lanes'] = ['Backlog', 'In Progress', 'Complete']
+
+    # Handle form submission for adding a new lane
+    if request.method == 'POST':
+        if 'add_lane' in request.POST:
+            new_lane_name = 'New Lane'  # Or dynamically generate the name
+            request.session['lanes'].append(new_lane_name)
+            request.session.modified = True  # Mark session as modified to save it
+
+        elif 'delete_lane' in request.POST:
+                lane_to_delete = request.POST.get('delete_lane')
+                if lane_to_delete in request.session['lanes']:
+                    request.session['lanes'].remove(lane_to_delete)
+                    request.session.modified = True
+
+        elif 'rename_lane' in request.POST:
+            new_lane_name = request.POST.get('new_lane_name')
+            lane_index = int(request.POST.get('lane_index'))
+            if 0 <= lane_index < len(request.session['lanes']):
+                request.session['lanes'][lane_index] = new_lane_name
+                request.session.modified = True
+
+        return redirect('dashboard')  # Redirect to the same page to show the updated lanes
+
+    # Retrieve current user and lanes
     current_user = request.user
-    return render(request, 'dashboard.html', {'user': current_user})
+    lanes = request.session['lanes']
+    return render(request, 'dashboard.html', {'user': current_user, 'lanes': lanes})
+
+# def dashboard(request):
+#     """Display and modify the current user's dashboard."""
+#     print("Dashboard accessed.")
+
+#     if 'lanes' not in request.session:
+#         request.session['lanes'] = [{'id': 1, 'name': 'Backlog'},
+#                                     {'id': 2, 'name': 'In Progress'},
+#                                     {'id': 3, 'name': 'Complete'}]
+#     print(request.session.get('lanes'))
+
+#     if request.method == 'POST':
+#         if 'add_lane' in request.POST:
+#             new_id = max((lane['id'] for lane in request.session.get('lanes')), default=0) + 1
+#             new_lane = {'id': new_id, 'name': 'New Lane'}
+#             request.session['lanes'].append(new_lane)
+#             request.session.modified = True
+
+#         elif 'delete_lane' in request.POST:
+#             lane_to_delete = request.POST.get('delete_lane')
+#             print(request.session.get('lanes'))
+#             request.session['lanes'] = [lane for lane in request.session.get('lanes') if lane['name'] != lane_to_delete]
+#             request.session.modified = True
+
+#         elif 'edit_lane' in request.POST:
+#             lane_id = int(request.POST.get('lane_id'))
+#             new_lane_name = request.POST.get('new_lane_name')
+#             for lane in request.session.get('lanes'):
+#                 if lane['id'] == lane_id:
+#                     lane['name'] = new_lane_name
+#                     break
+#             request.session.modified = True
+
+#         return redirect('dashboard')
+
+#     current_user = request.user
+#     lanes = request.session.get('lanes')
+#     return render(request, 'dashboard.html', {'user': current_user, 'lanes': lanes})
 
 @login_required
 def create_team(request):
@@ -181,7 +247,7 @@ class SignUpView(LoginProhibitedMixin, FormView):
     """Display the sign up screen and handle sign ups."""
 
     form_class = SignUpForm
-    template_name = "sign_up.html"
+    template_name = 'sign_up.html'
     redirect_when_logged_in_url = settings.REDIRECT_URL_WHEN_LOGGED_IN
 
     def form_valid(self, form):
@@ -207,7 +273,7 @@ class InviteView(LoginRequiredMixin, FormView):
         return kwargs
     
     def form_valid(self, form):
-        """Handle valid invite by sending it."""
+    """Handle valid invite by sending it."""
 
         form.send_invite()
         return super().form_valid(form)
@@ -217,3 +283,4 @@ class InviteView(LoginRequiredMixin, FormView):
 
         messages.add_message(self.request, messages.SUCCESS, "Invite Sent!")
         return reverse('my_teams')
+

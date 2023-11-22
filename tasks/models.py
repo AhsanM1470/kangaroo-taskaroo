@@ -143,5 +143,4 @@ class Invite(models.Model):
             print("Rejected Invite!")
         self.delete()
 
-        
-
+       
