@@ -8,10 +8,10 @@ from django.shortcuts import redirect, render
 from django.views import View
 from django.views.generic.edit import FormView, UpdateView
 from django.urls import reverse
-from tasks.forms import LogInForm, PasswordForm, UserForm, SignUpForm, CreateTeamForm
+from tasks.forms import LogInForm, PasswordForm, UserForm, SignUpForm, CreateTeamForm, InviteForm
 from tasks.helpers import login_prohibited
+from tasks.models import Invite
 from django.views.decorators.http import require_POST
-
 
 @login_required
 def dashboard(request):
@@ -86,6 +86,45 @@ def dashboard(request):
 #     lanes = request.session.get('lanes')
 #     return render(request, 'dashboard.html', {'user': current_user, 'lanes': lanes})
 
+@login_required
+def create_team(request):
+    """Form that allows user to create a new team"""
+    if request.method == "POST":
+        # Create the team
+        current_user = request.user
+        team = CreateTeamForm(request.POST)
+        if team.is_valid():
+            team.create_team(user=current_user)
+        else:
+            messages.add_message(request, messages.ERROR, "That team name has already been taken!")
+    return redirect("my_teams")
+
+@login_required
+def my_teams(request):
+    """Display the user's teams page and their invites"""
+
+    current_user = request.user
+    user_teams = current_user.get_teams()
+    user_invites = current_user.get_invites()
+    team_form = CreateTeamForm()
+    invite_form = InviteForm()
+    return render(request, 'my_teams.html', {'teams': user_teams, 'invites': user_invites, 'team_form': team_form, "invite_form" : invite_form})
+
+@login_required
+def press_invite(request):
+    """Functionality for the accept/reject buttons of invite"""
+    
+    if request.method == "POST":
+        invite = Invite.objects.get(id=request.POST.get('id'))
+        user = request.user
+
+        if request.POST.get('status'):
+            invite.status = request.POST.get('status')
+            invite.close(user)
+        else:
+            messages.add_message(request, messages.ERROR, "A choice wasn't made!")
+
+    return redirect("my_teams")
 
 @login_prohibited
 def home(request):
@@ -218,37 +257,30 @@ class SignUpView(LoginProhibitedMixin, FormView):
 
     def get_success_url(self):
         return reverse(settings.REDIRECT_URL_WHEN_LOGGED_IN)
-    
-class CreateTeamView(LoginRequiredMixin, FormView):
-    """"Display the create team screen and handle team creation"""
-    
-    form_class = CreateTeamForm
-    template_name = "create_team.html"
-    model = CreateTeamForm
+
+class InviteView(LoginRequiredMixin, FormView):
+    """Display invite form"""
+
+    template_name = 'my_teams.html'
+    form_class = InviteForm
 
     def get_form_kwargs(self, **kwargs):
-        """Pass the current user to the creat team form."""
+        """Pass the current user to the invite form."""
 
         kwargs = super().get_form_kwargs(**kwargs)
+        print(f"User : {self.request.user}")
         kwargs.update({'user': self.request.user})
         return kwargs
     
     def form_valid(self, form):
-        """Handle valid form by saving the new team."""
+    """Handle valid invite by sending it."""
 
-        form.save()
+        form.send_invite()
         return super().form_valid(form)
-    
+
     def get_success_url(self):
-        #
-        return reverse('dashboard')
-    
-# FormView
-class TeamsView(LoginRequiredMixin, FormView):
-    """"Display the screen showing all the teams the user is part of. Handle team management."""
-    template_name = "view_teams.html"
-    
-    # context = {'joined_teams'}
-    
-    # def get(self, request):
-    #     return render(request, self.template_name, context)
+        """Redirect the user after successful password change."""
+
+        messages.add_message(self.request, messages.SUCCESS, "Invite Sent!")
+        return reverse('my_teams')
+
