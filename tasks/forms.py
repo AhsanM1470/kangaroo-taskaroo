@@ -135,6 +135,7 @@ class TaskDeleteForm(forms.Form):
         help_text="Check to confirm deletion of this task",
     )
 
+
 class CreateTeamForm(forms.ModelForm):
     """Form enabling a user to create a team"""
 
@@ -195,4 +196,3 @@ class InviteForm(forms.ModelForm):
         invite.save()
 
         return invite
-

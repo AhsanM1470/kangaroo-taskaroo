@@ -143,7 +143,7 @@ class Invite(models.Model):
         elif self.status == "Reject":
             print("Rejected Invite!")
         self.delete()
-
+        
 class Task(models.Model):
     """Model used for tasks and information related to them"""
 
