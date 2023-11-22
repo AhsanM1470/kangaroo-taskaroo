@@ -14,12 +14,6 @@ from django.views.decorators.http import require_POST
 
 
 @login_required
-# def dashboard(request):
-#     """Display the current user's dashboard."""
-
-#     current_user = request.user
-#     return render(request, 'dashboard.html', {'user': current_user})
-
 def dashboard(request):
     """Display and modify the current user's dashboard."""
 
@@ -40,12 +34,57 @@ def dashboard(request):
                     request.session['lanes'].remove(lane_to_delete)
                     request.session.modified = True
 
+        elif 'rename_lane' in request.POST:
+            new_lane_name = request.POST.get('new_lane_name')
+            lane_index = int(request.POST.get('lane_index'))
+            if 0 <= lane_index < len(request.session['lanes']):
+                request.session['lanes'][lane_index] = new_lane_name
+                request.session.modified = True
+
         return redirect('dashboard')  # Redirect to the same page to show the updated lanes
 
     # Retrieve current user and lanes
     current_user = request.user
     lanes = request.session['lanes']
     return render(request, 'dashboard.html', {'user': current_user, 'lanes': lanes})
+
+# def dashboard(request):
+#     """Display and modify the current user's dashboard."""
+#     print("Dashboard accessed.")
+
+#     if 'lanes' not in request.session:
+#         request.session['lanes'] = [{'id': 1, 'name': 'Backlog'},
+#                                     {'id': 2, 'name': 'In Progress'},
+#                                     {'id': 3, 'name': 'Complete'}]
+#     print(request.session.get('lanes'))
+
+#     if request.method == 'POST':
+#         if 'add_lane' in request.POST:
+#             new_id = max((lane['id'] for lane in request.session.get('lanes')), default=0) + 1
+#             new_lane = {'id': new_id, 'name': 'New Lane'}
+#             request.session['lanes'].append(new_lane)
+#             request.session.modified = True
+
+#         elif 'delete_lane' in request.POST:
+#             lane_to_delete = request.POST.get('delete_lane')
+#             print(request.session.get('lanes'))
+#             request.session['lanes'] = [lane for lane in request.session.get('lanes') if lane['name'] != lane_to_delete]
+#             request.session.modified = True
+
+#         elif 'edit_lane' in request.POST:
+#             lane_id = int(request.POST.get('lane_id'))
+#             new_lane_name = request.POST.get('new_lane_name')
+#             for lane in request.session.get('lanes'):
+#                 if lane['id'] == lane_id:
+#                     lane['name'] = new_lane_name
+#                     break
+#             request.session.modified = True
+
+#         return redirect('dashboard')
+
+#     current_user = request.user
+#     lanes = request.session.get('lanes')
+#     return render(request, 'dashboard.html', {'user': current_user, 'lanes': lanes})
 
 
 @login_prohibited

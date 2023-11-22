@@ -2,15 +2,6 @@
 {% block content %}
 
 <style>
-  /* .{
-    width: 100%;
-    height: 100vh;
-    background-image: url(https://images.unsplash.com/photo-1465101162946-4377e57745c3?q=80&w=1178&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D);
-    background-position: center;
-    background-size: cover;
-    margin:
-  } */
-
   /* body{
     background-image: linear-gradient(green,blue);
   } */
@@ -36,6 +27,31 @@
     min-height: 120px;
   }
 
+  .lane-name-label{
+    display: block;
+    font-size: 1.5em;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+  }
+
+  .lane-name-input{
+    display: none;
+    font-size: 1.5em;
+    font-weight: bold;
+    border: none;
+    background: transparent;
+    width: 100%;
+  }
+
+  .toggle-lane-name:checked + .lane-name-label + .lane-name-input{
+    display: block;
+  }
+
+  .toggle-lane-name:checked + .lane-name-label{
+    display: none;
+  }
+
   .task{
     background: rgb(210, 210, 210);
     box-shadow: 0px 5px 15px rgba(0,0,0,0.1);
@@ -57,7 +73,21 @@
       <div class="task-board">
         {% for lane in lanes %}
         <div class="lane">
-          <h3>{{ lane }}</h3>
+          <!-- <h3>{{ lane }}</h3> -->
+
+          <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="lane_index" value="{{ forloop.counter0 }}">
+
+            <!-- Toggle checkbox to rename -->
+            <input type="checkbox" id="lane-name-{{ forloop.counter }}" class="toggle-lane-name" style="display:none;">
+
+            <label for="lane-name-{{ forloop.counter }}" class="lane-name-label">{{ lane }}</label>
+
+            <input type="text" name="new_lane_name" value="{{ lane }}" required class="lane-name-input">
+            <input type="submit" name="rename_lane" style="display: none;">
+          </form>
+
           <p class="task">Do Thing</p>
 
           <form method="post" style="display: inline;">
@@ -76,6 +106,47 @@
     </div>
   </div>
 </div>
+
+<!-- <div class="container">
+  <div class="row">
+    <div class="col-12" style="display: inline;">
+      <h1>Welcome to your dashboard {{ user.username }}</h1>
+    </div>
+
+    <div class="d-flex align-items-start">
+      <div class="task-board">
+        {% for lane in lanes %}
+        <div class="lane">
+          <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="lane_id" value="{{ lane.id }}">
+            <div onclick="this.style.display='none'; this.nextSibling.style.display='block';">
+              <h3>{{ lane.name }}</h3>
+            </div>
+            <div style="display: none;">
+              <input type="hidden" name="delete_lane" value="{{ lane.name }}">
+              <button type="submit" name="edit_lane">Change Name</button>
+            </div>
+          </form>
+
+          <p class="task">Do Thing</p>
+
+          <form method="post" style="display: inline;">
+            {% csrf_token %}
+            <input type="hidden" name="delete_lane" value="{{ lane.name }}">
+            <button type="submit" class="btn btn-danger">Delete</button>
+          </form>
+        </div>
+        {% endfor %}
+      </div>
+
+      <form method="post" class="ms-2">
+        {% csrf_token %}
+        <button type="submit" name="add_lane" class="btn btn-primary">Add Lane</button>
+      </form>
+    </div>
+  </div>
+</div> -->
 
 
 
