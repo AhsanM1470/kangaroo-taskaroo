@@ -6,9 +6,14 @@ from tasks.models import User, Team
 class TeamModelTestCase(TestCase):
     """Unit tests for the Team model."""
 
+    
+    fixtures = [
+        'tasks/tests/fixtures/default_user.json',
+        'tasks/tests/fixtures/other_users.json'
+    ]
+
     def setUp(self):
         self.user = User.objects.get(username='@johndoe')
-        self.team = Team.objects.get(team_name="kangaroo")
 
     def test_valid_user(self):
         self._assert_user_is_valid()
