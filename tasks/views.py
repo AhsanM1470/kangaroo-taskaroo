@@ -16,6 +16,7 @@ from django.views.decorators.http import require_POST
 from .forms import TaskForm, TaskDeleteForm
 from .models import Task, Invite
 from datetime import datetime
+  
 
 @login_required
 def dashboard(request):
@@ -294,9 +295,7 @@ class TaskView(LoginRequiredMixin, FormView):
             
         return render(request, 'task_deletion.html', {'task':task, 'delete_form': delete_form})
 
-    from datetime import datetime
-    from django.shortcuts import render, redirect
-    from .models import Task
+
 
     def create_task(request):
         if request.method == 'POST':
