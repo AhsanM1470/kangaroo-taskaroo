@@ -50,10 +50,14 @@
 
     .nameClass {
         width: 100%;
-        padding: 8px;
+        padding: 10px;
         box-sizing: border-box;
         border: 1px solid black;
-        border-radius: 4px;
+        border-radius: 5px;
+    }
+
+    .descriptionClass {
+        height: 100px;
     }
 </style>
 <div class="container">
@@ -61,21 +65,6 @@
     <form method="post" action="{% url 'task_create' %}" id="taskForm">
         {% csrf_token %}
         {{ form.as_p }}
-        <div class="mb-3">
-            <label for="exampleFormControlInput1" class="form-label">Task name</label>
-            <input type="text" name="task_name" class="form-control" id="exampleFormControlInput1" placeholder="Task1">
-        </div>
-
-        <div class="mb-3">
-            <label for="datepicker">Add the due date:</label>
-            <input type="date" id="datepicker" name="selected_date" onchange="updateSelectedDate(this.value)">
-        </div>
-        <input type="hidden" name="due_date" id="SelectedDate" value="">
-
-        <div class="mb-3">
-            <label for="exampleFormControlTextarea1" class="form-label">Description</label>
-            <textarea name="description" class="form-control" id="exampleFormControlTextarea1" rows="3" placeholder="write task description here"></textarea>
-        </div>
 
         <div>
             <button type="submit" class="btn btn-primary">Submit</button>

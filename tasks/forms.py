@@ -121,8 +121,8 @@ class TaskForm(forms.ModelForm):
         model = Task
         fields = ["name", "description"]
         widgets = {
-            'name' : forms.TextInput(attrs={'class': 'nameClass', 'placeholder': 'Enter your name...'}),
-            'description' : forms.Textarea(attrs={'placeholder': 'Write a task description...'})
+            'name' : forms.TextInput(attrs={'class': 'nameClass', 'placeholder': 'Enter the task name...'}),
+            'description' : forms.Textarea(attrs={'class': 'descriptionClass', 'placeholder': 'Write a task description...'})
         }
      
     date_field = forms.DateField(
@@ -131,7 +131,7 @@ class TaskForm(forms.ModelForm):
     )
     time_field = forms.TimeField(
         label='Time',
-        widget=forms.TimeInput(),
+        widget=forms.TimeInput(attrs={'placeholder': '00:00:00'}),
     )
         
     def clean(self):
