@@ -121,7 +121,8 @@ class TaskForm(forms.ModelForm):
         model = Task
         fields = ["name", "description"]
         widgets = {
-            'description' : forms.Textarea()
+            'name' : forms.TextInput(attrs={'class': 'nameClass', 'placeholder': 'Enter your name...'}),
+            'description' : forms.Textarea(attrs={'placeholder': 'Write a task description...'})
         }
      
     date_field = forms.DateField(
@@ -147,7 +148,9 @@ class TaskForm(forms.ModelForm):
         instance = super(TaskForm, self).save(commit=False)
         date = self.cleaned_data.get('date_field')
         time = self.cleaned_data.get('time_field')
-        instance.due_date = datetime.combine(date, time)
+
+        if date is not None and time is not None:
+            instance.due_date = datetime.combine(date, time)
         
         if commit:
             instance.save()
