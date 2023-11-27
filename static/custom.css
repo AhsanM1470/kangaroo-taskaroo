@@ -15,6 +15,14 @@
   padding-top: 10px;
 }
 
+#cover-image {
+  background: url('images/background-cover.jpg') no-repeat center center fixed;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  background-size: cover;
+  -o-background-size: cover;
+}
+
 .h-100 {
   min-height: 100vh;
   height: 100vh;
@@ -101,6 +109,37 @@ h3.profile-title {
   font-style: italic;
 }
 
+.profile-bio {
+  font-size: 1.1rem;
+}
+
+.profile-statistics {
+  color: #777777;
+  font-weight: 300;
+  display: block;
+}
+
+.profile-statistics-item {
+  display: block;
+  padding-right: 50px;
+}
+
+/*
+ * Post
+ */
+.post-author {
+  margin-bottom: 0px;
+
+}
+
+.post-author-fullname {
+  font-weight: bold;
+}
+
+.post-author-user-details {
+  margin-left: 10px;
+  color: #777777;
+}
 
 /*
  * Hyperlinks
@@ -112,4 +151,13 @@ h3.profile-title {
 .content a:hover {
   text-decoration: underline;
   color: #0d6efd;
+}
+
+.post-author a {
+  text-decoration: none;
+  color: black;
+}
+.post-author a:hover {
+  text-decoration: underline;
+  color: black;
 }

@@ -2,7 +2,10 @@
 from django import forms
 from django.contrib.auth import authenticate
 from django.core.validators import RegexValidator
-from .models import User
+from django.core.exceptions import ValidationError
+from .models import User, Task, Team, Invite
+from django.utils import timezone
+
 
 class LogInForm(forms.Form):
     """Form enabling registered users to log in."""
@@ -108,3 +111,88 @@ class SignUpForm(NewPasswordMixin, forms.ModelForm):
             password=self.cleaned_data.get('new_password'),
         )
         return user
+    
+class TaskForm(forms.ModelForm):
+    """Form to input task information"""
+    
+    class Meta:
+        """Form options"""
+        model = Task
+        fields = ["name", "description", "due_date"]
+        widgets = {
+            'description' : forms.Textarea()
+        }
+        
+    def clean_due_date(self):
+        due_date = self.cleaned_data.get('due_date')
+        if due_date and due_date < timezone.now():
+            raise ValidationError("Due date must be in the future!")
+        return due_date
+        
+class TaskDeleteForm(forms.Form):
+    confirm_deletion = forms.BooleanField(
+        required=True,
+        help_text="Check to confirm deletion of this task",
+    )
+
+
+class CreateTeamForm(forms.ModelForm):
+    """Form enabling a user to create a team"""
+
+    class Meta:
+        """Form options."""
+
+        model = Team
+        fields = ['team_name', 'description', 'team_members']
+    
+    def create_team(self, user):
+        """Create a new team"""
+
+        team_members = self.cleaned_data.get("team_members")
+        # Maybe for each team member, send them an invite instead of doing it automatically
+        
+        team = Team.objects.create(
+            team_name=self.cleaned_data.get("team_name"),
+            description=self.cleaned_data.get("description"),
+        )
+        team.add_creator(user) # This user is the first member of the team
+
+        if len(team_members) != 0: # If you had members you added in the form
+            team.add_team_member(team_members) 
+        return team
+
+class InviteForm(forms.ModelForm):
+    """Form enabling a user to create and send an invite to another user"""
+
+    class Meta:
+        """Form options."""
+
+        model = Invite
+        fields = ['invited_users', 'invite_message', "team_to_join"]
+    
+    team_to_join = forms.ModelChoiceField(queryset=Team.objects.all())
+    
+    def __init__(self, user=None, **kwargs):
+        """Makes sure only teams that the current user belongs to are given as options"""
+
+        super().__init__(**kwargs)
+        self.user = user
+        
+        if self.user != None:
+            self.fields['team_to_join'].queryset.filter(team_members=self.user)
+    
+    def send_invite(self):
+        """Create a new invite"""
+
+        users = self.cleaned_data.get("invited_users")
+        team = self.cleaned_data.get("team_to_join")
+        # Need to change this so that all the users and the team is passed into the invite object
+
+        invite = Invite.objects.create(
+            invite_message=self.cleaned_data.get("invite_message")
+        )
+        invite.set_invited_users(users)
+        invite.set_team(team)
+        invite.save()
+
+        return invite

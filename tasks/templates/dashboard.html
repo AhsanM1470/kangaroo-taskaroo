@@ -1,10 +1,153 @@
 {% extends 'base_content.html' %}
 {% block content %}
+
+<style>
+  /* body{
+    background-image: linear-gradient(green,blue);
+  } */
+
+  .task-board{
+    display: flex;
+    align-items: flex-start;
+    justify-content: start;
+    gap: 16px;
+  }
+
+  .lane{
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    background: rgb(190, 190, 190);
+    box-shadow: 0px 5px 15px rgba(0,0,0,0.25);
+
+    padding: 12px;
+    border-radius: 4px;
+    width: 225px;
+    min-height: 120px;
+  }
+
+  .lane-name-label{
+    display: block;
+    font-size: 1.5em;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+  }
+
+  .lane-name-input{
+    display: none;
+    font-size: 1.5em;
+    font-weight: bold;
+    border: none;
+    background: transparent;
+    width: 100%;
+  }
+
+  .toggle-lane-name:checked + .lane-name-label + .lane-name-input{
+    display: block;
+  }
+
+  .toggle-lane-name:checked + .lane-name-label{
+    display: none;
+  }
+
+  .task{
+    background: rgb(210, 210, 210);
+    box-shadow: 0px 5px 15px rgba(0,0,0,0.1);
+    padding: 5px;
+    border-radius: 4px;
+
+    font-size: 15px;
+    cursor: move;
+  }
+</style>
+
 <div class="container">
   <div class="row">
-    <div class="col-12">
+    <div class="col-12" style="display: inline;">
       <h1>Welcome to your dashboard {{ user.username }}</h1>
+    </div>
+
+    <div class="d-flex align-items-start">
+      <div class="task-board">
+        {% for lane in lanes %}
+        <div class="lane">
+          <!-- <h3>{{ lane }}</h3> -->
+
+          <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="lane_index" value="{{ forloop.counter0 }}">
+
+            <!-- Toggle checkbox to rename -->
+            <input type="checkbox" id="lane-name-{{ forloop.counter }}" class="toggle-lane-name" style="display:none;">
+
+            <label for="lane-name-{{ forloop.counter }}" class="lane-name-label">{{ lane }}</label>
+
+            <input type="text" name="new_lane_name" value="{{ lane }}" required class="lane-name-input">
+            <input type="submit" name="rename_lane" style="display: none;">
+          </form>
+
+          <p class="task">Do Thing</p>
+
+          <form method="post" style="display: inline;">
+            {% csrf_token %}
+            <input type="hidden" name="delete_lane" value="{{ lane }}">
+            <button type="submit" class="btn btn-danger">Delete</button>
+          </form>
+        </div>
+        {% endfor %}
+      </div>
+
+      <form method="post" class="ms-2">
+        {% csrf_token %}
+        <button type="submit" name="add_lane" class="btn btn-primary">Add Lane</button>
+      </form>
     </div>
   </div>
 </div>
+
+<!-- <div class="container">
+  <div class="row">
+    <div class="col-12" style="display: inline;">
+      <h1>Welcome to your dashboard {{ user.username }}</h1>
+    </div>
+
+    <div class="d-flex align-items-start">
+      <div class="task-board">
+        {% for lane in lanes %}
+        <div class="lane">
+          <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="lane_id" value="{{ lane.id }}">
+            <div onclick="this.style.display='none'; this.nextSibling.style.display='block';">
+              <h3>{{ lane.name }}</h3>
+            </div>
+            <div style="display: none;">
+              <input type="hidden" name="delete_lane" value="{{ lane.name }}">
+              <button type="submit" name="edit_lane">Change Name</button>
+            </div>
+          </form>
+
+          <p class="task">Do Thing</p>
+
+          <form method="post" style="display: inline;">
+            {% csrf_token %}
+            <input type="hidden" name="delete_lane" value="{{ lane.name }}">
+            <button type="submit" class="btn btn-danger">Delete</button>
+          </form>
+        </div>
+        {% endfor %}
+      </div>
+
+      <form method="post" class="ms-2">
+        {% csrf_token %}
+        <button type="submit" name="add_lane" class="btn btn-primary">Add Lane</button>
+      </form>
+    </div>
+  </div>
+</div> -->
+
+
+
 {% endblock %}

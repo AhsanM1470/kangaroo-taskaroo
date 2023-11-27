@@ -4,21 +4,132 @@ from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ImproperlyConfigured
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect, render, get_object_or_404
 from django.views import View
 from django.views.generic.edit import FormView, UpdateView
 from django.urls import reverse
-from tasks.forms import LogInForm, PasswordForm, UserForm, SignUpForm
+from tasks.forms import LogInForm, PasswordForm, UserForm, SignUpForm, CreateTeamForm, InviteForm
 from tasks.helpers import login_prohibited
-
+from django.urls import reverse_lazy
+from django.views.generic.edit import FormView
+from django.views.decorators.http import require_POST
+from .forms import TaskForm, TaskDeleteForm
+from .models import Task, Invite
+from datetime import datetime
+  
 
 @login_required
 def dashboard(request):
-    """Display the current user's dashboard."""
+    """Display and modify the current user's dashboard."""
+
+    # Initialize lanes in the session if they don't exist
+    if 'lanes' not in request.session:
+        request.session['lanes'] = ['Backlog', 'In Progress', 'Complete']
+
+    # Handle form submission for adding a new lane
+    if request.method == 'POST':
+        if 'add_lane' in request.POST:
+            new_lane_name = 'New Lane'  # Or dynamically generate the name
+            request.session['lanes'].append(new_lane_name)
+            request.session.modified = True  # Mark session as modified to save it
+
+        elif 'delete_lane' in request.POST:
+                lane_to_delete = request.POST.get('delete_lane')
+                if lane_to_delete in request.session['lanes']:
+                    request.session['lanes'].remove(lane_to_delete)
+                    request.session.modified = True
+
+        elif 'rename_lane' in request.POST:
+            new_lane_name = request.POST.get('new_lane_name')
+            lane_index = int(request.POST.get('lane_index'))
+            if 0 <= lane_index < len(request.session['lanes']):
+                request.session['lanes'][lane_index] = new_lane_name
+                request.session.modified = True
+
+        return redirect('dashboard')  # Redirect to the same page to show the updated lanes
+
+    # Retrieve current user and lanes
+    current_user = request.user
+    lanes = request.session['lanes']
+    return render(request, 'dashboard.html', {'user': current_user, 'lanes': lanes})
+
+# def dashboard(request):
+#     """Display and modify the current user's dashboard."""
+#     print("Dashboard accessed.")
+
+#     if 'lanes' not in request.session:
+#         request.session['lanes'] = [{'id': 1, 'name': 'Backlog'},
+#                                     {'id': 2, 'name': 'In Progress'},
+#                                     {'id': 3, 'name': 'Complete'}]
+#     print(request.session.get('lanes'))
+
+#     if request.method == 'POST':
+#         if 'add_lane' in request.POST:
+#             new_id = max((lane['id'] for lane in request.session.get('lanes')), default=0) + 1
+#             new_lane = {'id': new_id, 'name': 'New Lane'}
+#             request.session['lanes'].append(new_lane)
+#             request.session.modified = True
+
+#         elif 'delete_lane' in request.POST:
+#             lane_to_delete = request.POST.get('delete_lane')
+#             print(request.session.get('lanes'))
+#             request.session['lanes'] = [lane for lane in request.session.get('lanes') if lane['name'] != lane_to_delete]
+#             request.session.modified = True
+
+#         elif 'edit_lane' in request.POST:
+#             lane_id = int(request.POST.get('lane_id'))
+#             new_lane_name = request.POST.get('new_lane_name')
+#             for lane in request.session.get('lanes'):
+#                 if lane['id'] == lane_id:
+#                     lane['name'] = new_lane_name
+#                     break
+#             request.session.modified = True
+
+#         return redirect('dashboard')
+
+#     current_user = request.user
+#     lanes = request.session.get('lanes')
+#     return render(request, 'dashboard.html', {'user': current_user, 'lanes': lanes})
+
+@login_required
+def create_team(request):
+    """Form that allows user to create a new team"""
+    if request.method == "POST":
+        # Create the team
+        current_user = request.user
+        team = CreateTeamForm(request.POST)
+        if team.is_valid():
+            team.create_team(user=current_user)
+        else:
+            messages.add_message(request, messages.ERROR, "That team name has already been taken!")
+    return redirect("my_teams")
+
+@login_required
+def my_teams(request):
+    """Display the user's teams page and their invites"""
 
     current_user = request.user
-    return render(request, 'dashboard.html', {'user': current_user})
+    user_teams = current_user.get_teams()
+    user_invites = current_user.get_invites()
+    team_form = CreateTeamForm()
+    invite_form = InviteForm()
+    return render(request, 'my_teams.html', {'teams': user_teams, 'invites': user_invites, 'team_form': team_form, "invite_form" : invite_form})
 
+@login_required
+def press_invite(request):
+    """Functionality for the accept/reject buttons of invite"""
+    
+    if request.method == "POST":
+        invite = Invite.objects.get(id=request.POST.get('id'))
+        user = request.user
+
+        if request.POST.get('status'):
+            invite.status = request.POST.get('status')
+            invite.close(user)
+        else:
+            messages.add_message(request, messages.ERROR, "A choice wasn't made!")
+
+    return redirect("my_teams")
 
 @login_prohibited
 def home(request):
@@ -141,7 +252,7 @@ class SignUpView(LoginProhibitedMixin, FormView):
     """Display the sign up screen and handle sign ups."""
 
     form_class = SignUpForm
-    template_name = "sign_up.html"
+    template_name = 'sign_up.html'
     redirect_when_logged_in_url = settings.REDIRECT_URL_WHEN_LOGGED_IN
 
     def form_valid(self, form):
@@ -151,3 +262,85 @@ class SignUpView(LoginProhibitedMixin, FormView):
 
     def get_success_url(self):
         return reverse(settings.REDIRECT_URL_WHEN_LOGGED_IN)
+
+class TaskView(LoginRequiredMixin, FormView):
+   
+    form_class = TaskForm
+    template_name = 'task_create.html'  # Create a template for your task form
+    #redirect_when_logged_in_url = settings.REDIRECT_URL_WHEN_LOGGED_IN
+    success_url = reverse_lazy('dashboard')  # Redirect to the dashboard after successful form submission
+    form_title = 'Create Task'
+    
+    def form_valid(self, form):
+        self.object = form.save()
+        #login(self.request, self.object)
+        return super().form_valid(form)
+    
+    def get_success_url(self):
+        """Return redirect URL after successful update."""
+        messages.add_message(self.request, messages.SUCCESS, "Task created!")
+        return reverse('dashboard')
+    
+    def delete_task(request, task_id):
+        task = get_object_or_404(Task, pk=task_id)
+        
+        if request.method == 'POST':
+            delete_form = TaskDeleteForm(request.POST)
+            if delete_form.is_valid():
+                if delete_form.cleaned_data['confirm_deletion']:
+                    task.delete()
+                    return redirect('dashboard')
+        else:
+            delete_form = TaskDeleteForm()
+            
+        return render(request, 'task_deletion.html', {'task':task, 'delete_form': delete_form})
+
+
+
+    def create_task(request):
+        if request.method == 'POST':
+            if request.method == 'POST':
+                # Use TaskForm to handle form data, including validation and cleaning
+                form = TaskForm(request.POST or None)
+
+                # Check if the form is valid
+                if form.is_valid():
+                    # Save the form data to create a new Task instance
+                    form.save()
+
+                    # Redirect to the dashboard or another page
+                    return redirect('dashboard')
+
+        # Fetch all tasks for rendering the form initially
+        all_tasks = Task.objects.all()
+
+        return render(request, 'task_create.html', {'tasks': all_tasks})
+
+    
+class InviteView(LoginRequiredMixin, FormView):
+    """Display invite form"""
+
+    template_name = 'my_teams.html'
+    form_class = InviteForm
+
+    def get_form_kwargs(self, **kwargs):
+        """Pass the current user to the invite form."""
+
+        kwargs = super().get_form_kwargs(**kwargs)
+        print(f"User : {self.request.user}")
+        kwargs.update({'user': self.request.user})
+        return kwargs
+    
+    def form_valid(self, form):
+        """Handle valid invite by sending it."""
+
+        form.send_invite()
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        """Redirect the user after successful password change."""
+
+        messages.add_message(self.request, messages.SUCCESS, "Invite Sent!")
+        return reverse('my_teams')
+
+
