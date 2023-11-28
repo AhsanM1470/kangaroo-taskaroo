@@ -149,9 +149,10 @@ class Task(models.Model):
 
     alphanumeric = RegexValidator(
         r'^[0-9a-zA-Z]{3,}$', 
-        'Only alphanumeric characters are allowed.'
+        'Must have 3 alphanumeric characters!'
         )
-    name = models.CharField(max_length=30, blank=False, unique=True, validators=[alphanumeric])
+    #task_id = models.AutoField(primary_key=True)
+    name = models.CharField(max_length=30, blank=False, unique=True, validators=[alphanumeric], primary_key=True)
     description = models.CharField(max_length=530, blank=True)
     due_date = models.DateTimeField(default=datetime.datetime(1, 1, 1))
     created_at = models.DateTimeField(auto_now_add=True)
