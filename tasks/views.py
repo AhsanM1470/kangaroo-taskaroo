@@ -312,7 +312,7 @@ class TaskView(LoginRequiredMixin, FormView):
                 description = form.cleaned_data['description']
                 #date_field
                 due_date = form.cleaned_data['due_date']
-            
+                # Adding the relevent fields for the Task Model
                 model = Task.objects.create(
                     name=name,
                     description=description,
