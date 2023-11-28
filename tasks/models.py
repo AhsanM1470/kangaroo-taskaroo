@@ -147,9 +147,10 @@ class Invite(models.Model):
 class Task(models.Model):
     """Model used for tasks and information related to them"""
 
-
-
-    alphanumeric = RegexValidator(r'^[0-9a-zA-Z]{3,}$', 'Only alphanumeric characters are allowed.')
+    alphanumeric = RegexValidator(
+        r'^[0-9a-zA-Z]{3,}$', 
+        'Only alphanumeric characters are allowed.'
+        )
     name = models.CharField(max_length=30, blank=False, unique=True, validators=[alphanumeric])
     description = models.CharField(max_length=530, blank=True)
     due_date = models.DateTimeField(default=datetime.datetime(1, 1, 1))

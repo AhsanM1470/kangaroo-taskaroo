@@ -15,23 +15,12 @@ class TaskCreateViewTestCase(TestCase, LogInTester):
         self.user = get_user_model().objects.create_user(username=username_to_find, password='Password123')
         self.url = reverse('task_create')
 
-        self.task = Task.objects.create(
-            name='Task1',
-            description='Amys first task within task manager!',
-            due_date=datetime(2023, 11, 28, 10, 0),
-        )
-        
         self.form_input = {
-            'name': 'Task5',
-            'description': 'Amys fifth task within task manager!',
-            'due_date': '2023-12-19 15:30',
+            'name': 'SpecialTask',
+            'description': 'Amys special task within task manager!',
+            'date_field': '2023-12-19',
+            'time_field': '10:05'
         }
-
-        self.task2 = Task.objects.create(
-            name='Task2',
-            description='Amys second task within task manager!',
-            due_date=datetime(2023, 12, 28, 10, 0),
-        )
         
         self.client.login(username=self.user.username, password='Password123')
 
@@ -71,9 +60,9 @@ class TaskCreateViewTestCase(TestCase, LogInTester):
         redirect_url = reverse('dashboard')
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
         self.assertTemplateUsed(response, 'dashboard.html')
-        created_task = Task.objects.filter(name='Task5').first()
-        self.assertIsNotNone(created_task, "Task5 should be created")
-        self.assertEqual(created_task.description, 'Amys fifth task within task manager!')
+        created_task = Task.objects.filter(name='SpecialTask').first()
+        self.assertIsNotNone(created_task, "SpecialTask should be created")
+        self.assertEqual(created_task.description, 'Amys special task within task manager!')
         
     def test_unsuccesful_task_create(self):
         self.task_data_bad = {

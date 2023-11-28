@@ -16,7 +16,6 @@ from django.views.decorators.http import require_POST
 from .forms import TaskForm, TaskDeleteForm
 from .models import Task, Invite
 from datetime import datetime
-  
 
 @login_required
 def dashboard(request):
@@ -296,26 +295,34 @@ class TaskView(LoginRequiredMixin, FormView):
             
         return render(request, 'task_deletion.html', {'task':task, 'delete_form': delete_form})
 
-
-
     def create_task(request):
         if request.method == 'POST':
-            if request.method == 'POST':
-                # Use TaskForm to handle form data, including validation and cleaning
-                form = TaskForm(request.POST or None)
+            # Use TaskForm to handle form data, including validation and cleaning
+            form = TaskForm(request.POST or None)
 
-                # Check if the form is valid
-                if form.is_valid():
-                    # Save the form data to create a new Task instance
-                    form.save()
+            # Check if the form is valid
+            if form.is_valid():
+                name = form.cleaned_data['name']
+                description = form.cleaned_data['description']
+                #date_field
+                due_date = form.cleaned_data['due_date']
+            
+                model = Task.objects.create(
+                    name=name,
+                    description=description,
+                    due_date=due_date
+                )
+                # Save the form data to create a new Task instance
+                form.save()
 
-                    # Redirect to the dashboard or another page
-                    return redirect('dashboard')
-
+                # Redirect to the dashboard or another page
+                return redirect('dashboard')
+        else:
+            form = TaskForm()
         # Fetch all tasks for rendering the form initially
         all_tasks = Task.objects.all()
 
-        return render(request, 'task_create.html', {'tasks': all_tasks})
+        return render(request, 'task_form.html', {'tasks': all_tasks}, {'form': form})
 
     
 class InviteView(LoginRequiredMixin, FormView):
@@ -333,7 +340,6 @@ class InviteView(LoginRequiredMixin, FormView):
         return kwargs
     
     def form_valid(self, form):
-        """Handle valid invite by sending it."""
 
         form.send_invite()
         return super().form_valid(form)

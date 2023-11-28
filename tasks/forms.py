@@ -5,6 +5,7 @@ from django.core.validators import RegexValidator
 from django.core.exceptions import ValidationError
 from .models import User, Task, Team, Invite
 from django.utils import timezone
+from datetime import datetime
 
 
 class LogInForm(forms.Form):
@@ -118,23 +119,49 @@ class TaskForm(forms.ModelForm):
     class Meta:
         """Form options"""
         model = Task
-        fields = ["name", "description", "due_date"]
+        fields = ["name", "description"]
         widgets = {
-            'description' : forms.Textarea()
+            'name' : forms.TextInput(attrs={'class': 'nameClass', 'placeholder': 'Enter the task name...'}),
+            'description' : forms.Textarea(attrs={'class': 'descriptionClass', 'placeholder': 'Write a task description...'})
         }
+     
+    date_field = forms.DateField(
+        label='Date',
+        widget=forms.SelectDateWidget(),
+    )
+    time_field = forms.TimeField(
+        label='Time',
+        widget=forms.TimeInput(attrs={'placeholder': '00:00:00'}),
+    )
         
-    def clean_due_date(self):
-        due_date = self.cleaned_data.get('due_date')
-        if due_date and due_date < timezone.now():
-            raise ValidationError("Due date must be in the future!")
-        return due_date
+    def clean(self):
+        cleaned_data = super().clean()
+        date = self.cleaned_data.get('date_field')
+        time = self.cleaned_data.get('time_field')
+        if date is not None and time is not None:
+            combined_datetime = datetime.combine(date, time)
+            if combined_datetime > datetime.now():
+                cleaned_data['due_date'] = datetime.combine(date, time)
+        return cleaned_data
+    
+    def save(self, commit=True):
+        instance = super(TaskForm, self).save(commit=False)
+        date = self.cleaned_data.get('date_field')
+        time = self.cleaned_data.get('time_field')
+
+        if date is not None and time is not None:
+            instance.due_date = datetime.combine(date, time)
+        
+        if commit:
+            instance.save()
+            
+        return instance
         
 class TaskDeleteForm(forms.Form):
     confirm_deletion = forms.BooleanField(
         required=True,
         help_text="Check to confirm deletion of this task",
     )
-
 
 class CreateTeamForm(forms.ModelForm):
     """Form enabling a user to create a team"""
