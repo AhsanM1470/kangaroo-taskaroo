@@ -112,7 +112,7 @@ class Team(models.Model):
 class Invite(models.Model):
     """Model used to hold information about invites"""
     invited_users = models.ManyToManyField(User, blank=False)
-    inviting_team = models.ManyToManyField(Team, blank=False)
+    inviting_team = models.ForeignKey(Team, on_delete=models.CASCADE, default=None)
     invite_message = models.TextField(max_length=100, blank=True)
     status = models.CharField(max_length=30, default="Reject")
 
@@ -121,16 +121,19 @@ class Invite(models.Model):
 
         for user in users.all():
             self.invited_users.add(user)
+            self.save()
 
     def set_team(self, team):
         """Set the team that will send the invite"""
+        
+        print(team)
+        self.inviting_team = team
+        self.save()
 
-        self.inviting_team.add(team)
-    
     def get_inviting_team(self):
         """Return the inviting team"""
 
-        return self.inviting_team.get(pk=1)
+        return self.inviting_team
 
     def close(self, user_to_invite=None):
         """Closes the invite and perform relevant behavior for

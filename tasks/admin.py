@@ -9,8 +9,11 @@ from .models import User, Team, Invite
 class UserAdmin(admin.ModelAdmin):
     """Configuration of the adminstrative interface for users"""
     list_display = [
-        "username", "first_name", "last_name", "email", "is_active"
+        "username", "first_name", "last_name", "email", "is_active", "get_invites"
     ]
+
+    def get_invites(self, user):
+        return [invite.inviting_team for invite in user.get_invites()]
 
 @admin.register(Team)
 class TeamAdmin(admin.ModelAdmin):
@@ -35,4 +38,4 @@ class InviteAdmin(admin.ModelAdmin):
     
     
     def get_team(self, invite):
-        return [team.team_name for team in invite.inviting_team.all()]
+        return [invite.inviting_team]

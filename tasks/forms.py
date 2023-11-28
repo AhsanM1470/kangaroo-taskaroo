@@ -159,6 +159,7 @@ class CreateTeamForm(forms.ModelForm):
 
         if len(team_members) != 0: # If you had members you added in the form
             team.add_team_member(team_members) 
+
         return team
 
 class InviteForm(forms.ModelForm):
@@ -182,17 +183,14 @@ class InviteForm(forms.ModelForm):
             self.fields['team_to_join'].queryset.filter(team_members=self.user)
     
     def send_invite(self):
-        """Create a new invite"""
+        """Create a new invite and send it to each user"""
 
         users = self.cleaned_data.get("invited_users")
-        team = self.cleaned_data.get("team_to_join")
-        # Need to change this so that all the users and the team is passed into the invite object
 
         invite = Invite.objects.create(
-            invite_message=self.cleaned_data.get("invite_message")
+            invite_message=self.cleaned_data.get("invite_message"),
+            inviting_team=self.cleaned_data.get("team_to_join")
         )
         invite.set_invited_users(users)
-        invite.set_team(team)
-        invite.save()
 
         return invite
