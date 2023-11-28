@@ -2,7 +2,8 @@ from django.core.validators import RegexValidator
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from libgravatar import Gravatar
-import datetime
+from datetime import datetime, timezone
+from django.utils import timezone
 
 class User(AbstractUser):
     """Model used for user authentication, and team member related information."""
@@ -154,6 +155,6 @@ class Task(models.Model):
     #task_id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=30, blank=False, unique=True, validators=[alphanumeric], primary_key=True)
     description = models.CharField(max_length=530, blank=True)
-    due_date = models.DateTimeField(default=datetime.datetime(1, 1, 1))
-    created_at = models.DateTimeField(auto_now_add=True)
+    due_date = models.DateTimeField(default=datetime(1, 1, 1))
+    created_at = models.DateTimeField(default=timezone.now)
     # Could add a boolean field to indicate if the task has expired?

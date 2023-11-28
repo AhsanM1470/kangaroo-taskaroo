@@ -265,18 +265,9 @@ class SignUpView(LoginProhibitedMixin, FormView):
 class TaskView(LoginRequiredMixin, FormView):
    
     form_class = TaskForm
-    #template_name = 'task_create.html'  # Create a template for your task form
-    #redirect_when_logged_in_url = settings.REDIRECT_URL_WHEN_LOGGED_IN
+    template_name = 'task_create.html'  # Create a template for your task form
     success_url = reverse_lazy('dashboard')  # Redirect to the dashboard after successful form submission
     form_title = 'Create Task'
-    
-    def get_template_names(self):
-        path = self.request.path
-        
-        if 'task/' in path:
-            return 'task_deletion.html'
-        else:
-            return 'task_create.html'
     
     def form_valid(self, form):
         self.object = form.save()
@@ -286,22 +277,9 @@ class TaskView(LoginRequiredMixin, FormView):
     def get_success_url(self):
         """Return redirect URL after successful update."""
         messages.add_message(self.request, messages.SUCCESS, "Task created!")
-        return reverse('dashboard')
+        return reverse_lazy('dashboard')
     
-    def delete_task(request, task_name):
-        task = get_object_or_404(Task, name=task_name)
-        if request.method == 'POST':
-            form = TaskDeleteForm(request.POST or None)
-            if form.is_valid():
-                if form.cleaned_data['confirm_deletion']:
-                    task.delete()
-                    return redirect('dashboard')
-        else:
-            form = TaskDeleteForm()
-            
-        return render(request, 'task_deletion.html', {'task':task} , {'form': form})
-
-    def create_task(request):
+    def post(self, request):
         if request.method == 'POST':
             # Use TaskForm to handle form data, including validation and cleaning
             form = TaskForm(request.POST or None)
@@ -312,7 +290,7 @@ class TaskView(LoginRequiredMixin, FormView):
                 description = form.cleaned_data['description']
                 #date_field
                 due_date = form.cleaned_data['due_date']
-                # Adding the relevent fields for the Task Model
+            
                 model = Task.objects.create(
                     name=name,
                     description=description,
@@ -320,7 +298,7 @@ class TaskView(LoginRequiredMixin, FormView):
                 )
                 # Save the form data to create a new Task instance
                 form.save()
-
+                messages.success(request, 'Task Created!')
                 # Redirect to the dashboard or another page
                 return redirect('dashboard')
         else:
@@ -328,7 +306,36 @@ class TaskView(LoginRequiredMixin, FormView):
         # Fetch all tasks for rendering the form initially
         all_tasks = Task.objects.all()
 
-        return render(request, 'task_form.html', {'tasks': all_tasks}, {'form': form})
+        return render(request, 'task_create.html', {'tasks': all_tasks, 'form': form})
+    
+class DeleteTaskView(LoginRequiredMixin, FormView):
+    form_class = TaskForm
+    template_name = 'task_delete.html'  # Create a template for your task form
+    success_url = reverse_lazy('dashboard')  # Redirect to the dashboard after successful form submission
+    form_title = 'Delete Task'
+    
+    def form_valid(self, form):
+        self.object = form.save()
+        return super().form_valid(form)
+    
+    def get_success_url(self):
+        """Return redirect URL after successful update."""
+        messages.add_message(self.request, messages.SUCCESS, "Task deleted!")
+        return reverse_lazy('dashboard')
+    
+    def post(self, request, task_name):
+        print('nom')
+        task = get_object_or_404(Task, name=task_name)
+        if request.method == 'POST':
+            form = TaskDeleteForm(request.POST or None)
+            if form.is_valid():
+                if form.cleaned_data['confirm_deletion']:
+                    task.delete()
+                    return redirect('dashboard')
+        else:
+            form = TaskDeleteForm()
+            
+        return render(request, 'task_deletion.html', {'task':task ,'form': form})
 
     
 class InviteView(LoginRequiredMixin, FormView):
