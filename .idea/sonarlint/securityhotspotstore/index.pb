@@ -1,0 +1,55 @@
+
+P
+ tasks/templates/task_create.html,e/d/ed278baabd06676f8d15feccd0f6e68f31ec8a7e
+D
+task_manager/urls.py,1/f/1f46b7a1b912ffeec3860c22b4b9c8789365601a
+K
+tasks/templates/log_in.html,9/0/9076554a141e9e81449ec89a91bdb6070f88ee82
+N
+tasks/templates/task_list.html,6/e/6e0e952064881ceb164d377666c2af538034cca1
+?
+tasks/models.py,6/0/60a80a12b95e6085f6536242e2205f6cf4f5e95e
+G
+static/chicken_font.css,8/d/8d31e2b56c499e32df5794410cff63b6743c64ec
+I
+tasks/templates/home.html,7/a/7a5b5df7db5a196e5f58a1d301762125ff54cbce
+H
+static/fonts/chicken.svg,1/a/1a8772690cfb90b22537cd29c3477b73c5647a0e
+H
+task_manager/settings.py,2/5/25ed1c54bbab4546f1361200c88646bbd948b1d1
+A
+static/custom.css,d/8/d888d8fc39a090017b12df188d128b4cfb4ad708
+>
+tasks/views.py,a/3/a3697f596a75575dd5f2f61a6caa5886cb87edf4
+R
+"tasks/templates/task_deletion.html,6/3/63a961fec7ae2c3e075fdda4a545b09d63202a68
+S
+#tasks/tests/views/test_task_view.py,1/6/167efa7cb1143963f134785cdd4411c098a062a2
+S
+#tasks/tests/forms/test_task_form.py,f/e/fe4ec4834ef3ae970f4f13b7cc7030f499d5bc86
+>
+tasks/forms.py,7/5/75086f4a2c6b90ff28fef771812207f5774baab2
+L
+tasks/templates/sign_up.html,8/b/8b9a19ed4facbb112aace43016324de5628853db
+S
+#tasks/tests/forms/test_user_form.py,e/2/e2e6288c139ebedb0c894a1ebf95ab263f0e9a1f
+T
+$tasks/templates/partials/navbar.html,2/8/282d03f7bb76ad6182c24227a473fc0a5a4f086a
+\
+,tasks/templates/partials/bootstrap_form.html,3/e/3e7932e8a6dce23d3ad4870f11171b10a704cc3f
+R
+"tasks/templates/partials/menu.html,f/3/f34f57501cb9ca7e77436108e559f4cfe5709478
+V
+&tasks/templates/partials/messages.html,7/5/753f7987069cb8ad4e2dde77443ca231e82d322e
+P
+ tasks/templates/search_task.html,6/8/6854b2b14416851259e42984ed9d9c1138759b07
+P
+ tasks/templates/task_search.html,c/e/ce74e14307c88da0941f67c160f5799af821e2ce
+>
+tasks/admin.py,8/a/8aa6c86023c06201ea1a60c630e373cbe31dcf60
+Q
+!tasks/templates/base_content.html,2/4/24aaeba1abcc832a886fdb7be3dee04744a38758
+I
+tasks/templates/base.html,3/3/337e76b85b80fd689d5ec0708fb761514fc7ab58
+P
+ tasks/templates/create_team.html,b/5/b5b5b91b5df63203b5ed051f01bcd6eb15dbc55f

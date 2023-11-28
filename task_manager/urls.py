@@ -32,5 +32,6 @@ urlpatterns = [
     path('sign_up/', views.SignUpView.as_view(), name='sign_up'),
     path('task_create/', views.TaskView.as_view(), name='task_create'),
     path('task/<int:task_id>/', views.TaskView.as_view(), name='task_delete'),
-    path('my_teams/', views.my_teams, name="my_teams")
+    path('my_teams/', views.my_teams, name="my_teams"),
+    path('task_search/', views.task_search, name='task_search')
 ]

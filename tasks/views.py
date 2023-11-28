@@ -280,6 +280,8 @@ class TaskView(LoginRequiredMixin, FormView):
         """Return redirect URL after successful update."""
         messages.add_message(self.request, messages.SUCCESS, "Task created!")
         return reverse('dashboard')
+
+
     
     def delete_task(request, task_id):
         task = get_object_or_404(Task, pk=task_id)
@@ -296,27 +298,37 @@ class TaskView(LoginRequiredMixin, FormView):
         return render(request, 'task_deletion.html', {'task':task, 'delete_form': delete_form})
 
 
-
     def create_task(request):
         if request.method == 'POST':
-            if request.method == 'POST':
-                # Use TaskForm to handle form data, including validation and cleaning
-                form = TaskForm(request.POST or None)
+            # Use TaskForm to handle form data, including validation and cleaning
+            form = TaskForm(request.POST or None)
 
-                # Check if the form is valid
-                if form.is_valid():
-                    # Save the form data to create a new Task instance
-                    form.save()
+            # Check if the form is valid
+            if form.is_valid():
+                # Save the form data to create a new Task instance
+                form.save()
 
-                    # Redirect to the dashboard or another page
-                    return redirect('dashboard')
+                # Redirect to the dashboard or another page
+                return redirect('dashboard')
 
         # Fetch all tasks for rendering the form initially
         all_tasks = Task.objects.all()
 
         return render(request, 'task_create.html', {'tasks': all_tasks})
 
-    
+def task_search(request):
+
+    if 'q' in request.GET:
+        q =request.GET['q']
+        data =Task.objects.filter(name__icontains=q)
+    else:
+        data = Task.objects.all()
+    context = {
+        'data': data
+    }
+    return render(request, 'task_search.html', context)
+
+
 class InviteView(LoginRequiredMixin, FormView):
     """Display invite form"""
 
