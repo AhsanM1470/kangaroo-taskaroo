@@ -51,7 +51,8 @@ def dashboard(request):
     # Retrieve current user and lanes
     current_user = request.user
     lanes = request.session['lanes']
-    return render(request, 'dashboard.html', {'user': current_user, 'lanes': lanes})
+    all_tasks = Task.objects.all()
+    return render(request, 'dashboard.html', {'user': current_user, 'lanes': lanes, 'tasks': all_tasks})
 
 # def dashboard(request):
 #     """Display and modify the current user's dashboard."""

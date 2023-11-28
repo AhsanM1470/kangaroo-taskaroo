@@ -73,7 +73,6 @@
       <div class="task-board">
         {% for lane in lanes %}
         <div class="lane">
-          <!-- <h3>{{ lane }}</h3> -->
 
           <form method="post">
             {% csrf_token %}
@@ -89,19 +88,31 @@
           </form>
 
           <p class="task">Do Thing</p>
+          <!-- {% for task in tasks %}
+          <div class="task">
+            {{ task.name }}
+          </div>
+          {% endfor %} -->
 
-          <form method="post" style="display: inline;">
-            {% csrf_token %}
-            <input type="hidden" name="delete_lane" value="{{ lane }}">
-            <button type="submit" class="btn btn-danger">Delete</button>
-          </form>
+          <div>
+            <form method="get" style="display: inline;" action="{% url 'task_create' %}">
+              <button type="submit" class="btn btn-secondary">New Task</button>
+            </form>
+
+            <form method="post" style="display: inline;">
+              {% csrf_token %}
+              <input type="hidden" name="delete_lane" value="{{ lane }}">
+              <button type="submit" class="btn btn-danger">Delete</button>
+            </form>
+          </div>
+
         </div>
         {% endfor %}
       </div>
 
       <form method="post" class="ms-2">
         {% csrf_token %}
-        <button type="submit" name="add_lane" class="btn btn-primary">Add Lane</button>
+        <button type="submit" name="add_lane" class="btn btn-dark">Add Lane</button>
       </form>
     </div>
   </div>
