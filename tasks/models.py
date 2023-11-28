@@ -57,6 +57,7 @@ class Team(models.Model):
     """Model used to hold teams of different users and their relevant information"""
     
     team_name = models.CharField(max_length=50, unique=True, blank=False)
+    #team_creator = models.ForeignKey(User, blank=False)
     team_members = models.ManyToManyField(User, blank=True)
     description = models.TextField(max_length=200, blank=True)
     
@@ -65,11 +66,12 @@ class Team(models.Model):
         
         return self.team_name
 
-
     def add_creator(self, user):
         """Add the creator of the team to the team"""
         
-        # May have administrator rights or something
+        # May have administrator rights for the creator, change later?
+
+        #self.team_creator = user
         self.team_members.add(user)
         self.save()
 
