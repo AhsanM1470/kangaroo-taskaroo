@@ -163,3 +163,18 @@ class Task(models.Model):
     due_date = models.DateTimeField(default=datetime.datetime(1, 1, 1))
     created_at = models.DateTimeField(auto_now_add=True)
     # Could add a boolean field to indicate if the task has expired?
+
+class Notification(models.Model): 
+    """Model used to represent a notification"""
+
+    class NotificationType(models.TextChoices):
+        ASSIGNMENT = "AS"
+        DEADLINE = "DL"
+
+    task_name = models.CharField(max_length=50)
+
+    def display(self,notification_type):
+        if notification_type== self.NotificationType.ASSIGNMENT:
+            return f'{self.task_name} has been assigned to you.'
+        elif notification_type == self.NotificationType.DEADLINE:
+            return f"{self.task_name}'s deadline is approaching."
