@@ -5,9 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="eefdf185-ad17-45f9-8701-7f5f08312d49" name="Changes" comment="done with create task">
-      <change afterPath="$PROJECT_DIR$/tasks/templates/task_search.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/task_manager/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/task_manager/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tasks/admin.py" beforeDir="false" afterPath="$PROJECT_DIR$/tasks/admin.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/sonarlint/issuestore/a/3/a3697f596a75575dd5f2f61a6caa5886cb87edf4" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/sonarlint/issuestore/a/3/a3697f596a75575dd5f2f61a6caa5886cb87edf4" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/sonarlint/issuestore/c/e/ce74e14307c88da0941f67c160f5799af821e2ce" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/sonarlint/issuestore/c/e/ce74e14307c88da0941f67c160f5799af821e2ce" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tasks/templates/task_search.html" beforeDir="false" afterPath="$PROJECT_DIR$/tasks/templates/task_search.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tasks/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/tasks/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -120,7 +121,7 @@
       <updated>1700351721081</updated>
       <workItem from="1700351722600" duration="14242000" />
       <workItem from="1700443700916" duration="2492000" />
-      <workItem from="1700729493911" duration="9789000" />
+      <workItem from="1700729493911" duration="10642000" />
     </task>
     <task id="LOCAL-00001" summary="slightly refine login page and task form">
       <option name="closed" value="true" />

@@ -317,15 +317,18 @@ class TaskView(LoginRequiredMixin, FormView):
         return render(request, 'task_create.html', {'tasks': all_tasks})
 
 def task_search(request):
-
     if 'q' in request.GET:
-        q =request.GET['q']
-        data =Task.objects.filter(name__icontains=q)
+        q = request.GET['q']
+        data = Task.objects.filter(name__icontains=q)
     else:
         data = Task.objects.all()
-    context = {
-        'data': data
-    }
+
+    # Additional logic to filter and sort by due date
+    sort_by_due_date = request.GET.get('sort_due_date', None)
+    if sort_by_due_date:
+        data = data.order_by('due_date')  # Sort by due date ascending
+
+    context = {'data': data}
     return render(request, 'task_search.html', context)
 
 
