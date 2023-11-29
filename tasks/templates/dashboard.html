@@ -3,6 +3,10 @@
 
 <style>
 
+  body{
+    background: linear-gradient(to bottom right, #0076f4, #209e3e);
+  }
+
   .board{
     overflow: auto;
     height: 100vh;
@@ -20,7 +24,7 @@
     flex-direction: column;
     gap: 12px;
 
-    background: rgb(190, 190, 190);
+    background: rgb(205, 205, 205);
     box-shadow: 0px 5px 15px rgba(0,0,0,0.25);
 
     padding: 12px;
@@ -55,7 +59,7 @@
   }
 
   .task{
-    background: rgb(210, 210, 210);
+    background: rgb(221, 221, 221);
     box-shadow: 0px 5px 15px rgba(0,0,0,0.1);
     padding: 5px;
     border-radius: 4px;
@@ -67,8 +71,8 @@
 
 
 
-<div class="header" style="background-color: red;">
-  <h1>Welcome to your dashboard {{ user.username }}</h1>
+<div class="header" style="background-color: #064486cc;">
+  <h2>Welcome to your dashboard {{ user.username }}</h2s>
 </div>
 
 <div class="container board">
