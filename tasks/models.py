@@ -1,4 +1,6 @@
+from collections.abc import Collection
 from django.core.validators import RegexValidator, MaxLengthValidator
+from django.core.exceptions import ValidationError 
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from libgravatar import Gravatar
@@ -46,6 +48,11 @@ class User(AbstractUser):
 
         return self.team_set.all()
     
+    def get_created_teams(self):
+        """Returns a query set of all the teams this user has created"""
+
+        return self.created_teams.all()
+    
     def get_invites(self):
         """Returns a query set of all the invites this user has received"""
 
@@ -57,7 +64,7 @@ class Team(models.Model):
     """Model used to hold teams of different users and their relevant information"""
     
     team_name = models.CharField(max_length=50, unique=True, blank=False)
-    #team_creator = models.ForeignKey(User, blank=False)
+    team_creator = models.ForeignKey(User, on_delete=models.CASCADE, blank=False, related_name="created_teams")
     team_members = models.ManyToManyField(User, blank=True)
     description = models.TextField(blank=True, validators=[MaxLengthValidator(200)])
     
@@ -65,15 +72,6 @@ class Team(models.Model):
         """Overrides string to show the team's name"""
         
         return self.team_name
-
-    def add_creator(self, user):
-        """Add the creator of the team to the team"""
-        
-        # May have administrator rights for the creator, change later?
-
-        #self.team_creator = user
-        self.team_members.add(user)
-        self.save()
 
     def add_team_member(self, new_team_members):
         """Add new team member/s to the team"""
@@ -91,9 +89,12 @@ class Team(models.Model):
     def remove_team_member(self, user):
         """Removes user from team"""
 
-        # Maybe use a query set for this too
-        self.team_members.remove(user)
-        self.save()
+        if user == self.team_creator:
+            print("Cannot remove the team's creator!")
+        
+        else:
+            self.team_members.remove(user)
+            self.save()
     
     def get_team_members(self):
         """Returns query set containing all the users in team"""
@@ -116,6 +117,11 @@ class Invite(models.Model):
     inviting_team = models.ForeignKey(Team, on_delete=models.CASCADE, default=None, blank=False)
     invite_message = models.TextField(validators=[MaxLengthValidator(100)], blank=True)
     status = models.CharField(max_length=30, default="Reject")
+
+    def clean(self):
+        super().clean()
+        if len(self.invited_users.all()) == 0:
+            raise ValidationError("The invite must invite some users!")
 
     def set_invited_users(self, users):
         """Set the invited users of the invite"""
@@ -145,7 +151,7 @@ class Invite(models.Model):
             if user_to_invite:
                 self.get_inviting_team().add_invited_member(user_to_invite)   
         elif self.status == "Reject":
-            print("Rejected Invite!")
+            print("I have rejected the invite!")
         self.delete()
         
 class Task(models.Model):

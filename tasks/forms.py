@@ -144,6 +144,18 @@ class CreateTeamForm(forms.ModelForm):
 
         model = Team
         fields = ['team_name', 'description', 'team_members']
+
+    team_members = forms.ModelChoiceField(queryset=User.objects.all())
+
+    def __init__(self, user=None, **kwargs):
+        """Makes sure the creator of team is not shown as option to add"""
+        
+        self.user = user
+
+        super().__init__(**kwargs)
+
+        if self.user != None:  
+            self.fields["team_members"].queryset.exclude(username=self.user.username)
     
     def create_team(self, user):
         """Create a new team"""
@@ -153,9 +165,9 @@ class CreateTeamForm(forms.ModelForm):
         
         team = Team.objects.create(
             team_name=self.cleaned_data.get("team_name"),
+            team_creator=user,
             description=self.cleaned_data.get("description"),
         )
-        team.add_creator(user) # This user is the first member of the team
 
         if len(team_members) != 0: # If you had members you added in the form
             team.add_team_member(team_members) 
@@ -175,12 +187,12 @@ class InviteForm(forms.ModelForm):
     
     def __init__(self, user=None, **kwargs):
         """Makes sure only teams that the current user belongs to are given as options"""
+        """Makes sure only users who are not already part of the team are shown"""
 
         super().__init__(**kwargs)
-        self.user = user
-        
-        if self.user != None:
-            self.fields['team_to_join'].queryset.filter(team_members=self.user)
+
+        if user != None:
+            self.fields['team_to_join'].queryset.filter(team_members=user)
     
     def send_invite(self):
         """Create a new invite and send it to each user"""

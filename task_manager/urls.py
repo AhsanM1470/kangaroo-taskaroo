@@ -21,7 +21,7 @@ from tasks import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.home, name='home'),
-    path("create_team/", views.create_team, name="create_team"),
+    path("create_team/", views.TeamView.as_view(), name="create_team"),
     path("create_invite/", views.InviteView.as_view(), name="create_invite"),
     path("press_invite/", views.press_invite, name="press_invite"),
     path('dashboard/', views.dashboard, name='dashboard'),

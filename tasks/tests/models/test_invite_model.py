@@ -13,14 +13,13 @@ class InviteModelTestCase(TestCase):
     ]
 
     def setUp(self):
-        self.team = Team.objects.create(
-            team_name="Kangaroo",
-            description="The team we all wanted to be part of. Oh wait."
-        )
         self.user = User.objects.get(username='@johndoe')
         self.other_user = User.objects.get(username="@peterpickles")
-        self.team.add_creator(self.user)
-
+        self.team = Team.objects.create(
+            team_name="Kangaroo",
+            team_creator=self.user,
+            description="The team we all wanted to be part of. Oh wait."
+        )
         users_to_invite = User.objects.filter(username="@peterpickles") 
         
         self.invite = Invite.objects.create(

@@ -13,13 +13,13 @@ class TeamModelTestCase(TestCase):
     ]
 
     def setUp(self):
-        self.team = Team.objects.create(
-            team_name="Kangaroo",
-            description="The team we all wanted to be part of. Oh wait."
-        )
         self.user = User.objects.get(username='@johndoe')
         self.other_user = User.objects.get(username="@peterpickles")
-        self.team.add_creator(self.user)
+        self.team = Team.objects.create(
+            team_name="Kangaroo",
+            team_creator=self.user,
+            description="The team we all wanted to be part of. Oh wait."
+        )
         self.team.add_invited_member(self.other_user)
         
 
@@ -53,23 +53,16 @@ class TeamModelTestCase(TestCase):
     def test_team_name_must_be_unique(self):
         second_team = Team.objects.create(
             team_name="FakeKangaroo",
+            team_creator=self.other_user,
             description="Yep"
         )
         self.team.team_name = second_team.team_name
         self._assert_team_is_invalid()
     
-    """
-    Put this back in after
-
-    def test_team_has_a_creator(self):
+    def test_team_must_have_a_creator(self):
         self.team.team_creator = None
         self._assert_team_is_invalid()
     
-    def test_team_cannot_remove_creator(self):
-
-    
-    """
-
     def test_added_member_is_part_of_team(self):
         """Test that when a user is added to a team, they have been added properly"""
 
