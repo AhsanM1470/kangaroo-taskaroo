@@ -15,6 +15,7 @@ from django.views.generic.edit import FormView
 from django.views.decorators.http import require_POST
 from .forms import TaskForm, TaskDeleteForm
 from .models import Task, Invite
+from django.http import HttpResponseBadRequest
 from datetime import datetime
   
 
@@ -317,20 +318,28 @@ class TaskView(LoginRequiredMixin, FormView):
         return render(request, 'task_create.html', {'tasks': all_tasks})
 
 def task_search(request):
-    if 'q' in request.GET:
-        q = request.GET['q']
-        data = Task.objects.filter(name__icontains=q)
-    else:
-        data = Task.objects.all()
+    q = request.GET.get('q', '')
+    data = Task.objects.all()
 
-    # Additional logic to filter and sort by due date
+    if q:
+        data = data.filter(name__icontains=q)
+
     sort_by_due_date = request.GET.get('sort_due_date', None)
+
     if sort_by_due_date:
-        data = data.order_by('due_date')  # Sort by due date ascending
+        if sort_by_due_date in ['asc', 'desc']:
+            order_by = 'due_date' if sort_by_due_date == 'asc' else '-due_date'
+            data = data.order_by(order_by)
+        else:
+            return HttpResponseBadRequest("Invalid value for 'sort_due_date'")
 
     context = {'data': data}
-    return render(request, 'task_search.html', context)
 
+    # Check if there are no tasks found
+    if not data.exists():
+        context['no_tasks_found'] = True
+
+    return render(request, 'task_search.html', context)
 
 class InviteView(LoginRequiredMixin, FormView):
     """Display invite form"""

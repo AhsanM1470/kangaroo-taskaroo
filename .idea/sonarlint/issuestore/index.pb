@@ -53,3 +53,13 @@ I
 tasks/templates/base.html,3/3/337e76b85b80fd689d5ec0708fb761514fc7ab58
 P
  tasks/templates/create_team.html,b/5/b5b5b91b5df63203b5ed051f01bcd6eb15dbc55f
+Z
+*tasks/tests/views/test_task_search_view.py,2/e/2ed5f362c415af6fcaf7f8b7cde1cdc1d22fa75c
+V
+&tasks/tests/views/test_sign_up_view.py,2/e/2e6b864ce480ed8abf8547327177b25deb9ebd0c
+W
+'tasks/tests/views/test_password_view.py,7/5/756a4fe703b842c6048d50f286248efae3776bb4
+U
+%tasks/tests/views/test_view_mixins.py,b/5/b5c26af2a371a14666f54b5a146f78dae302ab72
+V
+&tasks/tests/views/test_profile_view.py,5/c/5c7db56e0a91c7633190a5eaf755c29063a819ad

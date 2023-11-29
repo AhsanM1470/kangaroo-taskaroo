@@ -1,8 +1,8 @@
 
-Bpython:S1258"Remove this commented out code.(„¹««ÿÿÿÿÿ8¸ƒ°ÂÁ1
-Bpython:S125X"Remove this commented out code.(äŞê¤úÿÿÿÿ8»ƒ°ÂÁ1
-Qpython:S1172˜",Remove the unused function parameter "args".(ÄÀŸëÿÿÿÿÿ8½ƒ°ÂÁ1
-Spython:S1172˜".Remove the unused function parameter "kwargs".(ÄÀŸëÿÿÿÿÿ8¼ƒ°ÂÁ1
-dpython:S5720"?Rename "request" to "self" or add the missing "self" parameter.(¹¼Ó´üÿÿÿÿ8½ƒ°ÂÁ1
-_python:S5720­"?Rename "request" to "self" or add the missing "self" parameter.(Ï¹®8½ƒ°ÂÁ1
->python:S125"Remove this commented out code.(áá—ì8½ƒ°ÂÁ1
+Bpython:S1259"Remove this commented out code.(„¹««ÿÿÿÿÿ8¸ƒ°ÂÁ1
+Bpython:S125Y"Remove this commented out code.(äŞê¤úÿÿÿÿ8»ƒ°ÂÁ1
+Qpython:S1172™",Remove the unused function parameter "args".(ÄÀŸëÿÿÿÿÿ8½ƒ°ÂÁ1
+Spython:S1172™".Remove the unused function parameter "kwargs".(ÄÀŸëÿÿÿÿÿ8¼ƒ°ÂÁ1
+dpython:S5720Ÿ"?Rename "request" to "self" or add the missing "self" parameter.(¹¼Ó´üÿÿÿÿ8½ƒ°ÂÁ1
+_python:S5720®"?Rename "request" to "self" or add the missing "self" parameter.(Ï¹®8½ƒ°ÂÁ1
+>python:S125"Remove this commented out code.(áá—ì8½ƒ°ÂÁ1

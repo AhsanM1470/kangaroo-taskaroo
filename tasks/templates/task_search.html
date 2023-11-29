@@ -31,7 +31,7 @@
                                     <li>
                                         <hr class="dropdown-divider">
                                     </li>
-                                    <li><a class="dropdown-item" href="#">Something else here</a></li>
+                                    <li><a class="dropdown-item" href="{% url 'task_search' %}?sort_due_date=desc">Sort by due date (desc)</a></li>
                                 </ul>
 
                             </li>
@@ -67,6 +67,11 @@
                     <td>{{ data.due_date }}</td>
                 </tr>
             {% endfor %}
+            {% if no_tasks_found %}
+            <tr>
+                <td colspan="3">No tasks found.</td>
+            </tr>
+        {% endif %}
             </tbody>
         </table>
     </div>
