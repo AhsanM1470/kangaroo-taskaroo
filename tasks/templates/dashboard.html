@@ -87,17 +87,20 @@
             <input type="submit" name="rename_lane" style="display: none;">
           </form>
 
-          <p class="task">Do Thing</p>
-          <!-- {% for task in tasks %}
+          <!-- <p class="task">Do Thing</p> -->
+          {% for task in tasks %}
           <div class="task">
             {{ task.name }}
           </div>
-          {% endfor %} -->
+          {% empty %}
+          <p>No tasks in this lane.</p>
+          {% endfor %}
 
           <div>
-            <form method="get" style="display: inline;" action="{% url 'task_create' %}">
-              <button type="submit" class="btn btn-secondary">New Task</button>
-            </form>
+              <form method="get" style="display: inline;;" action="{% url 'task_create' %}">
+                <input type="hidden" name="lane" value="{{ lane }}">
+                <button type="submit" class="btn btn-secondary">New Task</button>
+              </form>
 
             <form method="post" style="display: inline;">
               {% csrf_token %}

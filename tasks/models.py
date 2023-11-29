@@ -157,6 +157,8 @@ class Task(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     # Could add a boolean field to indicate if the task has expired?
 
+    lane = models.CharField(max_length=100,blank=True)
+
 class Notification(models.Model): 
     """Model used to represent a notification"""
 

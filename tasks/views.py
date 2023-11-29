@@ -51,45 +51,8 @@ def dashboard(request):
     current_user = request.user
     lanes = request.session['lanes']
     all_tasks = Task.objects.all()
+    # lane_tasks = {lane: Task.objects.filter(lane=lane) for lane in lanes}
     return render(request, 'dashboard.html', {'user': current_user, 'lanes': lanes, 'tasks': all_tasks})
-
-# def dashboard(request):
-#     """Display and modify the current user's dashboard."""
-#     print("Dashboard accessed.")
-
-#     if 'lanes' not in request.session:
-#         request.session['lanes'] = [{'id': 1, 'name': 'Backlog'},
-#                                     {'id': 2, 'name': 'In Progress'},
-#                                     {'id': 3, 'name': 'Complete'}]
-#     print(request.session.get('lanes'))
-
-#     if request.method == 'POST':
-#         if 'add_lane' in request.POST:
-#             new_id = max((lane['id'] for lane in request.session.get('lanes')), default=0) + 1
-#             new_lane = {'id': new_id, 'name': 'New Lane'}
-#             request.session['lanes'].append(new_lane)
-#             request.session.modified = True
-
-#         elif 'delete_lane' in request.POST:
-#             lane_to_delete = request.POST.get('delete_lane')
-#             print(request.session.get('lanes'))
-#             request.session['lanes'] = [lane for lane in request.session.get('lanes') if lane['name'] != lane_to_delete]
-#             request.session.modified = True
-
-#         elif 'edit_lane' in request.POST:
-#             lane_id = int(request.POST.get('lane_id'))
-#             new_lane_name = request.POST.get('new_lane_name')
-#             for lane in request.session.get('lanes'):
-#                 if lane['id'] == lane_id:
-#                     lane['name'] = new_lane_name
-#                     break
-#             request.session.modified = True
-
-#         return redirect('dashboard')
-
-#     current_user = request.user
-#     lanes = request.session.get('lanes')
-#     return render(request, 'dashboard.html', {'user': current_user, 'lanes': lanes})
 
 @login_required
 def create_team(request):
@@ -323,6 +286,37 @@ class TaskView(LoginRequiredMixin, FormView):
         all_tasks = Task.objects.all()
 
         return render(request, 'task_form.html', {'tasks': all_tasks}, {'form': form})
+
+    # def create_task(request):
+    #     lane_name = request.GET.get('lane', 'DefaultLane')  # Get the lane name from the GET request
+
+    #     if request.method == 'POST':
+    #         form = TaskForm(request.POST or None)
+
+    #         if form.is_valid():
+    #             # Use cleaned data from form
+    #             name = form.cleaned_data['name']
+    #             description = form.cleaned_data['description']
+    #             due_date = form.cleaned_data['due_date']
+
+    #             # Create a new Task instance but do not save it yet
+    #             new_task = Task(
+    #                 name=name,
+    #                 description=description,
+    #                 due_date=due_date,
+    #                 lane=lane_name  # Set the lane for the task
+    #             )
+
+    #             # Save the new task
+    #             new_task.save()
+
+    #             # Redirect to the dashboard or another page
+    #             return redirect('dashboard')
+    #     else:
+    #         form = TaskForm()
+
+    #     all_tasks = Task.objects.all()
+    #     return render(request, 'task_form.html', {'tasks': all_tasks, 'form': form, 'lane': lane_name})
 
     
 class InviteView(LoginRequiredMixin, FormView):
