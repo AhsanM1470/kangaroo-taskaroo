@@ -1,0 +1,17 @@
+{% extends 'base_content.html' %}
+{% block content %}
+{% include 'partials/messages.html' %}
+
+<div class="container">
+  <title>Update Task</title>
+  
+    <form method="post" action="{{ update_url }}">
+      {% csrf_token %}
+      {{ delete_form }}
+      <div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+        <a href="{% url 'dashboard' %}" class="cancel-button">Cancel</a>
+      </div>
+    </form>
+</div>
+{% endblock %}

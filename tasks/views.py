@@ -325,7 +325,8 @@ class DeleteTaskView(LoginRequiredMixin, View):
     def get(self, request, task_name, *args, **kwargs):
         task = get_object_or_404(Task, name=task_name)
         delete_form = TaskDeleteForm()
-        context = {'task': task, 'delete_form': delete_form}
+        delete_url = 'task_delete/'+task_name+'/'
+        context = {'task': task, 'delete_form': delete_form, 'delete_url': delete_url, 'name': task_name}
         return render(request, self.template_name, context)
     
     def post(self, request, task_name, *args, **kwargs):
@@ -343,6 +344,10 @@ class DeleteTaskView(LoginRequiredMixin, View):
             delete_form = TaskDeleteForm()
             
         return render(request, 'task_delete.html', {'task':task, 'delete_form': delete_form})
+    
+class UpdateTaskView(LoginRequiredMixin, UpdateView):
+    model = Task
+    fields = '__all__'
         
     
 class InviteView(LoginRequiredMixin, FormView):
