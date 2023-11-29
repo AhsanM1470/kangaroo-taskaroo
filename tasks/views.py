@@ -1,3 +1,4 @@
+from typing import Any
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import login, logout
@@ -308,24 +309,41 @@ class TaskView(LoginRequiredMixin, FormView):
 
         return render(request, 'task_create.html', {'tasks': all_tasks, 'form': form})
     
-class DeleteTaskView(LoginRequiredMixin, DeleteView):
+class DeleteTaskView(LoginRequiredMixin, View):
     model = Task
     form_class = TaskDeleteForm
     template_name = 'task_delete.html'  # Create a template for your task form
     success_url = reverse_lazy('dashboard')  # Redirect to the dashboard after successful form submission
     form_title = 'Delete Task'
-    
-    def form_valid(self, form):
-        self.object = form.save()
-        return super().form_valid(form)
+    context_object_name = 'task'
     
     def get_success_url(self):
         """Return redirect URL after successful update."""
         messages.add_message(self.request, messages.SUCCESS, "Task deleted!")
         return reverse_lazy('dashboard')
     
+    def get(self, request, task_name, *args, **kwargs):
+        task = get_object_or_404(Task, name=task_name)
+        delete_form = TaskDeleteForm()
+        context = {'task': task, 'delete_form': delete_form}
+        return render(request, self.template_name, context)
     
-
+    def post(self, request, task_name, *args, **kwargs):
+        #task_name = kwargs["task_name"]
+        task = get_object_or_404(Task, pk=task_name)
+        #task = Task.objects.get(pk = task_name)
+        if request.method == 'POST':
+            delete_form = TaskDeleteForm(request.POST)
+            if delete_form.is_valid():
+                if delete_form.cleaned_data['confirm_deletion']:
+                    task.delete()
+                    messages.success(request, 'Task Deleted!')
+                    return redirect('dashboard')
+        else:
+            delete_form = TaskDeleteForm()
+            
+        return render(request, 'task_delete.html', {'task':task, 'delete_form': delete_form})
+        
     
 class InviteView(LoginRequiredMixin, FormView):
     """Display invite form"""

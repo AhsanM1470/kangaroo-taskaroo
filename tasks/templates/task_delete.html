@@ -1,14 +1,63 @@
 {% extends 'base_content.html' %}
 {% block content %}
 {% include 'partials/messages.html' %}
-  <div class="container mt-4">
-    <h2>Delete Task</h2>
-    <p>Are you sure you want to delete task "{{ task.name }}"?</p>
-      <form method="post" action="{% url 'task_delete' task.name %}">
-        {% csrf_token %}
-        {{ delete_form.as_p }}
-        <input type="submit" value="Delete">
-      </form>
-    <a href="{% url 'dashboard' %}">Cancel</a>
-  </div>
+
+<style>
+  form {
+      max-width: 600px;
+      margin: auto;
+      margin-top: 50px;
+      position: relative;
+      background-color: lightgray;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+  }
+
+  label {
+    font-weight: bold;
+  }
+
+  button[type="submit"], .cancel-button {
+      display: inline-block;
+      background-color: lightsalmon;
+      color: white;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+      z-index: 2;
+      width: 80px;
+      box-sizing: border-box;
+      vertical-align: top;
+      text-align: center;
+  }
+
+  button[type="submit"]:hover, .cancel-button:hover {
+      background-color: darksalmon;
+      color: white;
+  }
+
+  .deleteForm input[type="checkbox"].confirmClass {
+    display: inline;
+    margin-right: 10px;
+    margin-bottom: 10px;
+    padding: 10px;
+  }
+
+</style>
+<div class="container">
+  <title>Delete Task</title>
+  
+    <form method="post" action="{{ delete_url }}" class="deleteForm">
+      {% csrf_token %}
+      <h4>Are you sure you want to delete "{{ task.name }}"?</h4>
+      {{ delete_form }}
+      <div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+        <a href="{% url 'dashboard' %}" class="cancel-button">Cancel</a>
+      </div>
+    </form>
+</div>
 {% endblock %}

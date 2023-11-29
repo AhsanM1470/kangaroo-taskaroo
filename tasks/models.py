@@ -147,7 +147,7 @@ class Invite(models.Model):
         
 class Task(models.Model):
     """Model used for tasks and information related to them"""
-    taskID = models.AutoField(primary_key=True, unique=True)
+    #taskID = models.AutoField(primary_key=True, unique=True)
     alphanumeric = RegexValidator(
         r'^[0-9a-zA-Z]{3,}$', 
         'Must have 3 alphanumeric characters!'

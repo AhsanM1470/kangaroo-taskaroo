@@ -160,7 +160,7 @@ class TaskForm(forms.ModelForm):
 class TaskDeleteForm(forms.Form):
     confirm_deletion = forms.BooleanField(
         required=True,
-        help_text="Check to confirm deletion of this task",
+        widget=forms.CheckboxInput(attrs={'class': 'confirmClass'})
     )
 
 class CreateTeamForm(forms.ModelForm):

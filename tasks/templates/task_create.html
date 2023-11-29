@@ -62,7 +62,7 @@
     }
 </style>
 <div class="container">
-    <title>Task Form</title>
+    <title>Create Task</title>
     <form method="post" action="{% url 'task_create' %}" id="taskForm">
         {% csrf_token %}
         {{ form.as_p }}
