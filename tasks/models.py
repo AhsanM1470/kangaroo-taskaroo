@@ -157,16 +157,27 @@ class Task(models.Model):
     # Could add a boolean field to indicate if the task has expired?
 
 class Notification(models.Model): 
-    """Model used to represent a notification"""
+    """Generic template model for notifications"""
+    pass
+
+class TaskNotification(models.Model): 
+    """Model used to represent a notification relating to a specific task"""
 
     class NotificationType(models.TextChoices):
         ASSIGNMENT = "AS"
         DEADLINE = "DL"
 
-    task_name = models.CharField(max_length=50)
+    task = models.OneToOneField(Task,blank=False,on_delete=models.CASCADE)
 
     def display(self,notification_type):
         if notification_type== self.NotificationType.ASSIGNMENT:
-            return f'{self.task_name} has been assigned to you.'
+            return f'{self.task.name} has been assigned to you.'
         elif notification_type == self.NotificationType.DEADLINE:
-            return f"{self.task_name}'s deadline is approaching."
+            return f"{self.task.name}'s deadline is approaching."
+
+class InviteNotification(models.Model): 
+    """Model used to represent a notification"""
+    invite = models.OneToOneField(Invite,blank=False,on_delete=models.CASCADE)
+
+    def display(self,notification_type):
+       return f"Do you wish to join {invite.inviting_team}?"
