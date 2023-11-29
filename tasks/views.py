@@ -6,12 +6,12 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ImproperlyConfigured
 from django.shortcuts import redirect, render, get_object_or_404
 from django.views import View
+from django.views.generic import DeleteView
 from django.views.generic.edit import FormView, UpdateView
 from django.urls import reverse
 from tasks.forms import LogInForm, PasswordForm, UserForm, SignUpForm, CreateTeamForm, InviteForm
 from tasks.helpers import login_prohibited
 from django.urls import reverse_lazy
-from django.views.generic.edit import FormView
 from django.views.decorators.http import require_POST
 from .forms import TaskForm, TaskDeleteForm
 from .models import Task, Invite
@@ -308,8 +308,9 @@ class TaskView(LoginRequiredMixin, FormView):
 
         return render(request, 'task_create.html', {'tasks': all_tasks, 'form': form})
     
-class DeleteTaskView(LoginRequiredMixin, FormView):
-    form_class = TaskForm
+class DeleteTaskView(LoginRequiredMixin, DeleteView):
+    model = Task
+    form_class = TaskDeleteForm
     template_name = 'task_delete.html'  # Create a template for your task form
     success_url = reverse_lazy('dashboard')  # Redirect to the dashboard after successful form submission
     form_title = 'Delete Task'
@@ -323,19 +324,7 @@ class DeleteTaskView(LoginRequiredMixin, FormView):
         messages.add_message(self.request, messages.SUCCESS, "Task deleted!")
         return reverse_lazy('dashboard')
     
-    def post(self, request, task_name):
-        print('nom')
-        task = get_object_or_404(Task, name=task_name)
-        if request.method == 'POST':
-            form = TaskDeleteForm(request.POST or None)
-            if form.is_valid():
-                if form.cleaned_data['confirm_deletion']:
-                    task.delete()
-                    return redirect('dashboard')
-        else:
-            form = TaskDeleteForm()
-            
-        return render(request, 'task_deletion.html', {'task':task ,'form': form})
+    
 
     
 class InviteView(LoginRequiredMixin, FormView):
