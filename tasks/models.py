@@ -120,8 +120,6 @@ class Invite(models.Model):
 
     def clean(self):
         super().clean()
-        if len(self.invited_users.all()) == 0:
-            raise ValidationError("The invite must invite some users!")
 
     def set_invited_users(self, users):
         """Set the invited users of the invite"""

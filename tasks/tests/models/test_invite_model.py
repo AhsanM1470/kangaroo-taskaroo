@@ -31,10 +31,6 @@ class InviteModelTestCase(TestCase):
 
     def test_valid_invite(self):
         self._assert_invite_is_valid()
-
-    def test_invite_must_invite_a_user(self):
-        self.invite.invited_users.clear()
-        self._assert_invite_is_invalid()
     
     def test_inviting_team_must_not_be_blank(self):
         self.invite.inviting_team = None

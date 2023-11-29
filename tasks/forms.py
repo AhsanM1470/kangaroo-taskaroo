@@ -143,34 +143,43 @@ class CreateTeamForm(forms.ModelForm):
         """Form options."""
 
         model = Team
-        fields = ['team_name', 'description', 'team_members']
+        fields = ['team_name', 'description', 'members_to_invite']
 
-    team_members = forms.ModelChoiceField(queryset=User.objects.all())
+    members_to_invite = forms.ModelMultipleChoiceField(User.objects.all(), required=False)
 
-    def __init__(self, user=None, **kwargs):
+    def __init__(self, *args, **kwargs):
         """Makes sure the creator of team is not shown as option to add"""
-        
-        self.user = user
 
-        super().__init__(**kwargs)
+        self.creator = kwargs.get("user")
+        if self.creator != None:
+            kwargs.pop("user") 
 
-        if self.user != None:  
-            self.fields["team_members"].queryset.exclude(username=self.user.username)
+        super().__init__(*args, **kwargs)
+
+        if self.creator != None:  
+            self.fields["members_to_invite"].queryset = User.objects.exclude(username=self.creator.username)
     
-    def create_team(self, user):
+    def create_team(self, creator):
         """Create a new team"""
 
-        team_members = self.cleaned_data.get("team_members")
+        members_to_invite = self.cleaned_data.get("members_to_invite")
         # Maybe for each team member, send them an invite instead of doing it automatically
         
         team = Team.objects.create(
             team_name=self.cleaned_data.get("team_name"),
-            team_creator=user,
+            team_creator=creator,
             description=self.cleaned_data.get("description"),
         )
 
-        if len(team_members) != 0: # If you had members you added in the form
-            team.add_team_member(team_members) 
+        """For now, add the creator to team members as well"""
+        team.add_invited_member(creator)
+
+        if members_to_invite != None: # If you had members you added in the form
+            default_invite = Invite.objects.create(
+                invite_message="Please join my team!",
+                inviting_team=team)
+            default_invite.set_invited_users(members_to_invite)
+            #team.add_team_member(team_members) 
 
         return team
 
@@ -183,16 +192,17 @@ class InviteForm(forms.ModelForm):
         model = Invite
         fields = ['invited_users', 'invite_message', "team_to_join"]
     
-    team_to_join = forms.ModelChoiceField(queryset=Team.objects.all())
+    team_to_join = forms.ModelChoiceField(queryset=Team.objects.all(), required=True)
     
     def __init__(self, user=None, **kwargs):
         """Makes sure only teams that the current user belongs to are given as options"""
         """Makes sure only users who are not already part of the team are shown"""
 
+        self.user = user
         super().__init__(**kwargs)
 
-        if user != None:
-            self.fields['team_to_join'].queryset.filter(team_members=user)
+        if self.user != None:
+            self.fields['team_to_join'].queryset = Team.objects.filter(team_members=self.user)
     
     def send_invite(self):
         """Create a new invite and send it to each user"""
@@ -206,3 +216,14 @@ class InviteForm(forms.ModelForm):
         invite.set_invited_users(users)
 
         return invite
+
+class RemoveMemberForm(forms.Form):
+    """Form enabling a team creator to remove a team member"""
+
+    class Meta:
+        """Form options."""
+
+        fields = ['member_to_remove', "thing"]
+
+    member_to_remove = forms.CharField(max_length=30)
+    #thing = forms.CharField(max_length=50, choic)

@@ -14,6 +14,7 @@
       <h1>Invite List</h1>
       {% for invite in invites %}
         <p>Team Name: <b> {{ invite.get_inviting_team.team_name }} </b></p>
+        <p>Team Creator: <b> {{ invite.get_inviting_team.team_creator.username }}</b></p>
         <p>Invite Message: <b> {{ invite.invite_message }} </b></p>
         <form action ="{%url 'press_invite'%}" method="post">
           {% csrf_token %}
@@ -30,12 +31,20 @@
         {% include 'partials/bootstrap_form.html' with form=team_form %}
       <input type="submit" value="Create Team" class="btn btn-primary">
       </form>
+      {% if invite_form and remove_form %}
       <h1>Make an invite</h1>
       <form action ="{%url 'create_invite'%}" method="post">
         {% csrf_token %}
         {% include 'partials/bootstrap_form.html' with form=invite_form %}
       <input type="submit" value="Create Invite" class="btn btn-primary">
       </form>
+      <h1>Remove a team member</h1>
+      <form action ="{%url 'remove_member'%}" method="post">
+        {% csrf_token %}
+        {% include 'partials/bootstrap_form.html' with form=remove_form %}
+      <input type="submit" value="Remove Member" class="btn btn-primary">
+      </form>
+      {% endif %}
     </div>
   </div>
 </div>
