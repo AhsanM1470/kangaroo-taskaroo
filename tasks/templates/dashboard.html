@@ -2,9 +2,11 @@
 {% block content %}
 
 <style>
-  /* body{
-    background-image: linear-gradient(green,blue);
-  } */
+
+  .board{
+    overflow: auto;
+    height: 100vh;
+  }
 
   .task-board{
     display: flex;
@@ -63,12 +65,14 @@
   }
 </style>
 
-<div class="container">
-  <div class="row">
-    <div class="col-12" style="display: inline;">
-      <h1>Welcome to your dashboard {{ user.username }}</h1>
-    </div>
 
+
+<div class="header" style="background-color: red;">
+  <h1>Welcome to your dashboard {{ user.username }}</h1>
+</div>
+
+<div class="container board">
+  <div class="row">
     <div class="d-flex align-items-start">
       <div class="task-board">
         {% for lane in lanes %}
