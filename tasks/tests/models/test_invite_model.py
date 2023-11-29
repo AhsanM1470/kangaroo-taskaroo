@@ -1,10 +1,10 @@
-"""Unit tests for the Teams model."""
+"""Unit tests for the Invite model."""
 from django.core.exceptions import ValidationError
 from django.test import TestCase
-from tasks.models import User, Team
+from tasks.models import User, Team, Invite
 
-class TeamModelTestCase(TestCase):
-    """Unit tests for the Team model."""
+class InviteModelTestCase(TestCase):
+    """Unit tests for the Invite model."""
 
     
     fixtures = [
@@ -13,34 +13,66 @@ class TeamModelTestCase(TestCase):
     ]
 
     def setUp(self):
+        self.team = Team.objects.create(
+            team_name="Kangaroo",
+            description="The team we all wanted to be part of. Oh wait."
+        )
         self.user = User.objects.get(username='@johndoe')
+        self.other_user = User.objects.get(username="@peterpickles")
+        self.team.add_creator(self.user)
 
-    def test_valid_user(self):
-        self._assert_user_is_valid()
+        users_to_invite = User.objects.filter(username="@peterpickles") 
+        
+        self.invite = Invite.objects.create(
+            invite_message="Yo Yo Yo",
+            inviting_team=self.team
+        )
+        self.invite.set_invited_users(users_to_invite)
+        
 
-    def test_username_cannot_be_blank(self):
-        self.user.username = ''
-        self._assert_user_is_invalid()
+    def test_valid_invite(self):
+        self._assert_invite_is_valid()
 
-    def test_username_can_be_30_characters_long(self):
-        self.user.username = '@' + 'x' * 29
-        self._assert_user_is_valid()
+    def test_invite_must_invite_a_user(self):
+        self.invite.invited_users.clear()
+        self._assert_invite_is_invalid()
+    
+    def test_inviting_team_must_not_be_blank(self):
+        self.invite.inviting_team = None
+        self._assert_invite_is_invalid()
 
-    def test_username_cannot_be_over_30_characters_long(self):
-        self.user.username = '@' + 'x' * 30
-        self._assert_user_is_invalid()
+    def test_invite_message_can_be_100_characters_long(self):
+        self.invite.invite_message = 'x' * 100
+        self._assert_invite_is_valid()
 
-    def test_username_must_be_unique(self):
-        second_user = User.objects.get(username='@janedoe')
-        self.user.username = second_user.username
-        self._assert_user_is_invalid()
+    def test_invite_message_cannot_be_over_100_characters_long(self):
+        self.invite.invite_message = 'x' * 101
+        self._assert_invite_is_invalid()
+    
+    def test_accepted_invite_adds_members_to_team(self):
+        """Check that users have been added to team from invite"""
+        self.invite.status = "Accept"
+        inviting_team = self.invite.inviting_team
+        invited_users = self.invite.invited_users
+        self.invite.close()
 
-    def _assert_user_is_valid(self):
+        for user in invited_users.all():
+            self.assertTrue(inviting_team in user.get_teams())
+    
+    def test_closed_invite_is_deleted(self):
+        id = self.invite.id
+        self.invite.close()
+
+        with self.assertRaises(Invite.DoesNotExist):
+            Invite.objects.get(pk = id) 
+
+    def _assert_invite_is_valid(self):
         try:
-            self.user.full_clean()
-        except (ValidationError):
-            self.fail('Test user should be valid')
+            self.invite.full_clean()
+        except ValidationError:
+            self.fail('Test Invite should be valid!')
 
-    def _assert_user_is_invalid(self):
+    def _assert_invite_is_invalid(self):
         with self.assertRaises(ValidationError):
-            self.user.full_clean()
+            self.invite.full_clean()
+

@@ -1,4 +1,4 @@
-from django.core.validators import RegexValidator
+from django.core.validators import RegexValidator, MaxLengthValidator
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from libgravatar import Gravatar
@@ -59,7 +59,7 @@ class Team(models.Model):
     team_name = models.CharField(max_length=50, unique=True, blank=False)
     #team_creator = models.ForeignKey(User, blank=False)
     team_members = models.ManyToManyField(User, blank=True)
-    description = models.TextField(max_length=200, blank=True)
+    description = models.TextField(blank=True, validators=[MaxLengthValidator(200)])
     
     def __str__(self):
         """Overrides string to show the team's name"""
@@ -88,13 +88,12 @@ class Team(models.Model):
         self.team_members.add(user)
         self.save()
     
-    def remove_team_member(self, users_to_remove):
-        """Removes user/s from team"""
+    def remove_team_member(self, user):
+        """Removes user from team"""
 
         # Maybe use a query set for this too
-        for user in users_to_remove:
-            self.team_members.remove(user)
-            self.save()
+        self.team_members.remove(user)
+        self.save()
     
     def get_team_members(self):
         """Returns query set containing all the users in team"""
@@ -114,8 +113,8 @@ class Team(models.Model):
 class Invite(models.Model):
     """Model used to hold information about invites"""
     invited_users = models.ManyToManyField(User, blank=False)
-    inviting_team = models.ForeignKey(Team, on_delete=models.CASCADE, default=None)
-    invite_message = models.TextField(max_length=100, blank=True)
+    inviting_team = models.ForeignKey(Team, on_delete=models.CASCADE, default=None, blank=False)
+    invite_message = models.TextField(validators=[MaxLengthValidator(100)], blank=True)
     status = models.CharField(max_length=30, default="Reject")
 
     def set_invited_users(self, users):
