@@ -7,7 +7,7 @@
   
     <form method="post" action="{{ update_url }}">
       {% csrf_token %}
-      {{ delete_form }}
+      {{ form.as_p }}
       <div>
         <button type="submit" class="btn btn-primary">Submit</button>
         <a href="{% url 'dashboard' %}" class="cancel-button">Cancel</a>

@@ -323,9 +323,9 @@ class DeleteTaskView(LoginRequiredMixin, View):
         return reverse_lazy('dashboard')
     
     def get(self, request, task_name, *args, **kwargs):
-        print("sdsdjshjdhsjdh")
         task = get_object_or_404(Task, name=task_name)
         delete_form = TaskDeleteForm()
+        # if this doesnt work use domain explicitly
         delete_url = '/task_delete/'+task_name+'/'
         context = {'task': task, 'delete_form': delete_form, 'delete_url': delete_url, 'name': task_name}
         return render(request, self.template_name, context)
@@ -347,7 +347,10 @@ class DeleteTaskView(LoginRequiredMixin, View):
     
 class UpdateTaskView(LoginRequiredMixin, UpdateView):
     model = Task
-    fields = '__all__'
+    #fields = '__all__'
+    form_class = TaskForm
+    template_name = 'task_update.html'
+    success_url = reverse_lazy('dashboard')  # Redirect to the dashboard after successful form submission
         
     
 class InviteView(LoginRequiredMixin, FormView):
