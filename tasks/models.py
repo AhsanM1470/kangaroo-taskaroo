@@ -149,8 +149,6 @@ class Invite(models.Model):
         if self.status == "Accept":
             if user_to_invite:
                 self.get_inviting_team().add_invited_member(user_to_invite)   
-        elif self.status == "Reject":
-            print("I have rejected the invite!")
         self.delete()
         
 class Task(models.Model):

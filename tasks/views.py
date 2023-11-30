@@ -15,14 +15,15 @@ from tasks.helpers import login_prohibited
 from django.urls import reverse_lazy
 from django.views.decorators.http import require_POST
 from .forms import TaskForm, TaskDeleteForm
-from .models import Task, Invite
+from .models import Task, Invite, Team
+from django.http import HttpResponseBadRequest
 from datetime import datetime
 
 @login_required
 def dashboard(request):
     """Display and modify the current user's dashboard."""
 
-    # Initialize lanes in the session if they don't exist
+    # Initialize lanes in the session if they don't exist12 hours ago
     if 'lanes' not in request.session:
         request.session['lanes'] = ['Backlog', 'In Progress', 'Complete']
 
@@ -51,45 +52,15 @@ def dashboard(request):
     # Retrieve current user and lanes
     current_user = request.user
     lanes = request.session['lanes']
-    return render(request, 'dashboard.html', {'user': current_user, 'lanes': lanes})
-
-# def dashboard(request):
-#     """Display and modify the current user's dashboard."""
-#     print("Dashboard accessed.")
-
-#     if 'lanes' not in request.session:
-#         request.session['lanes'] = [{'id': 1, 'name': 'Backlog'},
-#                                     {'id': 2, 'name': 'In Progress'},
-#                                     {'id': 3, 'name': 'Complete'}]
-#     print(request.session.get('lanes'))
-
-#     if request.method == 'POST':
-#         if 'add_lane' in request.POST:
-#             new_id = max((lane['id'] for lane in request.session.get('lanes')), default=0) + 1
-#             new_lane = {'id': new_id, 'name': 'New Lane'}
-#             request.session['lanes'].append(new_lane)
-#             request.session.modified = True
-
-#         elif 'delete_lane' in request.POST:
-#             lane_to_delete = request.POST.get('delete_lane')
-#             print(request.session.get('lanes'))
-#             request.session['lanes'] = [lane for lane in request.session.get('lanes') if lane['name'] != lane_to_delete]
-#             request.session.modified = True
-
-#         elif 'edit_lane' in request.POST:
-#             lane_id = int(request.POST.get('lane_id'))
-#             new_lane_name = request.POST.get('new_lane_name')
-#             for lane in request.session.get('lanes'):
-#                 if lane['id'] == lane_id:
-#                     lane['name'] = new_lane_name
-#                     break
-#             request.session.modified = True
-
-#         return redirect('dashboard')
-
-#     current_user = request.user
-#     lanes = request.session.get('lanes')
-#     return render(request, 'dashboard.html', {'user': current_user, 'lanes': lanes})
+    all_tasks = Task.objects.all()
+    teams = Team.objects.all()
+    # lane_tasks = {lane: Task.objects.filter(lane=lane) for lane in lanes}
+    return render(request, 'dashboard.html', {
+        'user': current_user,
+        'lanes': lanes,
+        'tasks': all_tasks,
+        'teams': teams
+    })
 
 @login_required
 def create_team(request):
@@ -360,28 +331,74 @@ class DeleteTaskView(LoginRequiredMixin, View):
                     messages.success(request, 'Task Deleted!')
                     return redirect('dashboard')
         else:
-            delete_form = TaskDeleteForm())
+            delete_form = TaskDeleteForm()
         return render(request, 'task_delete.html', {'task':task, 'delete_form': delete_form})
-
 
     def create_task(request):
         if request.method == 'POST':
-            if request.method == 'POST':
-                # Use TaskForm to handle form data, including validation and cleaning
-                form = TaskForm(request.POST or None)
+            # Use TaskForm to handle form data, including validation and cleaning
+            form = TaskForm(request.POST or None)
+            # Check if the form is valid
+            if form.is_valid():
+                # Save the form data to create a new Task instance
+                form.save()
 
-                # Check if the form is valid
-                if form.is_valid():
-                    # Save the form data to create a new Task instance
-                    form.save()
+                # Redirect to the dashboard or another page
+                return redirect('dashboard')
 
-                    # Redirect to the dashboard or another page
-                    return redirect('dashboard')
+    #     if request.method == 'POST':
+    #         form = TaskForm(request.POST or None)
 
-        # Fetch all tasks for rendering the form initially
-        all_tasks = Task.objects.all()
+    #         if form.is_valid():
+    #             # Use cleaned data from form
+    #             name = form.cleaned_data['name']
+    #             description = form.cleaned_data['description']
+    #             due_date = form.cleaned_data['due_date']
 
-        return render(request, 'task_create.html', {'tasks': all_tasks})
+    #             # Create a new Task instance but do not save it yet
+    #             new_task = Task(
+    #                 name=name,
+    #                 description=description,
+    #                 due_date=due_date,
+    #                 lane=lane_name  # Set the lane for the task
+    #             )
+
+    #             # Save the new task
+    #             new_task.save()
+
+    #             # Redirect to the dashboard or another page
+    #             return redirect('dashboard')
+    #     else:
+    #         form = TaskForm()
+
+    #     all_tasks = Task.objects.all()
+    #     return render(request, 'task_form.html', {'tasks': all_tasks, 'form': form, 'lane': lane_name})
+
+      
+def task_search(request):
+    q = request.GET.get('q', '')
+    data = Task.objects.all()
+
+    if q:
+        data = data.filter(name__icontains=q)
+
+    sort_by_due_date = request.GET.get('sort_due_date', None)
+
+    if sort_by_due_date:
+        if sort_by_due_date in ['asc', 'desc']:
+            order_by = 'due_date' if sort_by_due_date == 'asc' else '-due_date'
+            data = data.order_by(order_by)
+        else:
+            return HttpResponseBadRequest("Invalid value for 'sort_due_date'")
+
+    context = {'data': data}
+
+    # Check if there are no tasks found
+    if not data.exists():
+        context['no_tasks_found'] = True
+
+    return render(request, 'task_search.html', context)
+
     
     
 class UpdateTaskView(LoginRequiredMixin, UpdateView):

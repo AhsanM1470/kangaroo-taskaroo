@@ -133,6 +133,7 @@ class TaskForm(forms.ModelForm):
         label='Time',
         widget=forms.TimeInput(attrs={'placeholder': '00:00:00'}),
     )
+
         
     def clean(self):
         cleaned_data = super().clean()
@@ -154,7 +155,7 @@ class TaskForm(forms.ModelForm):
 
         if date is not None and time is not None:
             instance.due_date = datetime.combine(date, time)
-        
+
         if commit:
             instance.save()
             
