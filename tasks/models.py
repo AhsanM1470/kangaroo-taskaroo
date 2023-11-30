@@ -179,7 +179,8 @@ class Task(models.Model):
 
 class Notification(models.Model): 
     """Generic template model for notifications"""
-    pass
+    def display(self):
+        return "This is a notification"
 
 class TaskNotification(Notification): 
     """Model used to represent a notification relating to a specific task"""

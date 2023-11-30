@@ -44,29 +44,28 @@ class InviteNotificationModelTestCase(TestCase):
         self.team.add_invited_member(self.creator)
 
         self.invitees = User.objects.filter(username='@janedoe')
+        self.invitee = User.objects.get(username='@janedoe')
         self.invite = Invite.objects.create(
             invite_message= "A random invite message",
             inviting_team = self.team
         )
 
         self.invite.set_invited_users(self.invitees)
-        self.notification = InviteNotification.objects.create(invite=self.invite)
-        #self.notification.invite = self.invite
+        self.notifications = self.invitee.get_notifications()
+        self.invite_notifs = self.notifications.select_related("invitenotification")
 
     def test_correct_team_name(self):
-        team = self.notification.invite.get_inviting_team()
+        team = self.invite_notifs[0].invitenotification.invite.get_inviting_team()
         self.assertEqual(team.team_name,'test-team')
 
     def test_notification_displays_correctly(self):
         target = "Do you wish to join test-team?"
-        display_result = self.notification.display()
+        display_result = self.invite_notifs[0].invitenotification.display()
         self.assertEqual(display_result,target)
 
     def test_notification_gets_stored(self):
-        user = User.objects.get(username='@janedoe') #the invitee from setUp
-        user_notifs = user.get_notifications()
-        self.assertEqual(user_notifs.count(),1)
-        self.assertIn(self.notification,user_notifs)
+        self.assertEqual(self.invite_notifs.count(),1)
+        self.assertIsInstance(self.invite_notifs[0].invitenotification,InviteNotification)
 
 
 
