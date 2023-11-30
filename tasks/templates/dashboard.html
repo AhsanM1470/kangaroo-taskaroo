@@ -2,9 +2,46 @@
 {% block content %}
 
 <style>
-  /* body{
-    background-image: linear-gradient(green,blue);
-  } */
+
+  body{
+    background: linear-gradient(to bottom right, #0076f4, #209e3e);
+  }
+
+  h3{
+    margin-bottom: 0;
+    margin-left:1%;
+  }
+
+  h6{
+    margin-top: 5%;
+    padding-left: 5%;
+  }
+
+  .flex-container{
+    display: flex;
+    height: 100vh;
+  }
+
+  .header-bar{
+    background-color: #064486cc;
+    border: 1px solid #FFFFFF55;
+    display: flex;
+    color: white;
+  }
+
+  .username{
+    border-right: 1px solid #FFFFFF55;
+    margin-bottom: 0;
+    display: flex;
+    justify-content: center;
+    width:12vw;
+  }
+
+  .board{
+    overflow: auto;
+    height: 100vh;
+    width: 88vw;
+  }
 
   .task-board{
     display: flex;
@@ -18,7 +55,7 @@
     flex-direction: column;
     gap: 12px;
 
-    background: rgb(190, 190, 190);
+    background: rgb(205, 205, 205);
     box-shadow: 0px 5px 15px rgba(0,0,0,0.25);
 
     padding: 12px;
@@ -53,7 +90,7 @@
   }
 
   .task{
-    background: rgb(210, 210, 210);
+    background: rgb(221, 221, 221);
     box-shadow: 0px 5px 15px rgba(0,0,0,0.1);
     padding: 5px;
     border-radius: 4px;
@@ -61,93 +98,104 @@
     font-size: 15px;
     cursor: move;
   }
+
+  #sidebar{
+    width: 12.1vw;
+    height: 100vh;
+    background-color: #064486cc;
+    border-right: 1px solid #FFFFFF55;
+    border-left: 1px solid #FFFFFF55;
+    color: white;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+  }
+
+  #sidebar ul{
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+
+  #sidebar li{
+    transition: background-color 0.3s;
+    padding-left: 5%;
+  }
+
+  #sidebar li:hover{
+    background-color: #064486;
+  }
+
 </style>
 
-<div class="container">
-  <div class="row">
-    <div class="col-12" style="display: inline;">
-      <h1>Welcome to your dashboard {{ user.username }}</h1>
-    </div>
+<div class="header-bar">
+  <h5 class="username">{{ user.username }}</h5>
+  <h3>Welcome to your dashboard</h3>
+</div>
 
-    <div class="d-flex align-items-start">
-      <div class="task-board">
-        {% for lane in lanes %}
-        <div class="lane">
-          <!-- <h3>{{ lane }}</h3> -->
-
-          <form method="post">
-            {% csrf_token %}
-            <input type="hidden" name="lane_index" value="{{ forloop.counter0 }}">
-
-            <!-- Toggle checkbox to rename -->
-            <input type="checkbox" id="lane-name-{{ forloop.counter }}" class="toggle-lane-name" style="display:none;">
-
-            <label for="lane-name-{{ forloop.counter }}" class="lane-name-label">{{ lane }}</label>
-
-            <input type="text" name="new_lane_name" value="{{ lane }}" required class="lane-name-input">
-            <input type="submit" name="rename_lane" style="display: none;">
-          </form>
-
-          <p class="task">Do Thing</p>
-
-          <form method="post" style="display: inline;">
-            {% csrf_token %}
-            <input type="hidden" name="delete_lane" value="{{ lane }}">
-            <button type="submit" class="btn btn-danger">Delete</button>
-          </form>
+<div class="flex-container">
+  <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block sidebar collapse">
+    <h6>Your Teamssssssss:</h6>
+    <ul>
+      {% for team in teams %}
+        <li>{{ team.team_name }}</li>
+      {% endfor %}
+    </ul>
+  </nav>
+  
+  <!--Used to be container board-->
+  <div class="board">
+    <div class="row">
+      <div class="d-flex align-items-start" style="margin-top: 2%; margin-left: 2%;">
+        <div class="task-board">
+          {% for lane in lanes %}
+          <div class="lane">
+  
+            <form method="post">
+              {% csrf_token %}
+              <input type="hidden" name="lane_index" value="{{ forloop.counter0 }}">
+  
+              <!-- Toggle checkbox to rename -->
+              <input type="checkbox" id="lane-name-{{ forloop.counter }}" class="toggle-lane-name" style="display:none;">
+  
+              <label for="lane-name-{{ forloop.counter }}" class="lane-name-label">{{ lane }}</label>
+  
+              <input type="text" name="new_lane_name" value="{{ lane }}" required class="lane-name-input">
+              <input type="submit" name="rename_lane" style="display: none;">
+            </form>
+  
+            <!-- <p class="task">Do Thing</p> -->
+            {% for task in tasks %}
+            <div class="task">
+              {{ task.name }}
+            </div>
+            {% empty %}
+            <p>No tasks in this lane.</p>
+            {% endfor %}
+  
+            <div>
+                <form method="get" style="display: inline;;" action="{% url 'task_create' %}">
+                  <input type="hidden" name="lane" value="{{ lane }}">
+                  <button type="submit" class="btn btn-secondary">New Task</button>
+                </form>
+  
+              <form method="post" style="display: inline;">
+                {% csrf_token %}
+                <input type="hidden" name="delete_lane" value="{{ lane }}">
+                <button type="submit" class="btn btn-danger">Delete</button>
+              </form>
+            </div>
+  
+          </div>
+          {% endfor %}
         </div>
-        {% endfor %}
+  
+        <form method="post" class="ms-2">
+          {% csrf_token %}
+          <button type="submit" name="add_lane" class="btn btn-dark">Add Lane</button>
+        </form>
       </div>
-
-      <form method="post" class="ms-2">
-        {% csrf_token %}
-        <button type="submit" name="add_lane" class="btn btn-primary">Add Lane</button>
-      </form>
     </div>
   </div>
 </div>
-
-<!-- <div class="container">
-  <div class="row">
-    <div class="col-12" style="display: inline;">
-      <h1>Welcome to your dashboard {{ user.username }}</h1>
-    </div>
-
-    <div class="d-flex align-items-start">
-      <div class="task-board">
-        {% for lane in lanes %}
-        <div class="lane">
-          <form method="post">
-            {% csrf_token %}
-            <input type="hidden" name="lane_id" value="{{ lane.id }}">
-            <div onclick="this.style.display='none'; this.nextSibling.style.display='block';">
-              <h3>{{ lane.name }}</h3>
-            </div>
-            <div style="display: none;">
-              <input type="hidden" name="delete_lane" value="{{ lane.name }}">
-              <button type="submit" name="edit_lane">Change Name</button>
-            </div>
-          </form>
-
-          <p class="task">Do Thing</p>
-
-          <form method="post" style="display: inline;">
-            {% csrf_token %}
-            <input type="hidden" name="delete_lane" value="{{ lane.name }}">
-            <button type="submit" class="btn btn-danger">Delete</button>
-          </form>
-        </div>
-        {% endfor %}
-      </div>
-
-      <form method="post" class="ms-2">
-        {% csrf_token %}
-        <button type="submit" name="add_lane" class="btn btn-primary">Add Lane</button>
-      </form>
-    </div>
-  </div>
-</div> -->
-
-
 
 {% endblock %}
