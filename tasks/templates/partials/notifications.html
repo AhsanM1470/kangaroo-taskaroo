@@ -1,0 +1,14 @@
+{% for notification in user.notifications %}
+{% if type(notification)=="InviteNotification" %}
+    <li> <p>Team Name: <b> {{ notification.invite.get_inviting_team.team_name }} </b></p>
+    <p>Invite Message: <b> {{ notification.invite.invite_message }} </b></p>
+    <form action ="{%url 'press_invite'%}" method="post">
+    {% csrf_token %}
+    <input type="submit" value="Accept" name="status">
+    <input type="submit" value="Reject" name="status">
+    <input type="hidden" name="id" value= {{ invite.id }}>
+    </form> </li>
+{% endif %}
+{% empty %}
+<li>No notifications currently</li>
+{% endfor %}
