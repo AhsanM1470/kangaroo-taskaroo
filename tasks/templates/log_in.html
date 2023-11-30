@@ -1,15 +1,55 @@
 {% extends 'base_content.html' %}
 {% block content %}
+
+<style>
+  body{
+    color: white;
+    height: 100vh;
+    width: 100vw;
+    background: linear-gradient(to bottom right, #0076f4, #209e3e);
+  }
+
+  .row{
+    display: flex;
+    align-items: center;
+    height: 80vh;
+  }
+
+  .login-form{
+    padding-bottom: 7vh;
+    padding-top: 5vh;
+    border-radius: 10px;
+
+    background: transparent;
+    border: 1px solid white;
+    backdrop-filter: blur(500px);
+    box-shadow: 0 0 10px rgba(0,0,0,0.4);
+  }
+
+  .login-btn{
+    width:80%;
+    margin-top: 2%;
+    border-radius: 50px;
+    background: white;
+    color: black;
+  }
+
+</style>
+
+<!--What is this for-->
 {#     <div id='cover-image'>#}
+
 <div class="container">
   <div class="row">
-    <div class="col-sm-12 col-md-6 offset-md-3">
-      <h1>Log in</h1>
+    <div class="login-form col-sm-12 col-md-6 offset-md-3">
+      <h1 style="text-align: center;">Log in</h1>
       <form action="{% url 'log_in' %}" method="post">
         {% csrf_token %}
         <input type="hidden" name="next" value="{{ next }}">
         {% include 'partials/bootstrap_form.html' with form=form %}
-        <input type="submit" value="Log in" class="btn btn-primary">
+        <div class="col text-center">
+          <input type="submit" value="Log in" class="login-btn btn">
+        </div>
       </form>
     </div>
   </div>
