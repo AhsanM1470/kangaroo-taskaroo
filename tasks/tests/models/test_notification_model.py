@@ -48,10 +48,16 @@ class InviteNotificationModelTestCase(TestCase):
         self.notification = InviteNotification()
         self.notification.invite = self.invite
 
-    def test_correct_team_details(self):
-        actualTeam = self.notification.invite.get_inviting_team()
-        self.assertEqual(actualTeam, self.team)
-        self.assertEqual(actualTeam.team_name, self.team.team_name)
+    def test_correct_team_name(self):
+        team = self.notification.invite.get_inviting_team()
+        self.assertEqual(team.team_name,'test-team')
+
+    def test_notification_displays_correctly(self):
+        target = "Do you wish to join test-team?"
+        display_result = self.notification.display()
+        self.assertEqual(display_result,target)
+
+        
 
 
     

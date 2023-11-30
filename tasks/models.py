@@ -179,5 +179,5 @@ class InviteNotification(models.Model):
     """Model used to represent a notification"""
     invite = models.OneToOneField(Invite,blank=False,on_delete=models.CASCADE)
 
-    def display(self,notification_type):
-       return f"Do you wish to join {invite.inviting_team}?"
+    def display(self):
+       return f"Do you wish to join {self.invite.get_inviting_team().team_name}?"
