@@ -323,9 +323,10 @@ class DeleteTaskView(LoginRequiredMixin, View):
         return reverse_lazy('dashboard')
     
     def get(self, request, task_name, *args, **kwargs):
+        print("sdsdjshjdhsjdh")
         task = get_object_or_404(Task, name=task_name)
         delete_form = TaskDeleteForm()
-        delete_url = 'task_delete/'+task_name+'/'
+        delete_url = '/task_delete/'+task_name+'/'
         context = {'task': task, 'delete_form': delete_form, 'delete_url': delete_url, 'name': task_name}
         return render(request, self.template_name, context)
     
@@ -342,7 +343,6 @@ class DeleteTaskView(LoginRequiredMixin, View):
                     return redirect('dashboard')
         else:
             delete_form = TaskDeleteForm()
-            
         return render(request, 'task_delete.html', {'task':task, 'delete_form': delete_form})
     
 class UpdateTaskView(LoginRequiredMixin, UpdateView):

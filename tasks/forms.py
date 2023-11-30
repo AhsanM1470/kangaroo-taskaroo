@@ -138,10 +138,13 @@ class TaskForm(forms.ModelForm):
         cleaned_data = super().clean()
         date = self.cleaned_data.get('date_field')
         time = self.cleaned_data.get('time_field')
+        # Add validation for this:
         if date is not None and time is not None:
             combined_datetime = datetime.combine(date, time)
             if combined_datetime > datetime.now():
                 cleaned_data['due_date'] = datetime.combine(date, time)
+            else:
+                raise ValidationError('Pick a date-time in the future!')
         return cleaned_data
     
     def save(self, commit=True):
