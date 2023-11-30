@@ -5,6 +5,7 @@ from django.core.validators import RegexValidator
 from django.core.exceptions import ValidationError
 from .models import User, Task, Team, Invite
 from django.utils import timezone
+from datetime import datetime
 
 
 class LogInForm(forms.Form):
@@ -118,23 +119,52 @@ class TaskForm(forms.ModelForm):
     class Meta:
         """Form options"""
         model = Task
-        fields = ["name", "description", "due_date"]
+        fields = ["name", "description"]
         widgets = {
-            'description' : forms.Textarea()
+            'name' : forms.TextInput(attrs={'class': 'nameClass', 'placeholder': 'Enter the task name...'}),
+            'description' : forms.Textarea(attrs={'class': 'descriptionClass', 'placeholder': 'Write a task description...'})
         }
+     
+    date_field = forms.DateField(
+        label='Date',
+        widget=forms.SelectDateWidget(),
+    )
+    time_field = forms.TimeField(
+        label='Time',
+        widget=forms.TimeInput(attrs={'placeholder': '00:00:00'}),
+    )
         
-    def clean_due_date(self):
-        due_date = self.cleaned_data.get('due_date')
-        if due_date and due_date < timezone.now():
-            raise ValidationError("Due date must be in the future!")
-        return due_date
+    def clean(self):
+        cleaned_data = super().clean()
+        date = self.cleaned_data.get('date_field')
+        time = self.cleaned_data.get('time_field')
+        # Add validation for this:
+        if date is not None and time is not None:
+            combined_datetime = datetime.combine(date, time)
+            if combined_datetime > datetime.now():
+                cleaned_data['due_date'] = datetime.combine(date, time)
+            else:
+                raise ValidationError('Pick a date-time in the future!')
+        return cleaned_data
+    
+    def save(self, commit=True):
+        instance = super(TaskForm, self).save(commit=False)
+        date = self.cleaned_data.get('date_field')
+        time = self.cleaned_data.get('time_field')
+
+        if date is not None and time is not None:
+            instance.due_date = datetime.combine(date, time)
+        
+        if commit:
+            instance.save()
+            
+        return instance
         
 class TaskDeleteForm(forms.Form):
     confirm_deletion = forms.BooleanField(
         required=True,
-        help_text="Check to confirm deletion of this task",
+        widget=forms.CheckboxInput(attrs={'class': 'confirmClass'})
     )
-
 
 class CreateTeamForm(forms.ModelForm):
     """Form enabling a user to create a team"""
@@ -143,22 +173,44 @@ class CreateTeamForm(forms.ModelForm):
         """Form options."""
 
         model = Team
-        fields = ['team_name', 'description', 'team_members']
+        fields = ['team_name', 'description', 'members_to_invite']
+
+    members_to_invite = forms.ModelMultipleChoiceField(User.objects.all(), required=False)
+
+    def __init__(self, *args, **kwargs):
+        """Makes sure the creator of team is not shown as option to add"""
+
+        self.creator = kwargs.get("user")
+        if self.creator != None:
+            kwargs.pop("user") 
+
+        super().__init__(*args, **kwargs)
+
+        if self.creator != None:  
+            self.fields["members_to_invite"].queryset = User.objects.exclude(username=self.creator.username)
     
-    def create_team(self, user):
+    def create_team(self, creator):
         """Create a new team"""
 
-        team_members = self.cleaned_data.get("team_members")
+        members_to_invite = self.cleaned_data.get("members_to_invite")
         # Maybe for each team member, send them an invite instead of doing it automatically
         
         team = Team.objects.create(
             team_name=self.cleaned_data.get("team_name"),
+            team_creator=creator,
             description=self.cleaned_data.get("description"),
         )
-        team.add_creator(user) # This user is the first member of the team
 
-        if len(team_members) != 0: # If you had members you added in the form
-            team.add_team_member(team_members) 
+        """For now, add the creator to team members as well"""
+        team.add_invited_member(creator)
+
+        if members_to_invite != None: # If you had members you added in the form
+            default_invite = Invite.objects.create(
+                invite_message="Please join my team!",
+                inviting_team=team)
+            default_invite.set_invited_users(members_to_invite)
+            #team.add_team_member(team_members) 
+
         return team
 
 class InviteForm(forms.ModelForm):
@@ -170,29 +222,38 @@ class InviteForm(forms.ModelForm):
         model = Invite
         fields = ['invited_users', 'invite_message', "team_to_join"]
     
-    team_to_join = forms.ModelChoiceField(queryset=Team.objects.all())
+    team_to_join = forms.ModelChoiceField(queryset=Team.objects.all(), required=True)
     
     def __init__(self, user=None, **kwargs):
         """Makes sure only teams that the current user belongs to are given as options"""
+        """Makes sure only users who are not already part of the team are shown"""
 
-        super().__init__(**kwargs)
         self.user = user
-        
+        super().__init__(**kwargs)
+
         if self.user != None:
-            self.fields['team_to_join'].queryset.filter(team_members=self.user)
+            self.fields['team_to_join'].queryset = Team.objects.filter(team_members=self.user)
     
     def send_invite(self):
-        """Create a new invite"""
+        """Create a new invite and send it to each user"""
 
         users = self.cleaned_data.get("invited_users")
-        team = self.cleaned_data.get("team_to_join")
-        # Need to change this so that all the users and the team is passed into the invite object
 
         invite = Invite.objects.create(
-            invite_message=self.cleaned_data.get("invite_message")
+            invite_message=self.cleaned_data.get("invite_message"),
+            inviting_team=self.cleaned_data.get("team_to_join")
         )
         invite.set_invited_users(users)
-        invite.set_team(team)
-        invite.save()
 
         return invite
+
+class RemoveMemberForm(forms.Form):
+    """Form enabling a team creator to remove a team member"""
+
+    class Meta:
+        """Form options."""
+
+        fields = ['member_to_remove', "thing"]
+
+    member_to_remove = forms.CharField(max_length=30)
+    #thing = forms.CharField(max_length=50, choic)
