@@ -35,16 +35,20 @@ class InviteNotificationModelTestCase(TestCase):
         'tasks/tests/fixtures/other_users.json'
     ]
     def setUp(self):
-        self.user = User.objects.get(username='@johndoe')
+        self.creator = User.objects.get(username='@johndoe')
         self.team = Team.objects.create(
             team_name = 'test-team',
+            team_creator= self.creator,
             description = "A random test team"
         )
+        self.team.add_invited_member(self.creator)
+
+        self.invitee = User.objects.get(username='@janedoe')
         self.invite = Invite.objects.create(
-            invite_message= "A random invite message"
+            invite_message= "A random invite message",
+            inviting_team = self.team
         )
-        self.invite.invited_users.add(self.user)
-        self.invite.set_team(self.team)
+        self.invite.invited_users.add(self.invitee)
         self.notification = InviteNotification()
         self.notification.invite = self.invite
 
