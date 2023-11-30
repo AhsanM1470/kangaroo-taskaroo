@@ -14,7 +14,7 @@ from django.urls import reverse_lazy
 from django.views.generic.edit import FormView
 from django.views.decorators.http import require_POST
 from .forms import TaskForm, TaskDeleteForm
-from .models import Task, Invite
+from .models import Task, Invite, Team
 from datetime import datetime
 
 @login_required
@@ -51,8 +51,14 @@ def dashboard(request):
     current_user = request.user
     lanes = request.session['lanes']
     all_tasks = Task.objects.all()
+    teams = Team.objects.all()
     # lane_tasks = {lane: Task.objects.filter(lane=lane) for lane in lanes}
-    return render(request, 'dashboard.html', {'user': current_user, 'lanes': lanes, 'tasks': all_tasks})
+    return render(request, 'dashboard.html', {
+        'user': current_user,
+        'lanes': lanes,
+        'tasks': all_tasks,
+        'teams': teams
+    })
 
 @login_required
 def create_team(request):
