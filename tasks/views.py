@@ -10,7 +10,7 @@ from django.views import View
 from django.views.generic import DeleteView
 from django.views.generic.edit import FormView, UpdateView
 from django.urls import reverse
-from tasks.forms import LogInForm, PasswordForm, UserForm, SignUpForm, CreateTeamForm, InviteForm
+from tasks.forms import LogInForm, PasswordForm, UserForm, SignUpForm, CreateTeamForm, InviteForm, RemoveMemberForm
 from tasks.helpers import login_prohibited
 from django.urls import reverse_lazy
 from django.views.decorators.http import require_POST
@@ -99,7 +99,8 @@ def create_team(request):
         current_user = request.user
         team = CreateTeamForm(request.POST)
         if team.is_valid():
-            team.create_team(user=current_user)
+            team.create_team(current_user)
+            messages.add_message(request, messages.SUCCESS, "Created Team!")
         else:
             messages.add_message(request, messages.ERROR, "That team name has already been taken!")
     return redirect("my_teams")
@@ -111,9 +112,26 @@ def my_teams(request):
     current_user = request.user
     user_teams = current_user.get_teams()
     user_invites = current_user.get_invites()
-    team_form = CreateTeamForm()
-    invite_form = InviteForm()
-    return render(request, 'my_teams.html', {'teams': user_teams, 'invites': user_invites, 'team_form': team_form, "invite_form" : invite_form})
+    team_form = CreateTeamForm(user=current_user)
+
+    """Only show the invite and remove form for creators of teams"""
+    if len(current_user.get_created_teams()) > 0:
+        invite_form = InviteForm(user=current_user)
+        remove_form = RemoveMemberForm()
+        return render(request, 'my_teams.html', {'teams': user_teams, 'invites': user_invites, 
+                                                 'team_form': team_form, "invite_form" : invite_form,
+                                                 "remove_form": remove_form})
+    else:
+        return render(request, 'my_teams.html', 
+                      {'teams': user_teams, 'invites': user_invites, 
+                       'team_form': team_form})
+
+@login_required
+def remove_member(request):
+    if request.method == "POST":
+        messages.add_message(request, messages.SUCCESS, "Tried to remove team member, but there ain't no functionality hehe")
+    return redirect("my_teams")
+
 
 @login_required
 def press_invite(request):
@@ -342,19 +360,39 @@ class DeleteTaskView(LoginRequiredMixin, View):
                     messages.success(request, 'Task Deleted!')
                     return redirect('dashboard')
         else:
-            delete_form = TaskDeleteForm()
+            delete_form = TaskDeleteForm())
         return render(request, 'task_delete.html', {'task':task, 'delete_form': delete_form})
+
+
+    def create_task(request):
+        if request.method == 'POST':
+            if request.method == 'POST':
+                # Use TaskForm to handle form data, including validation and cleaning
+                form = TaskForm(request.POST or None)
+
+                # Check if the form is valid
+                if form.is_valid():
+                    # Save the form data to create a new Task instance
+                    form.save()
+
+                    # Redirect to the dashboard or another page
+                    return redirect('dashboard')
+
+        # Fetch all tasks for rendering the form initially
+        all_tasks = Task.objects.all()
+
+        return render(request, 'task_create.html', {'tasks': all_tasks})
+    
     
 class UpdateTaskView(LoginRequiredMixin, UpdateView):
     model = Task
     #fields = '__all__'
     form_class = TaskForm
     template_name = 'task_update.html'
-    success_url = reverse_lazy('dashboard')  # Redirect to the dashboard after successful form submission
-        
+    success_url = reverse_lazy('dashboard')  # Redirect to the dashboard after successful form submission  
     
 class InviteView(LoginRequiredMixin, FormView):
-    """Display invite form"""
+    """Functionality for using the invite form"""
 
     template_name = 'my_teams.html'
     form_class = InviteForm
@@ -366,9 +404,10 @@ class InviteView(LoginRequiredMixin, FormView):
         print(f"User : {self.request.user}")
         kwargs.update({'user': self.request.user})
         return kwargs
-    
+
     def form_valid(self, form):
 
+        print("ysosodsod")
         form.send_invite()
         return super().form_valid(form)
 
