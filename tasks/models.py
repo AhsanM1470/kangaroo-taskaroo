@@ -170,6 +170,7 @@ class Task(models.Model):
     description = models.CharField(max_length=530, blank=True)
     due_date = models.DateTimeField(default=datetime(1, 1, 1))
     created_at = models.DateTimeField(default=timezone.now)
+    #lane = models.ForeignKey(Lane, on_delete=models.CASCADE)
     # Could add a boolean field to indicate if the task has expired?
     # lane = models.ForeignKey(Lane, on_delete=models.CASCADE, related_name='tasks')
 
