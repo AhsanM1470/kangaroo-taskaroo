@@ -43,14 +43,15 @@ class InviteNotificationModelTestCase(TestCase):
         )
         self.team.add_invited_member(self.creator)
 
-        self.invitee = User.objects.get(username='@janedoe')
+        self.invitees = User.objects.filter(username='@janedoe')
         self.invite = Invite.objects.create(
             invite_message= "A random invite message",
             inviting_team = self.team
         )
-        self.invite.invited_users.add(self.invitee)
-        self.notification = InviteNotification()
-        self.notification.invite = self.invite
+
+        self.invite.set_invited_users(self.invitees)
+        self.notification = InviteNotification.objects.create(invite=self.invite)
+        #self.notification.invite = self.invite
 
     def test_correct_team_name(self):
         team = self.notification.invite.get_inviting_team()
@@ -60,6 +61,14 @@ class InviteNotificationModelTestCase(TestCase):
         target = "Do you wish to join test-team?"
         display_result = self.notification.display()
         self.assertEqual(display_result,target)
+
+    def test_notification_gets_stored(self):
+        user = User.objects.get(username='@janedoe') #the invitee from setUp
+        user_notifs = user.get_notifications()
+        self.assertEqual(user_notifs.count(),1)
+        self.assertIn(self.notification,user_notifs)
+
+
 
         
 
