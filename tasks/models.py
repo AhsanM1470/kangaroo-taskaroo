@@ -150,6 +150,13 @@ class Invite(models.Model):
             if user_to_invite:
                 self.get_inviting_team().add_invited_member(user_to_invite)   
         self.delete()
+    
+class Lane(models.Model):
+    lane_name = models.CharField(max_length=100)
+    lane_id = models.AutoField(primary_key=True)
+
+    def __str__(self):
+        return self.lane_name
         
 class Task(models.Model):
     """Model used for tasks and information related to them"""
@@ -164,6 +171,7 @@ class Task(models.Model):
     due_date = models.DateTimeField(default=datetime(1, 1, 1))
     created_at = models.DateTimeField(default=timezone.now)
     # Could add a boolean field to indicate if the task has expired?
+    # lane = models.ForeignKey(Lane, on_delete=models.CASCADE, related_name='tasks')
 
 class Notification(models.Model): 
     """Model used to represent a notification"""

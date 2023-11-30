@@ -36,4 +36,5 @@ urlpatterns = [
     path('task_delete/<str:task_name>/', views.DeleteTaskView.as_view(), name='task_delete'),
     path('task_update/<str:task_name>/', views.UpdateTaskView.as_view(), name = 'task_update'),
     path('my_teams/', views.my_teams, name="my_teams")
+    # path('add_lane/', views.add_lane, name="add_lane")
 ]

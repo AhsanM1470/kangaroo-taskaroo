@@ -15,7 +15,7 @@ from tasks.helpers import login_prohibited
 from django.urls import reverse_lazy
 from django.views.decorators.http import require_POST
 from .forms import TaskForm, TaskDeleteForm
-from .models import Task, Invite, Team
+from .models import Task, Invite, Team, Lane
 from django.http import HttpResponseBadRequest
 from datetime import datetime
 
@@ -24,34 +24,36 @@ def dashboard(request):
     """Display and modify the current user's dashboard."""
 
     # Initialize lanes in the session if they don't exist12 hours ago
-    if 'lanes' not in request.session:
-        request.session['lanes'] = ['Backlog', 'In Progress', 'Complete']
+    # if 'lanes' not in request.session:
+    #     request.session['lanes'] = ['Backlog', 'In Progress', 'Complete']
 
     # Handle form submission for adding a new lane
     if request.method == 'POST':
         if 'add_lane' in request.POST:
-            new_lane_name = 'New Lane'  # Or dynamically generate the name
-            request.session['lanes'].append(new_lane_name)
-            request.session.modified = True  # Mark session as modified to save it
+            # new_lane_name = 'New Lane'
+            # request.session['lanes'].append(new_lane_name)
+            # request.session.modified = True  
+            Lane.objects.create(lane_name="New Lane")
 
-        elif 'delete_lane' in request.POST:
-                lane_to_delete = request.POST.get('delete_lane')
-                if lane_to_delete in request.session['lanes']:
-                    request.session['lanes'].remove(lane_to_delete)
-                    request.session.modified = True
+        # elif 'delete_lane' in request.POST:
+            # lane_to_delete = request.POST.get('delete_lane')
+            # if lane_to_delete in request.session['lanes']:
+            #     request.session['lanes'].remove(lane_to_delete)
+            #     request.session.modified = True
 
-        elif 'rename_lane' in request.POST:
-            new_lane_name = request.POST.get('new_lane_name')
-            lane_index = int(request.POST.get('lane_index'))
-            if 0 <= lane_index < len(request.session['lanes']):
-                request.session['lanes'][lane_index] = new_lane_name
-                request.session.modified = True
-
+        # elif 'rename_lane' in request.POST:
+            # new_lane_name = request.POST.get('new_lane_name')
+            # lane_index = int(request.POST.get('lane_index'))
+            # if 0 <= lane_index < len(request.session['lanes']):
+            #     request.session['lanes'][lane_index] = new_lane_name
+            #     request.session.modified = True
+        
         return redirect('dashboard')  # Redirect to the same page to show the updated lanes
 
     # Retrieve current user and lanes
     current_user = request.user
-    lanes = request.session['lanes']
+    # lanes = request.session['lanes']
+    lanes = Lane.objects.all()
     all_tasks = Task.objects.all()
     teams = Team.objects.all()
     # lane_tasks = {lane: Task.objects.filter(lane=lane) for lane in lanes}
@@ -61,6 +63,12 @@ def dashboard(request):
         'tasks': all_tasks,
         'teams': teams
     })
+
+def add_lane(request):
+    if request.method == 'POST':
+        lane_name = request.POST.get('lane_name')
+        Lane.objects.create(lane_name = lane_name)
+        return redirect('dashboard')
 
 @login_required
 def create_team(request):
@@ -433,5 +441,3 @@ class InviteView(LoginRequiredMixin, FormView):
 
         messages.add_message(self.request, messages.SUCCESS, "Invite Sent!")
         return reverse('my_teams')
-
-
