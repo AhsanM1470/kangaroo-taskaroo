@@ -23,6 +23,7 @@ urlpatterns = [
     path('', views.home, name='home'),
     path("create_team/", views.create_team, name="create_team"),
     path("create_invite/", views.InviteView.as_view(), name="create_invite"),
+    path("remove_member/", views.remove_member, name="remove_member"),
     path("press_invite/", views.press_invite, name="press_invite"),
     path('dashboard/', views.dashboard, name='dashboard'),
     path('log_in/', views.LogInView.as_view(), name='log_in'),
@@ -31,6 +32,8 @@ urlpatterns = [
     path('profile/', views.ProfileUpdateView.as_view(), name='profile'),
     path('sign_up/', views.SignUpView.as_view(), name='sign_up'),
     path('task_create/', views.TaskView.as_view(), name='task_create'),
-    path('task/<int:task_id>/', views.TaskView.as_view(), name='task_delete'),
+    path('task_search/', views.task_search, name='task_search'),
+    path('task_delete/<str:task_name>/', views.DeleteTaskView.as_view(), name='task_delete'),
+    path('task_update/<str:task_name>/', views.UpdateTaskView.as_view(), name = 'task_update'),
     path('my_teams/', views.my_teams, name="my_teams")
 ]

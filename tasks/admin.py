@@ -1,16 +1,22 @@
 from django.contrib import admin
-from .models import User, Team, Invite
+from .models import User, Team, Invite,Task
 
 # Register your models here.
-
+admin.site.register(Task)
 """These haven't been fully finished, but seem to work for what is needed so far"""
 
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
     """Configuration of the adminstrative interface for users"""
     list_display = [
-        "username", "first_name", "last_name", "email", "is_active"
+        "username", "first_name", "last_name", "email", "is_active", "get_invites", "get_created_teams"
     ]
+
+    def get_invites(self, user):
+        return [invite.inviting_team for invite in user.get_invites()]
+    
+    def get_created_teams(self, user):
+        return [team for team in user.get_created_teams()]
 
 @admin.register(Team)
 class TeamAdmin(admin.ModelAdmin):
@@ -35,4 +41,4 @@ class InviteAdmin(admin.ModelAdmin):
     
     
     def get_team(self, invite):
-        return [team.team_name for team in invite.inviting_team.all()]
+        return [invite.inviting_team]
