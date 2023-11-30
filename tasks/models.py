@@ -1,8 +1,11 @@
-from django.core.validators import RegexValidator
+from collections.abc import Collection
+from django.core.validators import RegexValidator, MaxLengthValidator
+from django.core.exceptions import ValidationError 
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from libgravatar import Gravatar
-import datetime
+from datetime import datetime, timezone
+from django.utils import timezone
 
 class User(AbstractUser):
     """Model used for user authentication, and team member related information."""
@@ -46,6 +49,11 @@ class User(AbstractUser):
 
         return self.team_set.all()
     
+    def get_created_teams(self):
+        """Returns a query set of all the teams this user has created"""
+
+        return self.created_teams.all()
+    
     def get_invites(self):
         """Returns a query set of all the invites this user has received"""
 
@@ -57,21 +65,14 @@ class Team(models.Model):
     """Model used to hold teams of different users and their relevant information"""
     
     team_name = models.CharField(max_length=50, unique=True, blank=False)
+    team_creator = models.ForeignKey(User, on_delete=models.CASCADE, blank=False, related_name="created_teams")
     team_members = models.ManyToManyField(User, blank=True)
-    description = models.TextField(max_length=200, blank=True)
+    description = models.TextField(blank=True, validators=[MaxLengthValidator(200)])
     
     def __str__(self):
         """Overrides string to show the team's name"""
         
         return self.team_name
-
-
-    def add_creator(self, user):
-        """Add the creator of the team to the team"""
-        
-        # May have administrator rights or something
-        self.team_members.add(user)
-        self.save()
 
     def add_team_member(self, new_team_members):
         """Add new team member/s to the team"""
@@ -86,11 +87,13 @@ class Team(models.Model):
         self.team_members.add(user)
         self.save()
     
-    def remove_team_member(self, users_to_remove):
-        """Removes user/s from team"""
+    def remove_team_member(self, user):
+        """Removes user from team"""
 
-        # Maybe use a query set for this too
-        for user in users_to_remove:
+        if user == self.team_creator:
+            print("Cannot remove the team's creator!")
+        
+        else:
             self.team_members.remove(user)
             self.save()
     
@@ -112,25 +115,31 @@ class Team(models.Model):
 class Invite(models.Model):
     """Model used to hold information about invites"""
     invited_users = models.ManyToManyField(User, blank=False)
-    inviting_team = models.ManyToManyField(Team, blank=False)
-    invite_message = models.TextField(max_length=100, blank=True)
+    inviting_team = models.ForeignKey(Team, on_delete=models.CASCADE, default=None, blank=False)
+    invite_message = models.TextField(validators=[MaxLengthValidator(100)], blank=True)
     status = models.CharField(max_length=30, default="Reject")
+
+    def clean(self):
+        super().clean()
 
     def set_invited_users(self, users):
         """Set the invited users of the invite"""
 
         for user in users.all():
             self.invited_users.add(user)
+            self.save()
 
     def set_team(self, team):
         """Set the team that will send the invite"""
+        
+        print(team)
+        self.inviting_team = team
+        self.save()
 
-        self.inviting_team.add(team)
-    
     def get_inviting_team(self):
         """Return the inviting team"""
 
-        return self.inviting_team.get(pk=1)
+        return self.inviting_team
 
     def close(self, user_to_invite=None):
         """Closes the invite and perform relevant behavior for
@@ -141,20 +150,21 @@ class Invite(models.Model):
             if user_to_invite:
                 self.get_inviting_team().add_invited_member(user_to_invite)   
         elif self.status == "Reject":
-            print("Rejected Invite!")
+            print("I have rejected the invite!")
         self.delete()
         
 class Task(models.Model):
     """Model used for tasks and information related to them"""
-
+    #taskID = models.AutoField(primary_key=True, unique=True)
     alphanumeric = RegexValidator(
         r'^[0-9a-zA-Z]{3,}$', 
-        'Only alphanumeric characters are allowed.'
+        'Must have 3 alphanumeric characters!'
         )
-    name = models.CharField(max_length=30, blank=False, unique=True, validators=[alphanumeric])
+    #task_id = models.AutoField(primary_key=True)
+    name = models.CharField(max_length=30, blank=False, unique=True, validators=[alphanumeric], primary_key=True)
     description = models.CharField(max_length=530, blank=True)
-    due_date = models.DateTimeField(default=datetime.datetime(1, 1, 1))
-    created_at = models.DateTimeField(auto_now_add=True)
+    due_date = models.DateTimeField(default=datetime(1, 1, 1))
+    created_at = models.DateTimeField(default=timezone.now)
     # Could add a boolean field to indicate if the task has expired?
 
 class Notification(models.Model): 
