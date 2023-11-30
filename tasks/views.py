@@ -331,7 +331,7 @@ class DeleteTaskView(LoginRequiredMixin, View):
                     messages.success(request, 'Task Deleted!')
                     return redirect('dashboard')
         else:
-            delete_form = TaskDeleteForm())
+            delete_form = TaskDeleteForm()
         return render(request, 'task_delete.html', {'task':task, 'delete_form': delete_form})
 
     def create_task(request):
