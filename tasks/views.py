@@ -1,3 +1,4 @@
+from typing import Any
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import login, logout
@@ -6,17 +7,16 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ImproperlyConfigured
 from django.shortcuts import redirect, render, get_object_or_404
 from django.views import View
+from django.views.generic import DeleteView
 from django.views.generic.edit import FormView, UpdateView
 from django.urls import reverse
 from tasks.forms import LogInForm, PasswordForm, UserForm, SignUpForm, CreateTeamForm, InviteForm, RemoveMemberForm
 from tasks.helpers import login_prohibited
 from django.urls import reverse_lazy
-from django.views.generic.edit import FormView
 from django.views.decorators.http import require_POST
 from .forms import TaskForm, TaskDeleteForm
 from .models import Task, Invite
 from datetime import datetime
-  
 
 @login_required
 def dashboard(request):
@@ -285,7 +285,6 @@ class TaskView(LoginRequiredMixin, FormView):
    
     form_class = TaskForm
     template_name = 'task_create.html'  # Create a template for your task form
-    #redirect_when_logged_in_url = settings.REDIRECT_URL_WHEN_LOGGED_IN
     success_url = reverse_lazy('dashboard')  # Redirect to the dashboard after successful form submission
     form_title = 'Create Task'
     
@@ -297,22 +296,72 @@ class TaskView(LoginRequiredMixin, FormView):
     def get_success_url(self):
         """Return redirect URL after successful update."""
         messages.add_message(self.request, messages.SUCCESS, "Task created!")
-        return reverse('dashboard')
+        return reverse_lazy('dashboard')
     
-    def delete_task(request, task_id):
-        task = get_object_or_404(Task, pk=task_id)
-        
+    def post(self, request):
+        if request.method == 'POST':
+            # Use TaskForm to handle form data, including validation and cleaning
+            form = TaskForm(request.POST or None)
+
+            # Check if the form is valid
+            if form.is_valid():
+                name = form.cleaned_data['name']
+                description = form.cleaned_data['description']
+                #date_field
+                due_date = form.cleaned_data['due_date']
+            
+                model = Task.objects.create(
+                    name=name,
+                    description=description,
+                    due_date=due_date
+                )
+                # Save the form data to create a new Task instance
+                form.save()
+                messages.success(request, 'Task Created!')
+                # Redirect to the dashboard or another page
+                return redirect('dashboard')
+        else:
+            form = TaskForm()
+        # Fetch all tasks for rendering the form initially
+        all_tasks = Task.objects.all()
+
+        return render(request, 'task_create.html', {'tasks': all_tasks, 'form': form})
+    
+class DeleteTaskView(LoginRequiredMixin, View):
+    model = Task
+    form_class = TaskDeleteForm
+    template_name = 'task_delete.html'  # Create a template for your task form
+    success_url = reverse_lazy('dashboard')  # Redirect to the dashboard after successful form submission
+    form_title = 'Delete Task'
+    context_object_name = 'task'
+    
+    def get_success_url(self):
+        """Return redirect URL after successful update."""
+        messages.add_message(self.request, messages.SUCCESS, "Task deleted!")
+        return reverse_lazy('dashboard')
+    
+    def get(self, request, task_name, *args, **kwargs):
+        task = get_object_or_404(Task, name=task_name)
+        delete_form = TaskDeleteForm()
+        # if this doesnt work use domain explicitly
+        delete_url = '/task_delete/'+task_name+'/'
+        context = {'task': task, 'delete_form': delete_form, 'delete_url': delete_url, 'name': task_name}
+        return render(request, self.template_name, context)
+    
+    def post(self, request, task_name, *args, **kwargs):
+        #task_name = kwargs["task_name"]
+        task = get_object_or_404(Task, pk=task_name)
+        #task = Task.objects.get(pk = task_name)
         if request.method == 'POST':
             delete_form = TaskDeleteForm(request.POST)
             if delete_form.is_valid():
                 if delete_form.cleaned_data['confirm_deletion']:
                     task.delete()
+                    messages.success(request, 'Task Deleted!')
                     return redirect('dashboard')
         else:
-            delete_form = TaskDeleteForm()
-            
-        return render(request, 'task_deletion.html', {'task':task, 'delete_form': delete_form})
-
+            delete_form = TaskDeleteForm())
+        return render(request, 'task_delete.html', {'task':task, 'delete_form': delete_form})
 
 
     def create_task(request):
@@ -335,6 +384,13 @@ class TaskView(LoginRequiredMixin, FormView):
         return render(request, 'task_create.html', {'tasks': all_tasks})
     
     
+class UpdateTaskView(LoginRequiredMixin, UpdateView):
+    model = Task
+    #fields = '__all__'
+    form_class = TaskForm
+    template_name = 'task_update.html'
+    success_url = reverse_lazy('dashboard')  # Redirect to the dashboard after successful form submission  
+    
 class InviteView(LoginRequiredMixin, FormView):
     """Functionality for using the invite form"""
 
@@ -350,7 +406,6 @@ class InviteView(LoginRequiredMixin, FormView):
         return kwargs
 
     def form_valid(self, form):
-        """Handle valid invite by sending it."""
 
         print("ysosodsod")
         form.send_invite()
