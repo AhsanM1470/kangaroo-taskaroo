@@ -1,8 +1,8 @@
 from django.contrib import admin
-from .models import User, Team, Invite
+from .models import User, Team, Invite,Task
 
 # Register your models here.
-
+admin.site.register(Task)
 """These haven't been fully finished, but seem to work for what is needed so far"""
 
 @admin.register(User)

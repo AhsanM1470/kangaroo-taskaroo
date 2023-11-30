@@ -16,13 +16,14 @@ from django.urls import reverse_lazy
 from django.views.decorators.http import require_POST
 from .forms import TaskForm, TaskDeleteForm
 from .models import Task, Invite
+from django.http import HttpResponseBadRequest
 from datetime import datetime
 
 @login_required
 def dashboard(request):
     """Display and modify the current user's dashboard."""
 
-    # Initialize lanes in the session if they don't exist
+    # Initialize lanes in the session if they don't exist12 hours ago
     if 'lanes' not in request.session:
         request.session['lanes'] = ['Backlog', 'In Progress', 'Complete']
 
@@ -363,25 +364,49 @@ class DeleteTaskView(LoginRequiredMixin, View):
             delete_form = TaskDeleteForm())
         return render(request, 'task_delete.html', {'task':task, 'delete_form': delete_form})
 
-
     def create_task(request):
         if request.method == 'POST':
-            if request.method == 'POST':
-                # Use TaskForm to handle form data, including validation and cleaning
-                form = TaskForm(request.POST or None)
+            # Use TaskForm to handle form data, including validation and cleaning
+            form = TaskForm(request.POST or None)
 
-                # Check if the form is valid
-                if form.is_valid():
-                    # Save the form data to create a new Task instance
-                    form.save()
+            # Check if the form is valid
+            if form.is_valid():
+                # Save the form data to create a new Task instance
+                form.save()
 
-                    # Redirect to the dashboard or another page
-                    return redirect('dashboard')
+                # Redirect to the dashboard or another page
+                return redirect('dashboard')
 
         # Fetch all tasks for rendering the form initially
         all_tasks = Task.objects.all()
 
         return render(request, 'task_create.html', {'tasks': all_tasks})
+
+      
+def task_search(request):
+    q = request.GET.get('q', '')
+    data = Task.objects.all()
+
+    if q:
+        data = data.filter(name__icontains=q)
+
+    sort_by_due_date = request.GET.get('sort_due_date', None)
+
+    if sort_by_due_date:
+        if sort_by_due_date in ['asc', 'desc']:
+            order_by = 'due_date' if sort_by_due_date == 'asc' else '-due_date'
+            data = data.order_by(order_by)
+        else:
+            return HttpResponseBadRequest("Invalid value for 'sort_due_date'")
+
+    context = {'data': data}
+
+    # Check if there are no tasks found
+    if not data.exists():
+        context['no_tasks_found'] = True
+
+    return render(request, 'task_search.html', context)
+
     
     
 class UpdateTaskView(LoginRequiredMixin, UpdateView):
