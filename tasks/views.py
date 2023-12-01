@@ -118,7 +118,7 @@ def press_invite(request):
         else:
             messages.add_message(request, messages.ERROR, "A choice wasn't made!")
 
-    return redirect("my_teams")
+    return redirect("dashboard")
 
 @login_prohibited
 def home(request):

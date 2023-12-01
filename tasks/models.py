@@ -179,6 +179,18 @@ class Task(models.Model):
 
 class Notification(models.Model): 
     """Generic template model for notifications"""
+    def as_task_notif(self):
+        try:
+            return self.tasknotification
+        except TaskNotification.DoesNotExist:
+            return None
+
+    def as_invite_notif(self):
+        try:
+            return self.invitenotification
+        except InviteNotification.DoesNotExist:
+            return None
+
     def display(self):
         return "This is a notification"
 
@@ -189,7 +201,7 @@ class TaskNotification(Notification):
         ASSIGNMENT = "AS"
         DEADLINE = "DL"
 
-    task = models.OneToOneField(Task,blank=False,on_delete=models.CASCADE)
+    task = models.ForeignKey(Task,blank=False,on_delete=models.CASCADE)
     notification_type = models.CharField(max_length=2,choices=NotificationType.choices,default=NotificationType.ASSIGNMENT)
 
     def set_type(new_type):
