@@ -24,9 +24,12 @@ def dashboard(request):
     """Display and modify the current user's dashboard."""
 
     # Initialize lanes in the session if they don't exist
-    default_lane_names = ["Backlog", "In Progress", "Complete"]
-    for lane_name in default_lane_names:
-        Lane.objects.get_or_create(lane_name=lane_name)
+    if request.method == 'GET':
+        if not Lane.objects.exists():
+            default_lane_names = ["Backlog", "In Progress", "Complete"]
+            for lane_name in default_lane_names:
+                Lane.objects.get_or_create(lane_name=lane_name)
+    
 
     # Handle form submission for adding a new lane
     if request.method == 'POST':
@@ -284,16 +287,6 @@ class CreateTaskView(LoginRequiredMixin, FormView):
 
             # Check if the form is valid
             if form.is_valid():
-                name = form.cleaned_data['name']
-                description = form.cleaned_data['description']
-                #date_field
-                due_date = form.cleaned_data['due_date']
-            
-                model = Task.objects.create(
-                    name=name,
-                    description=description,
-                    due_date=due_date
-                )
                 # Save the form data to create a new Task instance
                 form.save()
                 messages.success(request, 'Task Created!')
