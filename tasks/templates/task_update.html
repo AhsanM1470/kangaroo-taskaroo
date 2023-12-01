@@ -5,6 +5,11 @@
 <div class="container">
   <title>Update Task</title>
   
+  {% if not edit_mode %}
+    <a href="{% url 'task_update' task_id=task.id %}">Edit</a>
+  {% endif %}
+
+  {% if edit_mode %}
     <form method="post" action="{{ update_url }}">
       {% csrf_token %}
       {{ form.as_p }}
@@ -13,5 +18,6 @@
         <a href="{% url 'dashboard' %}" class="cancel-button">Cancel</a>
       </div>
     </form>
+  {% endif %}
 </div>
 {% endblock %}
