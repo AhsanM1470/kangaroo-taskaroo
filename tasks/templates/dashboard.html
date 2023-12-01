@@ -147,45 +147,7 @@
     <div class="row">
       <div class="d-flex align-items-start" style="margin-top: 2%; margin-left: 2%;">
         <div class="task-board">
-          <!-- {% for lane in lanes %}
-
-          <div class="lane">
-  
-            <form method="post">
-              {% csrf_token %}
-              <input type="hidden" name="lane_index" value="{{ forloop.counter0 }}">
-  
-              <input type="checkbox" id="lane-name-{{ forloop.counter }}" class="toggle-lane-name" style="display:none;">
-  
-              <label for="lane-name-{{ forloop.counter }}" class="lane-name-label">{{ lane }}</label>
-  
-              <input type="text" name="new_lane_name" value="{{ lane }}" required class="lane-name-input">
-              <input type="submit" name="rename_lane" style="display: none;">
-            </form>
-
-            {% for task in tasks %}
-            <div class="task">
-              {{ task.name }}
-            </div>
-            {% empty %}
-            <p>No tasks in this lane.</p>
-            {% endfor %}
-  
-            <div>
-                <form method="get" style="display: inline;;" action="{% url 'task_create' %}">
-                  <input type="hidden" name="lane" value="{{ lane }}">
-                  <button type="submit" class="btn btn-secondary">New Task</button>
-                </form>
-  
-              <form method="post" style="display: inline;">
-                {% csrf_token %}
-                <input type="hidden" name="delete_lane" value="{{ lane }}">
-                <button type="submit" class="btn btn-danger">Delete</button>
-              </form>
-            </div>
-  
-          </div>
-          {% endfor %} -->
+          
           {% for lane in lanes %}
           <div class="lane">
             <form method="post">
@@ -203,9 +165,14 @@
     
             <!-- Tasks for each lane -->
             {% for task in tasks %}
-                <div class="task">
-                    {{ task.name }}
-                </div>
+            {% if task.lane_id == lane.lane_id %}
+              <div class="task">
+                {{ task.name }}
+              </div>
+            {% endif %}
+              <!-- <div class="task">
+                {{ task.name }}
+              </div> -->
             {% empty %}
                 <p>No tasks in this lane.</p>
             {% endfor %}
