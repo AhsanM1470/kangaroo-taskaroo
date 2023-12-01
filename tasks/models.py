@@ -172,7 +172,7 @@ class Task(models.Model):
     created_at = models.DateTimeField(default=timezone.now)
     #lane = models.ForeignKey(Lane, on_delete=models.CASCADE)
     # Could add a boolean field to indicate if the task has expired?
-    lane = models.ForeignKey(Lane, on_delete=models.CASCADE, related_name='tasks', default=Lane.objects.first())
+    lane = models.ForeignKey(Lane, on_delete=models.CASCADE, related_name='tasks',default=None)
 
 class Notification(models.Model): 
     """Model used to represent a notification"""
