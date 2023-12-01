@@ -189,7 +189,7 @@ class TaskNotification(Notification):
         ASSIGNMENT = "AS"
         DEADLINE = "DL"
 
-    task = models.OneToOneField(Task,blank=False,on_delete=models.CASCADE)
+    task = models.ForeignKey(Task,blank=False,on_delete=models.CASCADE)
     notification_type = models.CharField(max_length=2,choices=NotificationType.choices,default=NotificationType.ASSIGNMENT)
 
     def set_type(new_type):
