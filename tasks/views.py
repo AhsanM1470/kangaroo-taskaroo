@@ -35,11 +35,10 @@ def dashboard(request):
             # request.session.modified = True  
             Lane.objects.create(lane_name="New Lane")
 
-        # elif 'delete_lane' in request.POST:
-            # lane_to_delete = request.POST.get('delete_lane')
-            # if lane_to_delete in request.session['lanes']:
-            #     request.session['lanes'].remove(lane_to_delete)
-            #     request.session.modified = True
+        elif 'delete_lane' in request.POST:
+            lane_id = request.POST.get('delete_lane')
+            lane = Lane.objects.get(lane_id=lane_id)
+            lane.delete()
 
         # elif 'rename_lane' in request.POST:
             # new_lane_name = request.POST.get('new_lane_name')

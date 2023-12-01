@@ -217,10 +217,10 @@
                 </form>
     
                 <form method="post" style="display: inline;">
-                    {% csrf_token %}
-                    <input type="hidden" name="delete_lane" value="{{ lane.id }}">
-                    <button type="submit" class="btn btn-danger">Delete</button>
-                </form>
+                  {% csrf_token %}
+                  <input type="hidden" name="delete_lane" value="{{ lane.lane_id }}">
+                  <button type="submit" class="btn btn-danger">Delete</button>
+              </form>
             </div>
         </div>
           {% endfor %}
