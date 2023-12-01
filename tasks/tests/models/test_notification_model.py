@@ -30,7 +30,6 @@ class TaskNotificationModelTestCase(TestCase):
         self.assertEqual(self.deadline_notification.task.name,"test-task")
 
     def test_assignment_notification_displays_correctly(self):
-        
         display_result = self.assign_notification.display()
         target = "test-task has been assigned to you."
         self.assertEquals(display_result,target)
@@ -47,6 +46,7 @@ class TaskNotificationModelTestCase(TestCase):
 
 
 class InviteNotificationModelTestCase(TestCase):
+    """Testing for the InviteNotification model"""
 
     fixtures = [
         'tasks/tests/fixtures/default_user.json',
