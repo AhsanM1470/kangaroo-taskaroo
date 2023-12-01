@@ -190,11 +190,15 @@ class TaskNotification(Notification):
         DEADLINE = "DL"
 
     task = models.OneToOneField(Task,blank=False,on_delete=models.CASCADE)
+    notification_type = models.CharField(max_length=2,choices=NotificationType.choices,default=NotificationType.ASSIGNMENT)
 
-    def display(self,notification_type):
-        if notification_type== self.NotificationType.ASSIGNMENT:
+    def set_type(new_type):
+        notification_type = new_type
+
+    def display(self):
+        if self.notification_type== self.NotificationType.ASSIGNMENT:
             return f'{self.task.name} has been assigned to you.'
-        elif notification_type == self.NotificationType.DEADLINE:
+        elif self.notification_type == self.NotificationType.DEADLINE:
             return f"{self.task.name}'s deadline is approaching."
 
 class InviteNotification(Notification): 

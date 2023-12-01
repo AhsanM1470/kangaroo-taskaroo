@@ -6,19 +6,27 @@ import datetime
 class TaskNotificationModelTestCase(TestCase):
     """Testing for the TaskNotification model"""
 
+    fixtures = [
+        'tasks/tests/fixtures/default_user.json',
+        'tasks/tests/fixtures/other_users.json'
+    ]
+
     def setUp(self):
+        
+        self.user = User.objects.get(username='@johndoe')
         self.task = Task.objects.create(
             name = 'test-task',
             description = 'A random test task',
             due_date = datetime.datetime(2023, 11, 28, 10, 0),
         )
-        self.notification = TaskNotification()
+        self.assign_notification = TaskNotification()
         self.notification.task = self.task
 
     def test_correct_task_name(self):
         self.assertEqual(self.notification.task.name,"test-task")
 
     def test_assignment_notification_displays_correctly(self):
+        
         display_result = self.notification.display("AS")
         target = "test-task has been assigned to you."
         self.assertEquals(display_result,target)
@@ -27,6 +35,9 @@ class TaskNotificationModelTestCase(TestCase):
         display_result = self.notification.display("DL")
         target = "test-task's deadline is approaching."
         self.assertEqual(display_result,target)
+
+    def test_deadline_notification_stored_correctly(self):
+        self.notification.notification_type = "AS"
 
 class InviteNotificationModelTestCase(TestCase):
 
