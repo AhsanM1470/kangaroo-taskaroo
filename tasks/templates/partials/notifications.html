@@ -1,18 +1,22 @@
-{% for notification in user.get_notifications %}
-    {% if notification.as_invite_notif != None %}
-        <li> <p>Team Name: <b> {{ notification.invitenotification.invite.get_inviting_team.team_name }} </b></p>
-        <p>Team Creator: <b> {{ notification.invitenotification.invite.get_inviting_team.team_creator.username }}</b></p>
-        <p>Invite Message: <b> {{ notification.invitenotification.invite.invite_message }} </b></p>
-        <p> {{notification.invitenotification.display}} </p>
-        <form action ="{%url 'press_invite'%}" method="post">
-        {% csrf_token %}
-        <input type="submit" value="Accept" name="status">
-        <input type="submit" value="Reject" name="status">
-        <input type="hidden" name="id" value= {{ notification.invitenotification.invite.id }}>
-        </form> </li>
-    {% elif notification.as_task_notif != None %}
-        <li> {{notification.tasknotification.display}} </li>
-    {% endif %} 
-{% empty %}
-    <li>No notifications currently</li>
-{% endfor %}
+<li>
+    <div style="height: 400px; overflow-y: scroll;">
+        {% for notification in user.get_notifications %}
+            {% if notification.as_invite_notif != None %}
+                <p>Team Name: <b> {{ notification.invitenotification.invite.get_inviting_team.team_name }} </b></p>
+                <p>Team Creator: <b> {{ notification.invitenotification.invite.get_inviting_team.team_creator.username }}</b></p>
+                <p>Invite Message: <b> {{ notification.invitenotification.invite.invite_message }} </b></p>
+                <p> {{notification.invitenotification.display}} </p>
+                <form action ="{%url 'press_invite'%}" method="post">
+                {% csrf_token %}
+                <input type="submit" value="Accept" name="status">
+                <input type="submit" value="Reject" name="status">
+                <input type="hidden" name="id" value= {{ notification.invitenotification.invite.id }}>
+                </form> <hr>
+            {% elif notification.as_task_notif != None %}
+                {{notification.tasknotification.display}} <hr>
+            {% endif %} 
+        {% empty %}
+            No notifications currently
+        {% endfor %}
+    </div>
+</li>
