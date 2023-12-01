@@ -119,11 +119,11 @@ class TaskForm(forms.ModelForm):
     class Meta:
         """Form options"""
         model = Task
-        fields = ["name", "description"]
+        fields = ["name", "description", "lane"]
         widgets = {
             'name' : forms.TextInput(attrs={'class': 'nameClass', 'placeholder': 'Enter the task name...'}),
             'description' : forms.Textarea(attrs={'class': 'descriptionClass', 'placeholder': 'Write a task description...'}),
-            # 'lane': forms.Select(attrs={'class':'lane_select'})
+            'lane': forms.Select(attrs={'class':'lane_select'})
         }
      
     date_field = forms.DateField(
@@ -135,7 +135,9 @@ class TaskForm(forms.ModelForm):
         widget=forms.TimeInput(attrs={'placeholder': '00:00:00'}),
     )
 
-
+    def __init__(self, *args, **kwargs):
+        super(TaskForm, self).__init__(*args, **kwargs)
+        self.fields['lane'].queryset = Lane.objects.all()
         
     def clean(self):
         cleaned_data = super().clean()
