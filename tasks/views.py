@@ -23,9 +23,10 @@ from datetime import datetime
 def dashboard(request):
     """Display and modify the current user's dashboard."""
 
-    # Initialize lanes in the session if they don't exist12 hours ago
-    # if 'lanes' not in request.session:
-    #     request.session['lanes'] = ['Backlog', 'In Progress', 'Complete']
+    # Initialize lanes in the session if they don't exist
+    default_lane_names = ["Backlog", "In Progress", "Complete"]
+    for lane_name in default_lane_names:
+        Lane.objects.get_or_create(lane_name=lane_name)
 
     # Handle form submission for adding a new lane
     if request.method == 'POST':
