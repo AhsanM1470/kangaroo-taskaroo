@@ -34,22 +34,21 @@ def dashboard(request):
     # Handle form submission for adding a new lane
     if request.method == 'POST':
         if 'add_lane' in request.POST:
-            # new_lane_name = 'New Lane'
-            # request.session['lanes'].append(new_lane_name)
-            # request.session.modified = True  
             Lane.objects.create(lane_name="New Lane")
 
+        # make this code better. delete_lane and lane_id
         elif 'delete_lane' in request.POST:
             lane_id = request.POST.get('delete_lane')
             lane = Lane.objects.get(lane_id=lane_id)
             lane.delete()
 
-        # elif 'rename_lane' in request.POST:
-            # new_lane_name = request.POST.get('new_lane_name')
-            # lane_index = int(request.POST.get('lane_index'))
-            # if 0 <= lane_index < len(request.session['lanes']):
-            #     request.session['lanes'][lane_index] = new_lane_name
-            #     request.session.modified = True
+        elif 'rename_lane' in request.POST:
+            lane_id = request.POST.get('lane_id')
+            new_lane_name = request.POST.get('new_lane_name')
+            if lane_id and new_lane_name:
+                lane = Lane.objects.get(lane_id=lane_id)
+                lane.lane_name = new_lane_name
+                lane.save()
         
         return redirect('dashboard')  # Redirect to the same page to show the updated lanes
 

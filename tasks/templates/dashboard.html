@@ -9,12 +9,23 @@
 
   h3{
     margin-bottom: 0;
-    margin-left:1%;
+    margin-left:1em;
+  }
+
+  .username h5{
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   h6{
-    margin-top: 5%;
-    padding-left: 5%;
+    margin-top: 0.5em;
+    padding-left: 0.5em;
+  }
+
+  .image{
+    border: none;
+    background: transparent;
   }
 
   .flex-container{
@@ -35,6 +46,7 @@
     display: flex;
     justify-content: center;
     width:12vw;
+    word-wrap: break-word;
   }
 
   .board{
@@ -58,7 +70,7 @@
     background: rgb(205, 205, 205);
     box-shadow: 0px 5px 15px rgba(0,0,0,0.25);
 
-    padding: 12px;
+    padding: 0.8em;
     border-radius: 4px;
     width: 225px;
     min-height: 120px;
@@ -92,7 +104,7 @@
   .task{
     background: rgb(221, 221, 221);
     box-shadow: 0px 5px 15px rgba(0,0,0,0.1);
-    padding: 5px;
+    padding: 0.5em;
     border-radius: 4px;
 
     font-size: 15px;
@@ -118,7 +130,7 @@
 
   #sidebar li{
     transition: background-color 0.3s;
-    padding-left: 5%;
+    padding-left: 0.5em;
   }
 
   #sidebar li:hover{
@@ -128,13 +140,15 @@
 </style>
 
 <div class="header-bar">
-  <h5 class="username">{{ user.username }}</h5>
+  <div class="username">
+    <h5>{{ user.username }}</h5>
+  </div>
   <h3>Welcome to your dashboard</h3>
 </div>
 
 <div class="flex-container">
   <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block sidebar collapse">
-    <h6>Your Teamssssssss:</h6>
+    <h6>YOUR TEAMS:</h6>
     <ul>
       {% for team in teams %}
         <li>{{ team.team_name }}</li>
@@ -145,24 +159,39 @@
   <!--Used to be container board-->
   <div class="board">
     <div class="row">
-      <div class="d-flex align-items-start" style="margin-top: 2%; margin-left: 2%;">
+      <div class="d-flex align-items-start" style="margin-top: 1em; margin-left: 1em;">
         <div class="task-board">
           
           {% for lane in lanes %}
           <div class="lane">
-            <form method="post">
-                {% csrf_token %}
-                <input type="hidden" name="lane_id" value="{{ lane.id }}">
-    
-                <!-- Toggle checkbox to rename -->
-                <input type="checkbox" id="lane-name-{{ forloop.counter }}" class="toggle-lane-name" style="display:none;">
-    
-                <label for="lane-name-{{ forloop.counter }}" class="lane-name-label">{{ lane.lane_name }}</label>
-    
-                <input type="text" name="new_lane_name" value="{{ lane.name }}" required class="lane-name-input">
-                <input type="submit" name="rename_lane" style="display: none;">
-            </form>
-    
+
+            <div class="lane-header" style="display: flex; justify-content: space-between; align-items: center;">
+
+              <!-- Rename form -->
+              <form method="post" style="display: inline;">
+                  {% csrf_token %}
+                  <input type="hidden" name="lane_id" value="{{ lane.id }}">
+                  
+                  <input type="checkbox" id="lane-name-{{ forloop.counter }}" class="toggle-lane-name" style="display:none;">
+                  <label for="lane-name-{{ forloop.counter }}" class="lane-name-label">{{ lane.lane_name }}</label>
+                  
+                  <!-- Rename input -->
+                  <input type="text" name="new_lane_name" value="{{ lane.lane_name }}" required class="lane-name-input">
+                  
+                  <!-- Submit button for renaming -->
+                  <input type="submit" name="rename_lane" style="display: none;">
+              </form>
+
+              <!-- Delete lane form -->
+              <form method="post" style="display: inline;">
+                  {% csrf_token %}
+                  <input type="hidden" name="delete_lane" value="{{ lane.lane_id }}">
+                  <button type="submit" class="image" title="Delete lane">
+                      <img src="../../static/images/bin-icon.png">
+                  </button>
+              </form>
+          
+          </div>
             <!-- Tasks for each lane -->
             {% for task in tasks %}
             {% if task.lane_id == lane.lane_id %}
@@ -180,14 +209,8 @@
             <div>
                 <form method="get" style="display: inline;" action="{% url 'task_create' %}">
                     <input type="hidden" name="lane" value="{{ lane.id }}">
-                    <button type="submit" class="btn btn-secondary">New Task</button>
+                    <button type="submit" class="btn btn-secondary" style="width: 100%;">New Task</button>
                 </form>
-    
-                <form method="post" style="display: inline;">
-                  {% csrf_token %}
-                  <input type="hidden" name="delete_lane" value="{{ lane.lane_id }}">
-                  <button type="submit" class="btn btn-danger">Delete</button>
-              </form>
             </div>
         </div>
           {% endfor %}
