@@ -109,6 +109,14 @@
 
     font-size: 15px;
     cursor: move;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .task img{
+    transform: scale(0.8);
   }
 
   #sidebar{
@@ -197,11 +205,15 @@
             {% if task.lane_id == lane.lane_id %}
               <div class="task">
                 {{ task.name }}
+                <form method="post" action="{% url 'task_delete' task.name %}" style="display: inline;">
+                  {% csrf_token %}
+                  <input type="hidden" name="task_delete" value="{{ task.name }}">
+                  <button type="submit" class="image" title="Delete task">
+                      <img src="../../static/images/bin-icon-grey.png">
+                  </button>
+                </form>
               </div>
             {% endif %}
-              <!-- <div class="task">
-                {{ task.name }}
-              </div> -->
             {% empty %}
                 <p>No tasks in this lane.</p>
             {% endfor %}
