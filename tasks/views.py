@@ -43,14 +43,14 @@ def dashboard(request):
             lane.delete()
 
         elif 'rename_lane' in request.POST:
-            lane_id = request.POST.get('lane_id')
+            lane_id = request.POST.get('rename_lane')
             new_lane_name = request.POST.get('new_lane_name')
-            if lane_id and new_lane_name:
-                lane = Lane.objects.get(lane_id=lane_id)
-                lane.lane_name = new_lane_name
-                lane.save()
+            # if lane_id and new_lane_name:
+            lane = Lane.objects.get(lane_id=lane_id)
+            lane.lane_name = new_lane_name
+            lane.save()
         
-        return redirect('dashboard')  # Redirect to the same page to show the updated lanes
+        return redirect('dashboard')
 
     # Retrieve current user and lanes
     current_user = request.user

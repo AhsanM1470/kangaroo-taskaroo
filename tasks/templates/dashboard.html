@@ -59,29 +59,39 @@
     display: flex;
     align-items: flex-start;
     justify-content: start;
-    gap: 16px;
+    gap: 1em;
   }
 
   .lane{
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 0.9em;
 
     background: rgb(205, 205, 205);
     box-shadow: 0px 5px 15px rgba(0,0,0,0.25);
 
     padding: 0.8em;
     border-radius: 4px;
-    width: 225px;
-    min-height: 120px;
+    min-width: 20vw;
+    min-height: 10vh;
+    max-width: 30vw;
+    overflow: hidden;
+    /* text-overflow: ellipsis;
+    white-space: nowrap;    */
   }
 
-  .lane-name-label{
+  .lane-name-label, .lane-name-input{
     display: block;
-    font-size: 1.5em;
+    font-size: 1.2em;
     font-weight: bold;
     border: none;
     cursor: pointer;
+    width: 100%;
+    /* overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;*/
+    overflow-wrap: break-word;
+    max-width: 20vw;
   }
 
   .lane-name-input{
@@ -177,17 +187,13 @@
 
               <!-- Rename form -->
               <form method="post" style="display: inline;">
-                  {% csrf_token %}
-                  <input type="hidden" name="lane_id" value="{{ lane.id }}">
-                  
-                  <input type="checkbox" id="lane-name-{{ forloop.counter }}" class="toggle-lane-name" style="display:none;">
-                  <label for="lane-name-{{ forloop.counter }}" class="lane-name-label">{{ lane.lane_name }}</label>
-                  
-                  <!-- Rename input -->
-                  <input type="text" name="new_lane_name" value="{{ lane.lane_name }}" required class="lane-name-input">
-                  
-                  <!-- Submit button for renaming -->
-                  <input type="submit" name="rename_lane" style="display: none;">
+                {% csrf_token %}
+                <input type="hidden" name="rename_lane" value="{{ lane.lane_id }}">
+
+                <label id="label-{{ forloop.counter }}" class="lane-name-label" onclick="toggleEdit('{{ forloop.counter }}')">{{ lane.lane_name }}</label>
+                
+                <!-- Rename input (initially hidden) -->
+                <input type="text" name="new_lane_name" value="{{ lane.lane_name }}" id="input-{{ forloop.counter }}" maxlength="50" class="lane-name-input" style="display:none;" onkeypress="enterName(event,'{{forloop.counter}}')">
               </form>
 
               <!-- Delete lane form -->
@@ -224,7 +230,7 @@
                     <button type="submit" class="btn btn-secondary" style="width: 100%;">New Task</button>
                 </form>
             </div>
-        </div>
+          </div>
           {% endfor %}
         </div>
   
@@ -236,5 +242,26 @@
     </div>
   </div>
 </div>
+
+<script>
+  // Toggle between the lanes name and the editable input
+  function toggleEdit(counter) {
+      let label = document.getElementById('label-' + counter);
+      let nameInput = document.getElementById('input-' + counter);
+      label.style.display = 'none';
+      nameInput.style.display = 'block';
+      nameInput.focus();
+  }
+  
+  function enterName(event, counter) {
+      if (event.key === 'Enter') {
+          event.preventDefault();
+  
+          // find the closest form to the input and submit it
+          let nameInput = document.getElementById('input-' + counter);
+          nameInput.closest('form').submit();
+      }
+  }
+</script>
 
 {% endblock %}
