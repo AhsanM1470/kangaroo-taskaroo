@@ -258,7 +258,7 @@ class RemoveMemberForm(forms.Form):
     class Meta:
         """Form options."""
 
-        fields = ['member_to_remove', "thing"]
+        fields = ['member_to_remove', "thing", "lane_order"]
 
     member_to_remove = forms.CharField(max_length=30)
     #thing = forms.CharField(max_length=50, choic)

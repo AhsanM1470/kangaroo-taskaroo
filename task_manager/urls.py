@@ -35,6 +35,8 @@ urlpatterns = [
     path('task_search/', views.task_search, name='task_search'),
     path('task_delete/<str:task_name>/', views.DeleteTaskView.as_view(), name='task_delete'),
     path('task_update/<str:task_name>/', views.TaskView.as_view(), name = 'task_update'),
-    path('my_teams/', views.my_teams, name="my_teams")
+    path('my_teams/', views.my_teams, name="my_teams"),
     # path('add_lane/', views.add_lane, name="add_lane")
+    path('task/<str:task_name>/move-left/', views.move_task_left, name='move_task_left'),
+    path('task/<str:task_name>/move-right/', views.move_task_right, name='move_task_right'),
 ]

@@ -18,6 +18,7 @@ from .forms import TaskForm, TaskDeleteForm
 from .models import Task, Invite, Team, Lane
 from django.http import HttpResponseBadRequest
 from datetime import datetime
+from django.db.models import Max
 
 @login_required
 def dashboard(request):
@@ -26,15 +27,16 @@ def dashboard(request):
     # Initialize lanes in the session if they don't exist
     if request.method == 'GET':
         if not Lane.objects.exists():
-            default_lane_names = ["Backlog", "In Progress", "Complete"]
-            for lane_name in default_lane_names:
-                Lane.objects.get_or_create(lane_name=lane_name)
+            default_lane_names = [("Backlog", 1), ("In Progress", 2), ("Complete", 3)]
+            for lane_name, lane_order in default_lane_names:
+                Lane.objects.get_or_create(lane_name=lane_name, lane_order=lane_order)
     
 
     # Handle form submission for adding a new lane
     if request.method == 'POST':
         if 'add_lane' in request.POST:
-            Lane.objects.create(lane_name="New Lane")
+            max_order = Lane.objects.aggregate(Max('lane_order'))['lane_order__max'] or 0
+            Lane.objects.create(lane_name="New Lane", lane_order=max_order + 1)
 
         # make this code better. delete_lane and lane_id
         elif 'delete_lane' in request.POST:
@@ -55,7 +57,7 @@ def dashboard(request):
     # Retrieve current user and lanes
     current_user = request.user
     # lanes = request.session['lanes']
-    lanes = Lane.objects.all()
+    lanes = lanes = Lane.objects.all().order_by('lane_order')
     all_tasks = Task.objects.all()
     teams = Team.objects.all()
     # lane_tasks = {lane: Task.objects.filter(lane=lane) for lane in lanes}
@@ -65,6 +67,30 @@ def dashboard(request):
         'tasks': all_tasks,
         'teams': teams
     })
+
+def move_task_left(request, task_name):
+    if request.method == 'POST':
+        task = get_object_or_404(Task, name=task_name)
+        current_lane = task.lane
+        left_lane = Lane.objects.filter(lane_order__lt=current_lane.lane_order).order_by('-lane_order').first()
+        
+        if left_lane:
+            task.lane = left_lane
+            task.save()
+
+        return redirect('dashboard')
+
+def move_task_right(request, task_name):
+    if request.method == 'POST':
+        task = get_object_or_404(Task, name=task_name)
+        current_lane = task.lane
+        right_lane = Lane.objects.filter(lane_order__gt=current_lane.lane_order).order_by('lane_order').first()
+        
+        if right_lane:
+            task.lane = right_lane
+            task.save()
+
+        return redirect('dashboard')
 
 def add_lane(request):
     if request.method == 'POST':

@@ -154,6 +154,10 @@ class Invite(models.Model):
 class Lane(models.Model):
     lane_name = models.CharField(max_length=100)
     lane_id = models.AutoField(primary_key=True)
+    lane_order = models.IntegerField(default=0)
+
+    class Meta:
+        ordering = ['lane_order']
 
     def __str__(self):
         return self.lane_name

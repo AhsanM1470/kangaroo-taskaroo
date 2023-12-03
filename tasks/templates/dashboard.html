@@ -49,13 +49,13 @@
     word-wrap: break-word;
   }
 
-  .board{
+  .board-container{
     overflow: auto;
     height: 100vh;
     width: 88vw;
   }
 
-  .task-board{
+  .board{
     display: flex;
     align-items: flex-start;
     justify-content: start;
@@ -118,7 +118,7 @@
     border-radius: 4px;
 
     font-size: 15px;
-    cursor: move;
+    cursor: pointer;
 
     display: flex;
     justify-content: space-between;
@@ -175,14 +175,13 @@
   </nav>
   
   <!--Used to be container board-->
-  <div class="board">
+  <div class="board-container">
     <div class="row">
       <div class="d-flex align-items-start" style="margin-top: 1em; margin-left: 1em;">
-        <div class="task-board">
+        <div class="board">
           
           {% for lane in lanes %}
           <div class="lane">
-
             <div class="lane-header" style="display: flex; justify-content: space-between; align-items: center;">
 
               <!-- Rename form -->
@@ -204,21 +203,38 @@
                       <img src="../../static/images/bin-icon.png">
                   </button>
               </form>
-          
-          </div>
+            </div>
+
             <!-- Tasks for each lane -->
             {% for task in tasks %}
             {% if task.lane_id == lane.lane_id %}
-              <div class="task">
-                {{ task.name }}
-                <form method="post" action="{% url 'task_delete' task.name %}" style="display: inline;">
-                  {% csrf_token %}
-                  <input type="hidden" name="task_delete" value="{{ task.name }}">
-                  <button type="submit" class="image" title="Delete task">
-                      <img src="../../static/images/bin-icon-grey.png">
-                  </button>
-                </form>
-              </div>
+            <div class="task">
+              <!-- Form for moving tasks to the left lane -->
+              <form method="post" action="{% url 'move_task_left' task.name %}">
+                {% csrf_token %}
+                <button type="submit" class="image" title="Move task left">
+                  <img src="../../static/images/move-left-icon-grey.png">
+                </button>
+              </form>
+
+              {{ task.name }}
+            
+              <!-- Form for moving task to the right lane -->
+              <form method="post" action="{% url 'move_task_right' task.name %}">
+                {% csrf_token %}
+                <button type="submit" class="image" title="Move task right">
+                  <img src="../../static/images/move-right-icon-grey.png">
+                </button>
+              </form>
+
+              <form method="post" action="{% url 'task_delete' task.name %}" style="display: inline;">
+                {% csrf_token %}
+                <input type="hidden" name="task_delete" value="{{ task.name }}">
+                <button type="submit" class="image" title="Delete task">
+                  <img src="../../static/images/bin-icon-grey.png">
+                </button>
+              </form>
+            </div>
             {% endif %}
             {% empty %}
                 <p>No tasks in this lane.</p>
