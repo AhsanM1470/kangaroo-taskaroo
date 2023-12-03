@@ -2,6 +2,25 @@
 {% block content %}
 
 <style>
+  /* For Firefox */
+  * {
+      scrollbar-width: thin;
+      scrollbar-color: #888 transparent;
+  }
+
+  .board-container::-webkit-scrollbar, .task::-webkit-scrollbar {
+      width: 0.5em; /* Width of the scrollbar */
+      height: 0.4em;
+  }
+
+  ::-webkit-scrollbar-thumb {
+      background: #ffffff88;
+      border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+      background: #555555;
+  }
 
   body{
     background: linear-gradient(to bottom right, #0076f4, #209e3e);
@@ -12,15 +31,15 @@
     margin-left:1em;
   }
 
+  h6{
+    margin-top: 0.5em;
+    padding-left: 0.5em;
+  }
+
   .username h5{
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-  }
-
-  h6{
-    margin-top: 0.5em;
-    padding-left: 0.5em;
   }
 
   .image{
@@ -117,7 +136,7 @@
     padding: 0.5em;
     border-radius: 4px;
 
-    font-size: 15px;
+    font-size: 0.95em;
     cursor: pointer;
 
     display: flex;
