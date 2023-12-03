@@ -21,6 +21,7 @@ class User(AbstractUser):
     first_name = models.CharField(max_length=50, blank=False)
     last_name = models.CharField(max_length=50, blank=False)
     email = models.EmailField(unique=True, blank=False)
+    tasks = models.ManyToManyField("Task", through="AssignedTask")
 
     class Meta:
         """Model options."""
@@ -164,6 +165,13 @@ class Task(models.Model):
     due_date = models.DateTimeField(default=datetime(1, 1, 1))
     created_at = models.DateTimeField(default=timezone.now)
     # Could add a boolean field to indicate if the task has expired?
+
+class AssignedTask(models.Model):
+    """Model used for holding the information about a task assigned to a specific user of a team"""
+    user = models.ForeignKey(User, blank=True, on_delete=models.CASCADE, default=None)
+    team = models.ForeignKey(Team, blank=False, on_delete=models.CASCADE)
+    task = models.OneToOneField(Task, blank=False, on_delete=models.CASCADE)
+
 
 class Notification(models.Model): 
     """Model used to represent a notification"""

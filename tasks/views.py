@@ -53,13 +53,15 @@ def dashboard(request):
     current_user = request.user
     lanes = request.session['lanes']
     all_tasks = Task.objects.all()
-    teams = Team.objects.all()
+    teams = current_user.get_teams()
+    task_form = TaskForm()
     # lane_tasks = {lane: Task.objects.filter(lane=lane) for lane in lanes}
     return render(request, 'dashboard.html', {
         'user': current_user,
         'lanes': lanes,
         'tasks': all_tasks,
-        'teams': teams
+        'teams': teams,
+        "task_form" : task_form,
     })
 
 @login_required

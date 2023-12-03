@@ -1,9 +1,9 @@
-{% extends 'base_content.html' %}
-{% block content %}
+{% extends 'base.html' %}
+{% block body %}
 {% include 'partials/messages.html' %}
     
 <style>
-    form {
+    .taskform {
         max-width: 600px;
         margin: auto;
         margin-top: 50px;
@@ -63,7 +63,7 @@
 </style>
 <div class="container">
     <title>Create Task</title>
-    <form method="post" action="{% url 'task_create' %}" id="taskForm">
+    <form class=".taskform" method="post" action="{% url 'task_create' %}" id="taskForm">
         {% csrf_token %}
         {{ form.as_p }}
 
