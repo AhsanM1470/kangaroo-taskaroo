@@ -96,6 +96,28 @@ def add_lane(request):
         lane_name = request.POST.get('lane_name')
         Lane.objects.create(lane_name = lane_name)
         return redirect('dashboard')
+    
+def move_lane_left(request, lane_id):
+    if request.method == 'POST':
+        lane = get_object_or_404(Lane, pk=lane_id)
+        # Swap order with the previous lane if it exists
+        previous_lane = Lane.objects.filter(lane_order__lt=lane.lane_order).order_by('-lane_order').first()
+        if previous_lane:
+            lane.lane_order, previous_lane.lane_order = previous_lane.lane_order, lane.lane_order
+            lane.save()
+            previous_lane.save()
+        return redirect('dashboard')
+
+def move_lane_right(request, lane_id):
+    if request.method == 'POST':
+        lane = get_object_or_404(Lane, pk=lane_id)
+        # Swap order with the next lane if it exists
+        next_lane = Lane.objects.filter(lane_order__gt=lane.lane_order).order_by('lane_order').first()
+        if next_lane:
+            lane.lane_order, next_lane.lane_order = next_lane.lane_order, lane.lane_order
+            lane.save()
+            next_lane.save()
+        return redirect('dashboard')
 
 @login_required
 def create_team(request):

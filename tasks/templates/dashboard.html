@@ -204,8 +204,15 @@
           {% for lane in lanes %}
           <div class="lane">
             <div class="lane-header" style="display: flex; justify-content: space-between; align-items: center;">
+              
+              <form method="post" action="{% url 'move_lane_left' lane.lane_id %}" style="display: inline;">
+                {% csrf_token %}
+                <button type="submit" class="image" title="Move lane left">
+                    <img src="../../static/images/move-left-icon.png">
+                </button>
+              </form>
 
-              <!-- Rename form -->
+              <!-- Lane name form -->
               <form method="post" style="display: inline;">
                 {% csrf_token %}
                 <input type="hidden" name="rename_lane" value="{{ lane.lane_id }}">
@@ -214,6 +221,13 @@
                 
                 <!-- Rename input (initially hidden) -->
                 <input type="text" name="new_lane_name" value="{{ lane.lane_name }}" id="input-{{ forloop.counter }}" maxlength="50" class="lane-name-input" style="display:none;" onkeypress="enterName(event,'{{forloop.counter}}')">
+              </form>
+
+              <form method="post" action="{% url 'move_lane_right' lane.lane_id %}" style="display: inline;">
+                {% csrf_token %}
+                <button type="submit" class="image" title="Move lane right">
+                    <img src="../../static/images/move-right-icon.png">
+                </button>
               </form>
 
               <!-- Delete lane form -->
