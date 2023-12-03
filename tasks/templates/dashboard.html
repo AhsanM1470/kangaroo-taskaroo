@@ -217,7 +217,7 @@
               </form>
 
               <!-- Delete lane form -->
-              <form method="post" style="display: inline;">
+              <form method="post" action="{% url 'lane_delete' lane.lane_id %}" style="display: inline;">
                   {% csrf_token %}
                   <input type="hidden" name="delete_lane" value="{{ lane.lane_id }}">
                   <button type="submit" class="image" title="Delete lane">

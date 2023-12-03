@@ -10,7 +10,7 @@ from django.views import View
 from django.views.generic import DeleteView
 from django.views.generic.edit import FormView, UpdateView
 from django.urls import reverse
-from tasks.forms import LogInForm, PasswordForm, UserForm, SignUpForm, CreateTeamForm, InviteForm, RemoveMemberForm
+from tasks.forms import LogInForm, PasswordForm, UserForm, SignUpForm, CreateTeamForm, InviteForm, RemoveMemberForm, LaneDeleteForm
 from tasks.helpers import login_prohibited
 from django.urls import reverse_lazy
 from django.views.decorators.http import require_POST
@@ -31,7 +31,6 @@ def dashboard(request):
             for lane_name, lane_order in default_lane_names:
                 Lane.objects.get_or_create(lane_name=lane_name, lane_order=lane_order)
     
-
     # Handle form submission for adding a new lane
     if request.method == 'POST':
         if 'add_lane' in request.POST:
@@ -39,10 +38,10 @@ def dashboard(request):
             Lane.objects.create(lane_name="New Lane", lane_order=max_order + 1)
 
         # make this code better. delete_lane and lane_id
-        elif 'delete_lane' in request.POST:
-            lane_id = request.POST.get('delete_lane')
-            lane = Lane.objects.get(lane_id=lane_id)
-            lane.delete()
+        # elif 'delete_lane' in request.POST:
+        #     lane_id = request.POST.get('delete_lane')
+        #     lane = Lane.objects.get(lane_id=lane_id)
+        #     lane.delete()
 
         elif 'rename_lane' in request.POST:
             lane_id = request.POST.get('rename_lane')
@@ -359,36 +358,6 @@ class DeleteTaskView(LoginRequiredMixin, View):
         else:
             delete_form = TaskDeleteForm()
         return render(request, 'task_delete.html', {'task':task, 'delete_form': delete_form})
-
-
-    #     if request.method == 'POST':
-    #         form = TaskForm(request.POST or None)
-
-    #         if form.is_valid():
-    #             # Use cleaned data from form
-    #             name = form.cleaned_data['name']
-    #             description = form.cleaned_data['description']
-    #             due_date = form.cleaned_data['due_date']
-
-    #             # Create a new Task instance but do not save it yet
-    #             new_task = Task(
-    #                 name=name,
-    #                 description=description,
-    #                 due_date=due_date,
-    #                 lane=lane_name  # Set the lane for the task
-    #             )
-
-    #             # Save the new task
-    #             new_task.save()
-
-    #             # Redirect to the dashboard or another page
-    #             return redirect('dashboard')
-    #     else:
-    #         form = TaskForm()
-
-    #     all_tasks = Task.objects.all()
-    #     return render(request, 'task_form.html', {'tasks': all_tasks, 'form': form, 'lane': lane_name})
-
       
 def task_search(request):
     q = request.GET.get('q', '')
@@ -414,6 +383,39 @@ def task_search(request):
 
     return render(request, 'task_search.html', context)
 
+class DeleteLaneView(LoginRequiredMixin, View):
+    model = Lane
+    form_class = LaneDeleteForm
+    template_name = 'lane_delete.html'
+    success_url = reverse_lazy('dashboard') 
+    form_title = 'Delete Lane'
+    context_object_name = 'lane'
+    
+    def get_success_url(self):
+        """Return redirect URL after successful update."""
+        messages.add_message(self.request, messages.SUCCESS, "Lane deleted!")
+        return reverse_lazy('dashboard')
+    
+    def get(self, request, lane_id, *args, **kwargs):
+        lane = get_object_or_404(Lane, lane_id=lane_id)
+        delete_form = LaneDeleteForm()
+        # if this doesnt work use domain explicitly
+        delete_url = '/lane_delete/'+str(lane_id)+'/'
+        context = {'lane': lane, 'delete_form': delete_form, 'delete_url': delete_url, 'lane_id': lane_id}
+        return render(request, self.template_name, context)
+    
+    def post(self, request, lane_id, *args, **kwargs):
+        lane = get_object_or_404(Lane, pk=lane_id)
+        if request.method == 'POST':
+            delete_form = LaneDeleteForm(request.POST)
+            if delete_form.is_valid():
+                if delete_form.cleaned_data['confirm_deletion']:
+                    lane.delete()
+                    messages.success(request, 'Task Deleted!')
+                    return redirect('dashboard')
+        else:
+            delete_form = LaneDeleteForm()
+        return render(request, 'task_delete.html', {'lane':lane, 'delete_form': delete_form})
     
     
 class TaskView(LoginRequiredMixin, View):
