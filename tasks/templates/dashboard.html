@@ -2,66 +2,6 @@
 {% block content %}
 
 <style>
-
-  <!--Task Create-->
-  .taskform {
-        max-width: 600px;
-        margin: auto;
-        margin-top: 50px;
-        position: relative;
-        background-color: lightgray;
-        padding: 20px;
-        border-radius: 10px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-    }
-
-    label {
-        font-weight: bold;
-        display: block;
-        margin-bottom: 5px;
-    }
-
-    textarea {
-        width: 100%;
-        padding: 10px;
-        border: 1px solid grey;
-        border-radius: 5px;
-        box-sizing: border-box;
-    }
-
-    button[type="submit"], .cancel-button {
-        display: inline-block;
-        background-color: lightsalmon;
-        color: white;
-        padding: 10px;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        transition: background-color 0.2s ease;
-        z-index: 2;
-        width: 80px;
-        box-sizing: border-box;
-        vertical-align: top;
-        text-align: center;
-    }
-
-    button[type="submit"]:hover, .cancel-button:hover {
-        background-color: darksalmon;
-        color: white;
-    }
-
-    .nameClass {
-        width: 100%;
-        padding: 10px;
-        box-sizing: border-box;
-        border: 1px solid black;
-        border-radius: 5px;
-    }
-
-    .descriptionClass {
-        height: 100px;
-    }
-
   body{
     background: linear-gradient(to bottom right, #0076f4, #209e3e);
   }
@@ -160,6 +100,7 @@
 
   #sidebar2{
     height: 100vh;
+    padding: 10px;
     background-color: rgba(222, 206, 206, 0.8);
     border: 10px solid #00000055;
     overflow-wrap: break-word;
@@ -271,17 +212,7 @@
   </div>
   <div class="collapse collapse-horizontal" id="task_pop_up">
     <article id="sidebar2">
-        <title>Create Task</title>
-        <form class=".taskform" method="post" action="{% url 'task_create' %}" id="taskForm">
-            {% csrf_token %}
-            {{ task_form.as_p }}
-    
-            <div>
-                <button type="submit" class="btn btn-primary">Submit</button>
-                <a href="{% url 'dashboard' %}" class="cancel-button">Cancel</a>
-            </div>
-        </form>
-      <!---{% include 'task_create.html' with form=task_form %}-->
+      {% include 'task_create.html' with form=task_form %}
     </article id="sidebar2">
   </div>
 </div>
