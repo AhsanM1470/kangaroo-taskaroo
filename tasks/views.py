@@ -376,17 +376,9 @@ class DeleteTaskView(LoginRequiredMixin, View):
     #     all_tasks = Task.objects.all()
     #     return render(request, 'task_form.html', {'tasks': all_tasks, 'form': form, 'lane': lane_name})
 
-
-from django.http import HttpResponseBadRequest
-from django.shortcuts import render
-from .models import Task
-
 def custom_sort(task):
-    # Your custom sorting logic here
-    # For example, sorting tasks by priority: low < medium < high
     priority_mapping = {'low': 1, 'medium': 2, 'high': 3}
     return priority_mapping.get(task.priority, 0)
-
 
 
 priority_order = Case(
@@ -425,7 +417,7 @@ def task_search(request):
     return render(request, 'task_search.html', context)
 
 
-    
+
     
 class UpdateTaskView(LoginRequiredMixin, UpdateView):
     model = Task
