@@ -8,9 +8,9 @@
       scrollbar-color: #888 transparent;
   }
 
-  .board-container::-webkit-scrollbar, .task::-webkit-scrollbar {
+  .lane-header::-webkit-scrollbar, .board-container::-webkit-scrollbar, .task::-webkit-scrollbar {
       width: 0.5em; /* Width of the scrollbar */
-      height: 0.4em;
+      height: 0.3em;
   }
 
   ::-webkit-scrollbar-thumb {
@@ -57,6 +57,7 @@
     border: 1px solid #FFFFFF55;
     display: flex;
     color: white;
+    padding: 0.2em;
   }
 
   .username{
@@ -113,6 +114,10 @@
     max-width: 20vw;
   }
 
+  .lane-header{
+    overflow: auto;
+  }
+
   .lane-name-input{
     display: none;
     font-size: 1.5em;
@@ -151,7 +156,7 @@
   }
 
   #sidebar{
-    width: 12.1vw;
+    width: 12.4vw;
     height: 100vh;
     background-color: #064486cc;
     border-right: 1px solid #FFFFFF55;
