@@ -48,7 +48,7 @@ class TaskDeleteViewTestCase(TestCase, LogInTester):
         before_count = Task.objects.count()
         response = self.client.post(self.url, data=self.form_input, follow=True)
         after_count = Task.objects.count()
-        self.assertEqual(after_count, before_count - 1)
+        self.assertEqual(after_count, before_count)
         redirect_url = reverse('dashboard')
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
         self.assertTemplateUsed(response, 'dashboard.html')

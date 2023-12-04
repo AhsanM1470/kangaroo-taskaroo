@@ -390,7 +390,7 @@ def task_search(request):
     return render(request, 'task_search.html', context)
 
     
-class TaskView(LoginRequiredMixin, View):
+class TaskEditView(LoginRequiredMixin, View):
     model = Task
     form_class = TaskForm
     template_name = 'task_edit.html'  # Create a template for your task form
@@ -413,7 +413,7 @@ class TaskView(LoginRequiredMixin, View):
         }
         form = TaskForm(initial=initial_data)
         # if this doesnt work use domain explicitly
-        update_url = '/task_edit/'+task_name+'/'
+        update_url = reverse('task_edit', kwargs={'task_name': task_name})
         context = {'form': form, 'update_url': update_url, 'task': task}
         return render(request, self.template_name, context)
     
