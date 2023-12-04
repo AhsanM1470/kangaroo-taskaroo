@@ -1,7 +1,5 @@
 
-fpython:S1192"GDefine a constant instead of duplicating this literal "Task 1" 4 times.(¥ìÖÌ8º§ÿÁ1
-fpython:S1192"GDefine a constant instead of duplicating this literal "Task 2" 4 times.(´óí8º§ÿÁ1
-fpython:S1192"GDefine a constant instead of duplicating this literal "Task 3" 4 times.(·ï¤¤8º§ÿÁ1
-fpython:S1192"GDefine a constant instead of duplicating this literal 'Task 1' 4 times.(ÇÜ°›8º§ÿÁ1
-ypython:S4144"UUpdate this function so that its implementation is not identical to setUp on line 10.(§˜œşÿÿÿÿ8º§ÿÁ1
-Bpython:S125@"Remove this commented out code.(“ÑÆúÿÿÿÿ8º§ÿÁ1
+fpython:S1192"GDefine a constant instead of duplicating this literal "Task 1" 5 times.(œ ×8Â¯¯·Ã1
+fpython:S1192	"GDefine a constant instead of duplicating this literal "Task 2" 5 times.(«ÙÏï8Ã¯¯·Ã1
+fpython:S1192
+"GDefine a constant instead of duplicating this literal "Task 3" 5 times.(À¹‰8Ã¯¯·Ã1

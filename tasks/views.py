@@ -16,8 +16,9 @@ from django.urls import reverse_lazy
 from django.views.decorators.http import require_POST
 from .forms import TaskForm, TaskDeleteForm
 from .models import Task, Invite, Team
-from django.http import HttpResponseBadRequest
 from datetime import datetime
+from django.http import HttpResponseBadRequest
+from django.db.models import Case, Value, When
 
 @login_required
 def dashboard(request):
@@ -280,6 +281,7 @@ class TaskView(LoginRequiredMixin, FormView):
                 description = form.cleaned_data['description']
                 #date_field
                 due_date = form.cleaned_data['due_date']
+                priority = form.cleaned_data['priority']
             
                 model = Task.objects.create(
                     name=name,
@@ -374,7 +376,25 @@ class DeleteTaskView(LoginRequiredMixin, View):
     #     all_tasks = Task.objects.all()
     #     return render(request, 'task_form.html', {'tasks': all_tasks, 'form': form, 'lane': lane_name})
 
-      
+
+from django.http import HttpResponseBadRequest
+from django.shortcuts import render
+from .models import Task
+
+def custom_sort(task):
+    # Your custom sorting logic here
+    # For example, sorting tasks by priority: low < medium < high
+    priority_mapping = {'low': 1, 'medium': 2, 'high': 3}
+    return priority_mapping.get(task.priority, 0)
+
+
+
+priority_order = Case(
+    When(priority='high', then=Value(3)),
+    When(priority='medium', then=Value(2)),
+    When(priority='low', then=Value(1))
+)
+
 def task_search(request):
     q = request.GET.get('q', '')
     data = Task.objects.all()
@@ -382,22 +402,28 @@ def task_search(request):
     if q:
         data = data.filter(name__icontains=q)
 
-    sort_by_due_date = request.GET.get('sort_due_date', None)
+    sort_column = request.GET.get('sort_column', None)
+    sort_direction = request.GET.get('sort_direction', None)
+    if sort_column:
 
-    if sort_by_due_date:
-        if sort_by_due_date in ['asc', 'desc']:
-            order_by = 'due_date' if sort_by_due_date == 'asc' else '-due_date'
-            data = data.order_by(order_by)
+        if sort_direction == 'desc':
+           if sort_column == 'priority':
+               data=data.model.objects.alias(priority_order=priority_order).order_by('-priority_order')
+           else:
+                data = data.order_by('-'+sort_column)
         else:
-            return HttpResponseBadRequest("Invalid value for 'sort_due_date'")
+            if sort_column == 'priority':
+                data=data.model.objects.alias(priority_order=priority_order).order_by('priority_order')
+            else:
+                data = data.order_by(sort_column)
 
     context = {'data': data}
 
-    # Check if there are no tasks found
     if not data.exists():
         context['no_tasks_found'] = True
 
     return render(request, 'task_search.html', context)
+
 
     
     

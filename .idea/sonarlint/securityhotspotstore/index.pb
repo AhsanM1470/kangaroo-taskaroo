@@ -21,8 +21,6 @@ A
 static/custom.css,d/8/d888d8fc39a090017b12df188d128b4cfb4ad708
 >
 tasks/views.py,a/3/a3697f596a75575dd5f2f61a6caa5886cb87edf4
-R
-"tasks/templates/task_deletion.html,6/3/63a961fec7ae2c3e075fdda4a545b09d63202a68
 S
 #tasks/tests/views/test_task_view.py,1/6/167efa7cb1143963f134785cdd4411c098a062a2
 S
@@ -41,8 +39,6 @@ R
 "tasks/templates/partials/menu.html,f/3/f34f57501cb9ca7e77436108e559f4cfe5709478
 V
 &tasks/templates/partials/messages.html,7/5/753f7987069cb8ad4e2dde77443ca231e82d322e
-P
- tasks/templates/search_task.html,6/8/6854b2b14416851259e42984ed9d9c1138759b07
 P
  tasks/templates/task_search.html,c/e/ce74e14307c88da0941f67c160f5799af821e2ce
 >
@@ -63,3 +59,9 @@ U
 %tasks/tests/views/test_view_mixins.py,b/5/b5c26af2a371a14666f54b5a146f78dae302ab72
 V
 &tasks/tests/views/test_profile_view.py,5/c/5c7db56e0a91c7633190a5eaf755c29063a819ad
+9
+	README.md,8/e/8ec9a00bfd09b3190ac6b22251dbb1aa95a0579d
+A
+tasks/__init__.py,b/7/b74c774a94c681a93f3a12e9e38f4dccc90874b2
+P
+ tasks/templates/task_delete.html,3/3/335359ad6b1461117dce5228031ef1e16239a419

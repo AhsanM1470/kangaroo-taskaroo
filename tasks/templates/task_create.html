@@ -66,11 +66,11 @@
     <form method="post" action="{% url 'task_create' %}" id="taskForm">
         {% csrf_token %}
         {{ form.as_p }}
-
         <div>
             <button type="submit" class="btn btn-primary">Submit</button>
             <a href="{% url 'dashboard' %}" class="cancel-button">Cancel</a>
         </div>
     </form>
+
 </div>
 {% endblock %}

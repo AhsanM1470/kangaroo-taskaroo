@@ -5,9 +5,25 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="eefdf185-ad17-45f9-8701-7f5f08312d49" name="Changes" comment="done with create task">
+      <change beforePath="$PROJECT_DIR$/.idea/sonarlint/issuestore/1/6/167efa7cb1143963f134785cdd4411c098a062a2" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/sonarlint/issuestore/1/6/167efa7cb1143963f134785cdd4411c098a062a2" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/sonarlint/issuestore/2/e/2ed5f362c415af6fcaf7f8b7cde1cdc1d22fa75c" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/sonarlint/issuestore/2/e/2ed5f362c415af6fcaf7f8b7cde1cdc1d22fa75c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/sonarlint/issuestore/6/0/60a80a12b95e6085f6536242e2205f6cf4f5e95e" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/sonarlint/issuestore/6/0/60a80a12b95e6085f6536242e2205f6cf4f5e95e" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/sonarlint/issuestore/6/3/63a961fec7ae2c3e075fdda4a545b09d63202a68" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/sonarlint/issuestore/6/8/6854b2b14416851259e42984ed9d9c1138759b07" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/sonarlint/issuestore/7/5/75086f4a2c6b90ff28fef771812207f5774baab2" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/sonarlint/issuestore/7/5/75086f4a2c6b90ff28fef771812207f5774baab2" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/sonarlint/issuestore/a/3/a3697f596a75575dd5f2f61a6caa5886cb87edf4" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/sonarlint/issuestore/a/3/a3697f596a75575dd5f2f61a6caa5886cb87edf4" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/sonarlint/issuestore/c/e/ce74e14307c88da0941f67c160f5799af821e2ce" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/sonarlint/issuestore/c/e/ce74e14307c88da0941f67c160f5799af821e2ce" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/sonarlint/issuestore/index.pb" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/sonarlint/issuestore/index.pb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/sonarlint/securityhotspotstore/6/3/63a961fec7ae2c3e075fdda4a545b09d63202a68" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/sonarlint/securityhotspotstore/6/8/6854b2b14416851259e42984ed9d9c1138759b07" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/sonarlint/securityhotspotstore/index.pb" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/sonarlint/securityhotspotstore/index.pb" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tasks/forms.py" beforeDir="false" afterPath="$PROJECT_DIR$/tasks/forms.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tasks/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/tasks/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tasks/templates/task_create.html" beforeDir="false" afterPath="$PROJECT_DIR$/tasks/templates/task_create.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tasks/templates/task_search.html" beforeDir="false" afterPath="$PROJECT_DIR$/tasks/templates/task_search.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tasks/tests/views/test_task_search_view.py" beforeDir="false" afterPath="$PROJECT_DIR$/tasks/tests/views/test_task_search_view.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tasks/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/tasks/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -25,25 +41,25 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="06-Create-Tasks" />
+        <entry key="$PROJECT_DIR$" value="09-Search-Task" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
-  "history": [
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;history&quot;: [
     {
-      "state": "OPEN",
-      "assignee": "Anna1021",
-      "author": "hannah-pk"
+      &quot;state&quot;: &quot;OPEN&quot;,
+      &quot;assignee&quot;: &quot;Anna1021&quot;,
+      &quot;author&quot;: &quot;hannah-pk&quot;
     }
   ],
-  "lastFilter": {
-    "state": "OPEN",
-    "assignee": "Anna1021",
-    "author": "hannah-pk"
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;Anna1021&quot;,
+    &quot;author&quot;: &quot;hannah-pk&quot;
   }
-}]]></component>
+}</component>
   <component name="GithubPullRequestsUISettings">
     <option name="selectedUrlAndAccountId">
       <UrlAndAccount>
@@ -70,7 +86,7 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "SONARLINT_PRECOMMIT_ANALYSIS": "true",
     "WebServerToolWindowFactoryState": "false",
-    "git-widget-placeholder": "09-Search-Task",
+    "git-widget-placeholder": "10-Priority-Levels",
     "last_opened_file_path": "/Users/xinxinzi/Second_year/5CCS2SEG/kangaroo/static/images",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
@@ -85,7 +101,7 @@
       <recent name="$PROJECT_DIR$/static/images" />
     </key>
   </component>
-  <component name="RunManager" selected="Django tests.Test: tasks.tests.views.test_task_search_view.TaskSearchViewTests.test_search_view_with_results">
+  <component name="RunManager" selected="Django Server.kangaroo">
     <configuration name="Test: tasks.tests.views.test_task_search_view.TaskSearchViewTests" type="DjangoTestsConfigurationType" temporary="true">
       <module name="kangaroo" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -154,6 +170,8 @@
       <list>
         <item itemvalue="Django tests.Test: tasks.tests.views.test_task_search_view.TaskSearchViewTests.test_search_view_with_results" />
         <item itemvalue="Django tests.Test: tasks.tests.views.test_task_search_view.TaskSearchViewTests" />
+        <item itemvalue="Django tests.Test: tasks.tests.views.test_task_search_view.TaskSearchViewTests.test_search_view_with_results" />
+        <item itemvalue="Django tests.Test: tasks.tests.views.test_task_search_view.TaskSearchViewTests" />
       </list>
     </recent_temporary>
   </component>
@@ -168,6 +186,8 @@
       <workItem from="1700351722600" duration="14242000" />
       <workItem from="1700443700916" duration="2492000" />
       <workItem from="1700729493911" duration="24450000" />
+      <workItem from="1701374436897" duration="330000" />
+      <workItem from="1701374820615" duration="15775000" />
     </task>
     <task id="LOCAL-00001" summary="slightly refine login page and task form">
       <option name="closed" value="true" />
@@ -196,19 +216,8 @@
     <MESSAGE value="done with create task" />
     <option name="LAST_COMMIT_MESSAGE" value="done with create task" />
   </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/tasks/tests/views/test_task_search_view.py</url>
-          <line>21</line>
-          <option name="timeStamp" value="11" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
-  </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/kangaroo$Test__tasks_tests_views_test_task_search_view_TaskSearchViewTests.coverage" NAME="Test: tasks.tests.views.test_task_search_view.TaskSearchViewTests Coverage Results" MODIFIED="1701299059227" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
-    <SUITE FILE_PATH="coverage/kangaroo$Test__tasks_tests_views_test_task_search_view_TaskSearchViewTests_test_search_view_with_results.coverage" NAME="Test: tasks.tests.views.test_task_search_view.TaskSearchViewTests.test_search_view_with_results Coverage Results" MODIFIED="1701300831582" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
+    <SUITE FILE_PATH="coverage/kangaroo$Test__tasks_tests_views_test_task_search_view_TaskSearchViewTests_test_search_view_with_results.coverage" NAME="Test: tasks.tests.views.test_task_search_view.TaskSearchViewTests.test_search_view_with_results Coverage Results" MODIFIED="1701720656559" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
   </component>
 </project>

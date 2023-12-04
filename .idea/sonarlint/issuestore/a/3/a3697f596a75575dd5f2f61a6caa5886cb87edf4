@@ -1,8 +1,12 @@
 
-Bpython:S1259"Remove this commented out code.(„¹««ÿÿÿÿÿ8¸ƒ°ÂÁ1
-Bpython:S125Y"Remove this commented out code.(äÞê¤úÿÿÿÿ8»ƒ°ÂÁ1
-Qpython:S1172™",Remove the unused function parameter "args".(ÄÀŸëÿÿÿÿÿ8½ƒ°ÂÁ1
-Spython:S1172™".Remove the unused function parameter "kwargs".(ÄÀŸëÿÿÿÿÿ8¼ƒ°ÂÁ1
-dpython:S5720Ÿ"?Rename "request" to "self" or add the missing "self" parameter.(¹¼Ó´üÿÿÿÿ8½ƒ°ÂÁ1
-_python:S5720®"?Rename "request" to "self" or add the missing "self" parameter.(Ï¹Ž®8½ƒ°ÂÁ1
->python:S125"Remove this commented out code.(áá—ì8½ƒ°ÂÁ1
+mpython:S1192]"NDefine a constant instead of duplicating this literal 'my_teams.html' 3 times.(Àö‡ý8«È˜¶Ã1
+=python:S125:"Remove this commented out code.(»¿¶ñ8¬È˜¶Ã1
+Qpython:S1172Ž",Remove the unused function parameter "args".(ÄÀŸëÿÿÿÿÿ8¬È˜¶Ã1
+Spython:S1172Ž".Remove the unused function parameter "kwargs".(ÄÀŸëÿÿÿÿÿ8¬È˜¶Ã1
+Npython:S1481ž")Remove the unused local variable "model".(ê›Øÿûÿÿÿÿ8¬È˜¶Ã1
+Lpython:S1481œ",Remove the unused local variable "priority".(•’»û8¬È˜¶Ã1
+€python:S1845Ö"`Rename field "POST" to prevent any misunderstanding/clash with method "post" defined on line 324(Š°Ü€8¬È˜¶Ã1
+_python:S5720Ó"?Rename "request" to "self" or add the missing "self" parameter.(Ï¹Ž®8¬È˜¶Ã1
+>python:S125Å"Remove this commented out code.(Øçì¶8¬È˜¶Ã1
+>python:S125Ç"Remove this commented out code.(”š®Ú8¬È˜¶Ã1
+Cpython:S125°"Remove this commented out code.(àÛ¼µýÿÿÿÿ8¬È˜¶Ã1

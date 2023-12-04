@@ -119,11 +119,17 @@ class TaskForm(forms.ModelForm):
     class Meta:
         """Form options"""
         model = Task
-        fields = ["name", "description"]
+        fields = ["name", "description", "priority"]
         widgets = {
             'name' : forms.TextInput(attrs={'class': 'nameClass', 'placeholder': 'Enter the task name...'}),
-            'description' : forms.Textarea(attrs={'class': 'descriptionClass', 'placeholder': 'Write a task description...'})
+            'description' : forms.Textarea(attrs={'class': 'descriptionClass', 'placeholder': 'Write a task description...'}),
+            'priority': forms.Select(attrs={'class': 'priorityClass'}),
         }
+    #
+    # priority = forms.ChoiceField(
+    #     choices=Task.PRIORITY_CHOICES,
+    #     widget=forms.Select(attrs={'class': 'priorityClass'}),
+    # )
      
     date_field = forms.DateField(
         label='Date',
@@ -155,6 +161,8 @@ class TaskForm(forms.ModelForm):
 
         if date is not None and time is not None:
             instance.due_date = datetime.combine(date, time)
+
+        instance.priority = self.cleaned_data.get('priority')
 
         if commit:
             instance.save()
