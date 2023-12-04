@@ -1,12 +1,0 @@
-
-mpython:S1192]"NDefine a constant instead of duplicating this literal 'my_teams.html' 3 times.(ΐφ‡ύ8«Θ¶Γ1
-=python:S125:"Remove this commented out code.(»Ώ¶ρ8¬Θ¶Γ1
-Spython:S1172".Remove the unused function parameter "kwargs".(Δΐλÿÿÿÿÿ8¬Θ¶Γ1
-Qpython:S1172",Remove the unused function parameter "args".(Δΐλÿÿÿÿÿ8¬Θ¶Γ1
-Lpython:S1481",Remove the unused local variable "priority".(•’»ϋ8¬Θ¶Γ1
-Npython:S1481")Remove the unused local variable "model".(κ›Ψÿϋÿÿÿÿ8¬Θ¶Γ1
-€python:S1845Φ"`Rename field "POST" to prevent any misunderstanding/clash with method "post" defined on line 324(°ά€8¬Θ¶Γ1
-_python:S5720Σ"?Rename "request" to "self" or add the missing "self" parameter.(ΟΉ®8¬Θ¶Γ1
->python:S125Ε"Remove this commented out code.(Ψημ¶8¬Θ¶Γ1
->python:S125Η"Remove this commented out code.(”®Ϊ8¬Θ¶Γ1
-Cpython:S125¨"Remove this commented out code.(ΰΫΌµύÿÿÿÿ8¬Θ¶Γ1
