@@ -20,6 +20,7 @@ from django.http import HttpResponseBadRequest
 from datetime import datetime
 from django.db.models import Max
 
+
 @login_required
 def dashboard(request):
     """Display and modify the current user's dashboard."""
@@ -32,6 +33,22 @@ def dashboard(request):
                 Lane.objects.get_or_create(lane_name=lane_name, lane_order=lane_order)
     
     # Handle form submission for adding a new lane
+    
+    # def __init__ (self, *args, ** kargs):
+        
+    #     default_lanes = ['Bakclog', 'In Progress', 'Complete']
+    #     for lane_name in default_lanes:
+    #         newlane = Lane.objects.get_or_create(lane_name = lane_name)
+    #         newlane.save()
+        
+    
+    
+    if request.method == 'GET':
+        if not Lane.objects.exists():
+            default_lanes = ['Backlog', 'In Progress', 'Complete']
+            for lane_name in default_lanes:
+                Lane.objects.get_or_create(lane_name = lane_name)
+    
     if request.method == 'POST':
         if 'add_lane' in request.POST:
             max_order = Lane.objects.aggregate(Max('lane_order'))['lane_order__max'] or 0
