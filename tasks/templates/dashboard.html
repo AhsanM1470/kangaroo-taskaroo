@@ -278,6 +278,16 @@
                 </button>
               </form>
 
+              <!-- View/edit task form -->
+              <form method="post" action="">
+                {% csrf_token %}
+                <input type="hidden" name="" value="">
+                <button type="submit" class="image" title="View and edit task">
+                  <img src="../../static/images/edit-icon-grey.png">
+                </button>
+              </form>
+
+              <!-- Delete task form -->
               <form method="post" action="{% url 'task_delete' task.name %}" style="display: inline;">
                 {% csrf_token %}
                 <input type="hidden" name="task_delete" value="{{ task.name }}">
