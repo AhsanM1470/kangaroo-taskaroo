@@ -185,6 +185,10 @@ def home(request):
 
     return render(request, 'home.html')
 
+@login_prohibited
+def task_search(request):
+    return render(request, 'task_search.html')
+
 
 class LoginProhibitedMixin:
     """Mixin that redirects when a user is logged in."""
