@@ -181,6 +181,15 @@
     background-color: #064486;
   }
 
+  #task_sidebar{
+    height: 100vh;
+    padding: 1empx;
+    background-color: rgba(222, 206, 206, 0.8);
+    border: 10px solid #00000055;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+  }
+
 </style>
 
 <div class="header-bar">
@@ -205,11 +214,12 @@
     <div class="row">
       <div class="d-flex align-items-start" style="margin-top: 1em; margin-left: 1em;">
         <div class="board">
-          
+          <!-- Lanes of the dashboard -->
           {% for lane in lanes %}
           <div class="lane">
             <div class="lane-header" style="display: flex; justify-content: space-between; align-items: center;">
               
+              <!-- Move lane left form -->
               <form method="post" action="{% url 'move_lane_left' lane.lane_id %}" style="display: inline;">
                 {% csrf_token %}
                 <button type="submit" class="image" title="Move lane left">
@@ -228,6 +238,7 @@
                 <input type="text" name="new_lane_name" value="{{ lane.lane_name }}" id="input-{{ forloop.counter }}" maxlength="50" class="lane-name-input" style="display:none;" onkeypress="enterName(event,'{{forloop.counter}}')">
               </form>
 
+              <!-- Move lane right form -->
               <form method="post" action="{% url 'move_lane_right' lane.lane_id %}" style="display: inline;">
                 {% csrf_token %}
                 <button type="submit" class="image" title="Move lane right">
@@ -281,10 +292,11 @@
             {% endfor %}
     
             <div>
-                <form method="get" style="display: inline;" action="{% url 'task_create' %}">
-                    <input type="hidden" name="lane" value="{{ lane.id }}">
-                    <button type="submit" class="btn btn-secondary" style="width: 100%;">New Task</button>
-                </form>
+              <form method="get" style="display: inline;" action="{% url 'task_create' %}">
+                  <input type="hidden" name="lane" value="{{ lane.id }}">
+                  <!-- <button type="submit" class="btn btn-secondary" style="width: 100%;">New Task</button> -->
+                  <button type="button" class="btn btn-secondary" data-bs-toggle="collapse" data-bs-target="#task_pop_up" aria-expanded="false" aria-controls="#task_pop_up" style="width: 100%;">New Task</button>
+              </form>
             </div>
           </div>
           {% endfor %}
@@ -296,6 +308,13 @@
         </form>
       </div>
     </div>
+  </div>
+
+  <!-- Task create popup -->
+  <div class="collapse collapse-horizontal" id="task_pop_up">
+    <article id="task_sidebar">
+      {% include 'task_create.html' with form=task_form %}
+    </article>
   </div>
 </div>
 

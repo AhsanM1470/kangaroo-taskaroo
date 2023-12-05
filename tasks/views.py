@@ -22,6 +22,7 @@ from django.db.models import Max
 
 
 @login_required
+
 def dashboard(request):
     """Display and modify the current user's dashboard."""
 
@@ -64,11 +65,13 @@ def dashboard(request):
     all_tasks = Task.objects.all()
     # Used to be all teams
     teams = current_user.get_teams()
+    task_form = TaskForm()
     return render(request, 'dashboard.html', {
         'user': current_user,
         'lanes': lanes,
         'tasks': all_tasks,
-        'teams': teams
+        'teams': teams,
+        'task_form': task_form,
     })
 
 def move_task_left(request, task_name):
@@ -184,10 +187,6 @@ def home(request):
     """Display the application's start/home screen."""
 
     return render(request, 'home.html')
-
-@login_prohibited
-def task_search(request):
-    return render(request, 'task_search.html')
 
 
 class LoginProhibitedMixin:
@@ -441,11 +440,11 @@ class DeleteLaneView(LoginRequiredMixin, View):
             if delete_form.is_valid():
                 if delete_form.cleaned_data['confirm_deletion']:
                     lane.delete()
-                    messages.success(request, 'Task Deleted!')
+                    messages.success(request, 'Lane Deleted!')
                     return redirect('dashboard')
         else:
             delete_form = LaneDeleteForm()
-        return render(request, 'task_delete.html', {'lane':lane, 'delete_form': delete_form})
+        return render(request, 'lane_delete.html', {'lane':lane, 'delete_form': delete_form})
     
     
 class TaskView(LoginRequiredMixin, View):
