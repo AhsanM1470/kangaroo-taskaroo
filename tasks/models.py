@@ -159,7 +159,7 @@ class Task(models.Model):
         'Must have 3 alphanumeric characters!'
         )
     #task_id = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=30, blank=False, unique=True, validators=[alphanumeric], primary_key=True)
+    name = models.CharField(max_length=30, blank=False, unique=True, validators=[alphanumeric])
     description = models.CharField(max_length=530, blank=True)
     due_date = models.DateTimeField(default=datetime(1, 1, 1))
     created_at = models.DateTimeField(default=timezone.now)

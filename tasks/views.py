@@ -276,16 +276,6 @@ class CreateTaskView(LoginRequiredMixin, FormView):
 
             # Check if the form is valid
             if form.is_valid():
-                name = form.cleaned_data['name']
-                description = form.cleaned_data['description']
-                #date_field
-                due_date = form.cleaned_data['due_date']
-            
-                model = Task.objects.create(
-                    name=name,
-                    description=description,
-                    due_date=due_date
-                )
                 # Save the form data to create a new Task instance
                 form.save()
                 messages.success(request, 'Task Created!')
@@ -311,18 +301,18 @@ class DeleteTaskView(LoginRequiredMixin, View):
         messages.add_message(self.request, messages.SUCCESS, "Task deleted!")
         return reverse_lazy('dashboard')
     
-    def get(self, request, task_name, *args, **kwargs):
-        task = get_object_or_404(Task, name=task_name)
+    def get(self, request, pk, *args, **kwargs):
+        task = get_object_or_404(Task, pk=pk)
         delete_form = TaskDeleteForm()
         # if this doesnt work use domain explicitly
         '''delete_url = '/task_delete/'+task_name+'/'''
-        delete_url = reverse('task_delete', kwargs={'task_name': task_name})
-        context = {'task': task, 'delete_form': delete_form, 'delete_url': delete_url, 'name': task_name}
+        delete_url = reverse('task_delete', kwargs={'pk': pk})
+        context = {'task': task, 'delete_form': delete_form, 'delete_url': delete_url}
         return render(request, self.template_name, context)
     
-    def post(self, request, task_name, *args, **kwargs):
+    def post(self, request, pk, *args, **kwargs):
         #task_name = kwargs["task_name"]
-        task = get_object_or_404(Task, pk=task_name)
+        task = get_object_or_404(Task, pk=pk)
         #task = Task.objects.get(pk = task_name)
         if request.method == 'POST':
             delete_form = TaskDeleteForm(request.POST)
@@ -401,8 +391,8 @@ class TaskEditView(LoginRequiredMixin, View):
         messages.add_message(self.request, messages.SUCCESS, "Task updated!")
         return reverse_lazy('dashboard')
     
-    def get(self, request, task_name, *args, **kwargs):
-        task = get_object_or_404(Task, name=task_name)
+    def get(self, request, pk, *args, **kwargs):
+        task = get_object_or_404(Task, pk=pk)
         date_field = task.due_date.date()
         time_field = task.due_date.time()
         initial_data = {
@@ -413,23 +403,23 @@ class TaskEditView(LoginRequiredMixin, View):
         }
         form = TaskForm(initial=initial_data)
         # if this doesnt work use domain explicitly
-        update_url = reverse('task_edit', kwargs={'task_name': task_name})
+        update_url = reverse('task_edit', kwargs={'pk': pk})
         context = {'form': form, 'update_url': update_url, 'task': task}
         return render(request, self.template_name, context)
     
-    def post(self, request, task_name, *args, **kwargs):
+    def post(self, request, pk, *args, **kwargs):
         #task_name = kwargs["task_name"]
-        task = get_object_or_404(Task, pk=task_name)
+        task = get_object_or_404(Task, pk=pk)
         #task = Task.objects.get(pk = task_name)
         if request.method == 'POST':
             form = TaskForm(request.POST, instance=task)
             if form.is_valid():
-                form.save
+                form.save()
                 messages.success(request, 'Task Updated!')
                 return redirect('dashboard')
         else:
-            task_form = TaskForm(instance=task)
-        return render(request, 'task_edit.html', {'task':task, 'delete_form': task_form})
+            form = TaskForm(instance=task)
+        return render(request, 'task_edit.html', {'task':task, 'form': form})
 
 class InviteView(LoginRequiredMixin, FormView):
     """Functionality for using the invite form"""
