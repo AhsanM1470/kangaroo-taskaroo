@@ -20,38 +20,42 @@
     display: flex;
     flex-direction: row;
     width: 100%;
-    max-width: 1000px; 
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
     text-align: center;
+    height: 400px;
+    max-width: 700px;
   }
 
   .section1, .section2 {
     flex: 1; 
     box-sizing: border-box;
-    padding: 50px;
     margin: 0;
+    padding: 10px;
   }
 
   .section1 {
     background-color: rgba(0, 118, 244, 0.493);
     color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center; 
   }
 
   .section2 {
     background-color: rgb(47, 148, 255);
-    border-radius: 5px;
     display: flex; 
     flex-direction: column; 
     justify-content: center; 
   }
 
   .cover-heading {
-    font-size: 1em;
+    font-size: 2.2em;
     margin-bottom: 10px;
   }
 
   .cover-text {
-    font-size: 0.6em;
+    font-size: 1em;
   }
 
   .btn-primary {
@@ -64,15 +68,14 @@
     background-color: #007bff;
     color: #fff;
     border: 1px solid #6c757d;
+    width: 200px;
   }
 </style>
 {#    <div id='cover-image'>#}
       <div class="container">
-        <div class="row">
-          <div class="col-12">
             <div class="card">
               <div class="section1">
-                <h1 class="cover-heading">Task Manager</h1>
+                <h1 class="cover-heading">KangarooTaskaroo</h1>
                 <p class="cover-text">A task manager application by Team <i>kangaroo</i></p>
               </div>
               <div class="section2">
@@ -87,9 +90,7 @@
                   </a>
                 </p>
               </div>
-            </div>
           </div>
-        </div>
       </div>
 {#    </div>#}
 {% endblock %}
