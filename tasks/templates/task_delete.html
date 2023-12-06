@@ -3,12 +3,23 @@
 {% include 'partials/messages.html' %}
 
 <style>
+  body{
+    background: linear-gradient(to bottom right, #0076f4, #209e3e);
+    height:100vh;
+    width: 100%;
+    color: rgb(80, 127, 189);
+    margin: 0;
+    font-family: 'Arial', sans-serif;
+  }
+
   form {
       max-width: 600px;
       margin: auto;
       margin-top: 50px;
       position: relative;
-      background-color: lightgray;
+      background-color: rgb(144, 198, 255);
+      border: 1px solid white;
+      box-shadow: 0 0 10px rgba(0,0,0,0.4);
       padding: 20px;
       border-radius: 10px;
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
@@ -20,7 +31,7 @@
 
   button[type="submit"], .cancel-button {
       display: inline-block;
-      background-color: lightsalmon;
+      background-color: rgb(80, 127, 189);
       color: white;
       padding: 10px;
       border: none;
@@ -35,8 +46,8 @@
   }
 
   button[type="submit"]:hover, .cancel-button:hover {
-      background-color: darksalmon;
-      color: white;
+    background: #28242c;
+    color: white;
   }
 
   .deleteForm input[type="checkbox"].confirmClass {
