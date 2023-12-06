@@ -9,20 +9,8 @@
                 <div class="container-fluid">
                     <a class="navbar-brand" href="{% url 'task_search' %}">Navbar</a>
 
-                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                            data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
-                            aria-expanded="false" aria-label="Toggle navigation">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
-
                     <div class="collapse navbar-collapse" id="navbarSupportedContent">
                         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                            <li class="nav-item">
-                                <a class="nav-link active" aria-current="page" href="#">Home</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="#">Link</a>
-                            </li>
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
                                    aria-expanded="false">
@@ -39,9 +27,6 @@
                                         by priority (high)</a></li>
                                 </ul>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link disabled" aria-disabled="true">Disabled</a>
-                            </li>
                         </ul>
 
                         <input class="form-control me-2" name="q" type="search" placeholder="Search"
@@ -52,12 +37,12 @@
             </nav>
         </form>
 
-        <table class="table  table-striped" >
+        <table class="table table-striped">
             <thead>
             <tr>
                 <th scope="col">Task name</th>
                 <th scope="col">Description</th>
-                <th scope="col" >Due date</th>
+                <th scope="col">Due date</th>
                 <th scope="col">Priority</th>
             </tr>
             </thead>
@@ -65,7 +50,7 @@
             {% for task in data %}
                 <tr>
                     <td>{{ task.name }}</td>
-                    <td style="max-width:420px;word-wrap:break-word;" >{{ task.description }}</td>
+                    <td style="max-width:420px;word-wrap:break-word;">{{ task.description }}</td>
                     <td>{{ task.due_date }}</td>
                     <td>{{ task.priority }}</td>
                 </tr>
