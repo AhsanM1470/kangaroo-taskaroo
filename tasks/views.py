@@ -75,6 +75,7 @@ def dashboard(request):
     # Simon's stuff
     assign_task_form = AssignTaskForm(team=current_team, user=current_user)
     create_task_form = TaskForm()
+    create_team_form = CreateTeamForm(user=current_user)
 
     # lane_tasks = {lane: Task.objects.filter(lane=lane) for lane in lanes}
     return render(request, 'dashboard.html', {
@@ -85,6 +86,7 @@ def dashboard(request):
         "current_team": current_team,
         "assign_task_form" : assign_task_form,
         "create_task_form": create_task_form,
+        "create_team_form": create_team_form,
     })
 
 @login_required
@@ -99,7 +101,7 @@ def create_team(request):
             messages.add_message(request, messages.SUCCESS, "Created Team!")
         else:
             messages.add_message(request, messages.ERROR, "That team name has already been taken!")
-    return redirect("my_teams")
+    return redirect("dashboard")
 
 @login_required
 def my_teams(request):

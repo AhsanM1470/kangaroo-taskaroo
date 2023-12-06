@@ -101,7 +101,7 @@
   #popup_panel{
     height: 100vh;
     width: 20vw;
-    padding: 10px;
+    padding: 15px;
     background-color: rgba(222, 206, 206, 0.8);
     border: 10px solid #00000055;
     overflow-wrap: break-word;
@@ -156,7 +156,7 @@
 <div class="flex-container">
   <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block sidebar collapse">
     <ul>
-      <button type="button"> Add Team </button>
+      <button type="button" data-bs-toggle="collapse" data-bs-target="#create_team" aria-expanded="false" aria-controls="#create_team">Add Team</button>
     </ul>
     <h6>Your Teamssssssss:</h6>
     <ul>
@@ -217,7 +217,7 @@
                 </form>
                 -->
                 
-              <button type="submit" class="btn btn-secondary"data-bs-toggle="collapse" data-bs-target="#create_task" aria-expanded="false" aria-controls="#create_task">New Task</button>
+              <button type="button" class="btn btn-secondary" data-bs-toggle="collapse" data-bs-target="#create_task" aria-expanded="false" aria-controls="#create_task">New Task</button>
               
               <form method="post" style="display: inline;">
                 {% csrf_token %}
@@ -257,6 +257,11 @@
   <div class="collapse collapse-horizontal" id="create_task">
     <article id="popup_panel">
       {% include 'task_create.html' with form=create_task_form %}
+    </article>
+  </div>
+  <div class="collapse collapse-horizontal" id="create_team">
+    <article id="popup_panel">
+      {% include 'create_team.html' with team_form=create_team_form %}
     </article>
   </div>
 
