@@ -155,9 +155,10 @@ class Task(models.Model):
     """Model used for tasks and information related to them"""
     #taskID = models.AutoField(primary_key=True, unique=True)
     alphanumeric = RegexValidator(
-        r'^[0-9a-zA-Z]{3,}$', 
-        'Must have 3 alphanumeric characters!'
-        )
+        regex=r'^[a-zA-Z0-9 ]{3,}$',
+        message='Enter a valid word with at least 3 alphanumeric characters (no special characters allowed).',
+        code='invalid_word',
+    )
     #task_id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=30, blank=False, unique=True, validators=[alphanumeric])
     description = models.CharField(max_length=530, blank=True)
