@@ -75,7 +75,10 @@
       <form action="{% url 'sign_up' %}" method="post">
         {% csrf_token %}
         {% include 'partials/bootstrap_form.html' with form=form %}
-        <input type="submit" value="Sign up" class="signup-btn btn btn-primary">
+        <div class="buttons" style="display: flex; gap: 10px;">
+          <input type="submit" value="Sign up" class="signup-btn btn btn-primary">
+          <a href="/" class="back-btn btn signup-btn">Back</a>
+        </div>
       </form>
       <a href="{% url 'log_in' %}">Already have an account? Log in.</a>
     </div>
