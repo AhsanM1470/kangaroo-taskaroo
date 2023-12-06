@@ -1,4 +1,5 @@
 {% block body %}
+<!--Removed extend base html and messages-->
 
 <style>
     .taskform {
@@ -60,11 +61,11 @@
     }
 </style>
 <div class="container">
-    <h4>Create Task</h4>
+    <h1>Create Task</h1>
     <form class=".taskform" method="post" action="{% url 'task_create' %}" id="taskForm">
         {% csrf_token %}
         {{ form.as_p }}
-
+        
         <div>
             <button type="submit" class="task-button">Submit</button>
             <a href="{% url 'dashboard' %}" class="task-button">Cancel</a>

@@ -98,8 +98,9 @@
     cursor: move;
   }
 
-  #sidebar2{
+  #popup_panel{
     height: 100vh;
+    width: 20vw;
     padding: 10px;
     background-color: rgba(222, 206, 206, 0.8);
     border: 10px solid #00000055;
@@ -133,19 +134,40 @@
     background-color: #064486;
   }
 
+  #sidebar button{
+    border: none;
+    background-color: inherit;
+    color: white;
+    transition: background-color 0.3s;
+    padding-left: 5%;
+  }
+
+  #sidebar button:hover{
+    background-color: #064486;
+  }
+
 </style>
 
 <div class="header-bar">
   <h5 class="username">{{ user.username }}</h5>
-  <h3>Welcome to your dashboard</h3>
+  <h3>Welcome to {{ current_team.team_name }}'s dashboard</h3>
 </div>
 
 <div class="flex-container">
   <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block sidebar collapse">
+    <ul>
+      <button type="button"> Add Team </button>
+    </ul>
     <h6>Your Teamssssssss:</h6>
     <ul>
       {% for team in teams %}
-        <li>{{ team.team_name }}</li>
+        <form method="get">
+          <button type="submit" name="dashboard_team" value="{{ team.team_name }}">
+            {{ team.team_name }}
+          </button>
+        </form>
+      {% empty %}
+        <p>You currently are not part of any teams 0-0</p>
       {% endfor %}
     </ul>
   </nav>
@@ -174,24 +196,29 @@
             <!-- <p class="task">Do Thing</p> -->
             {% for task in tasks %}
             <div class="task">
-              <p>
-                <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#task_pop_up" aria-expanded="false" aria-controls="#task_pop_up">
-                  {{ task.name }}
-                </button>         
-              </p>  
+              <!---Another change by the maestro-->
+                  <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#task_pop_up{{ task.name }}" aria-expanded="false" aria-controls="#task_pop_up{{ task.name }}">
+                    {{ task.name }}
+                  </button>
+              <!---up to here--> 
             </div>
-
 
             {% empty %}
             <p>No tasks in this lane.</p>
             {% endfor %}
   
             <div class="task">
+
+                <!--Simon comment out
+      
                 <form method="get" style="display: inline;;" action="{% url 'task_create' %}">
                   <input type="hidden" name="lane" value="{{ lane }}">
                   <button type="submit" class="btn btn-secondary">New Task</button>
                 </form>
-  
+                -->
+                
+              <button type="submit" class="btn btn-secondary"data-bs-toggle="collapse" data-bs-target="#create_task" aria-expanded="false" aria-controls="#create_task">New Task</button>
+              
               <form method="post" style="display: inline;">
                 {% csrf_token %}
                 <input type="hidden" name="delete_lane" value="{{ lane }}">
@@ -207,14 +234,34 @@
           {% csrf_token %}
           <button type="submit" name="add_lane" class="btn btn-dark">Add Lane</button>
         </form>
+
+        <!--Simon Stuff -->
+        <button type="button" name="view_team" class="btn btn-dark" data-bs-toggle="collapse" data-bs-target="#team_info" aria-expanded="false" aria-controls="#team_info">View Team</button>
+
       </div>
     </div>
   </div>
-  <div class="collapse collapse-horizontal" id="task_pop_up">
-    <article id="sidebar2">
-      {% include 'task_create.html' with form=task_form %}
-    </article id="sidebar2">
+  <!--Here I changed -->
+  {% for task in tasks %}
+    <div class="collapse collapse-horizontal" id="task_pop_up{{ task.name }}">
+      <article id="popup_panel">
+        {% include 'assign_task.html' with form=assign_task_form task_name=task.name %}
+      </article>
+    </div>
+  {% endfor %}
+  <div class="collapse collapse-horizontal" id="team_info">
+    <article id="popup_panel">
+      {% include 'team_info.html' with team=current_team %}
+    </article>
   </div>
+  <div class="collapse collapse-horizontal" id="create_task">
+    <article id="popup_panel">
+      {% include 'task_create.html' with form=create_task_form %}
+    </article>
+  </div>
+
+
+  <!--sdsdsd-->
 </div>
 
 {% endblock %}

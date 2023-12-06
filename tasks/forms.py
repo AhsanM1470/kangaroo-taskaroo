@@ -148,13 +148,16 @@ class TaskForm(forms.ModelForm):
                 raise ValidationError('Pick a date-time in the future!')
         return cleaned_data
     
-    def save(self, commit=True):
+    def save(self, assigned_team=None, commit=True):
         instance = super(TaskForm, self).save(commit=False)
         date = self.cleaned_data.get('date_field')
         time = self.cleaned_data.get('time_field')
 
         if date is not None and time is not None:
             instance.due_date = datetime.combine(date, time)
+            
+        if assigned_team is not None:
+            instance.assigned_team = Team.objects.get(team_name=assigned_team)
 
         if commit:
             instance.save()
@@ -191,10 +194,9 @@ class CreateTeamForm(forms.ModelForm):
             self.fields["members_to_invite"].queryset = User.objects.exclude(username=self.creator.username)
     
     def create_team(self, creator):
-        """Create a new team"""
+        """Create a new team, sending the requested members invites to join team"""
 
         members_to_invite = self.cleaned_data.get("members_to_invite")
-        # Maybe for each team member, send them an invite instead of doing it automatically
         
         team = Team.objects.create(
             team_name=self.cleaned_data.get("team_name"),
@@ -210,7 +212,6 @@ class CreateTeamForm(forms.ModelForm):
                 invite_message="Please join my team!",
                 inviting_team=team)
             default_invite.set_invited_users(members_to_invite)
-            #team.add_team_member(team_members) 
 
         return team
 
@@ -258,3 +259,43 @@ class RemoveMemberForm(forms.Form):
 
     member_to_remove = forms.CharField(max_length=30)
     #thing = forms.CharField(max_length=50, choic)
+
+
+class AssignTaskForm(forms.Form):
+    """Form enabling a user to assign a task to another user in team"""
+
+    class Meta:
+        """Form options."""
+
+        fields = ['team_members', 'task']
+
+    team_members = forms.ModelMultipleChoiceField(queryset=User.objects.all(), required=True)
+
+    def __init__(self, *args, **kwargs):
+        """Show all the users who are part of the current team"""
+
+        self.team = kwargs.get("team")
+        self.task_name = kwargs.get("task_name")
+        self.user = kwargs.get("user")
+
+        if self.team != None:
+            kwargs.pop("team")
+        if self.task_name != None:
+            kwargs.pop("task_name")
+        if self.user != None:
+            kwargs.pop("user")
+
+        super().__init__(*args, **kwargs)
+
+        if self.team != None:  
+            self.fields["team_members"].queryset = self.team.get_team_members()
+    
+    def assign_task(self):
+        """Assign the task to the team members selected"""
+
+        task = Task.objects.get(name=self.task_name)
+        assigned_users = self.cleaned_data.get("team_members")
+        task.set_assigned_users(assigned_users)
+        task.save()
+
+        

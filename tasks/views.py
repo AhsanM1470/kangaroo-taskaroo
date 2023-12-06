@@ -14,7 +14,7 @@ from tasks.forms import LogInForm, PasswordForm, UserForm, SignUpForm, CreateTea
 from tasks.helpers import login_prohibited
 from django.urls import reverse_lazy
 from django.views.decorators.http import require_POST
-from .forms import TaskForm, TaskDeleteForm
+from .forms import TaskForm, TaskDeleteForm, AssignTaskForm
 from .models import Task, Invite, Team
 from django.http import HttpResponseBadRequest
 from datetime import datetime
@@ -27,8 +27,15 @@ def dashboard(request):
     if 'lanes' not in request.session:
         request.session['lanes'] = ['Backlog', 'In Progress', 'Complete']
 
+    if request.method == "GET":
+        if 'dashboard_team' in request.GET:
+            team_name = request.GET.get("dashboard_team")
+            request.session["current_team"] = team_name
+
+            # Change the dashboard
+
     # Handle form submission for adding a new lane
-    if request.method == 'POST':
+    elif request.method == 'POST':
         if 'add_lane' in request.POST:
             new_lane_name = 'New Lane'  # Or dynamically generate the name
             request.session['lanes'].append(new_lane_name)
@@ -48,20 +55,36 @@ def dashboard(request):
                 request.session.modified = True
 
         return redirect('dashboard')  # Redirect to the same page to show the updated lanes
+    
+    # Simon Stuff
+    if "team_name" not in request.session:
+        request.session["current_team"] = "Kangaroo" # This is our current board we are looking at for now
+        # Should just be the first team created by user
 
     # Retrieve current user and lanes
     current_user = request.user
+    current_team = Team.objects.get(team_name=request.session["current_team"])
     lanes = request.session['lanes']
-    all_tasks = Task.objects.all()
+
+    # THe lanes can then be retrieved using the current team
+
+    #all_tasks = Task.objects.all()
+    team_tasks = current_team.get_tasks()
     teams = current_user.get_teams()
-    task_form = TaskForm()
+
+    # Simon's stuff
+    assign_task_form = AssignTaskForm(team=current_team, user=current_user)
+    create_task_form = TaskForm()
+
     # lane_tasks = {lane: Task.objects.filter(lane=lane) for lane in lanes}
     return render(request, 'dashboard.html', {
         'user': current_user,
         'lanes': lanes,
-        'tasks': all_tasks,
+        'tasks': team_tasks,
         'teams': teams,
-        "task_form" : task_form,
+        "current_team": current_team,
+        "assign_task_form" : assign_task_form,
+        "create_task_form": create_task_form,
     })
 
 @login_required
@@ -104,6 +127,32 @@ def remove_member(request):
     if request.method == "POST":
         messages.add_message(request, messages.SUCCESS, "Tried to remove team member, but there ain't no functionality hehe")
     return redirect("my_teams")
+
+@login_required
+def assign_task(request):
+    """Assigns a task to a user using the AssignedTask Model"""
+
+    """
+    if request.method == "GET":
+        request.team = Team.objects.get(team_name="Kangaroo")
+        assign_task_form = AssignTaskForm(team=request.team, task_name="Simon")
+        
+        #return render(request, "assign_task.html", {"team": request.team, "assign_form": assign_task_form})
+    """
+
+    if request.method == "POST":
+        """Gets the task that has just been pressed"""
+
+        modified_request = request.POST.copy()
+        task_name = modified_request.pop("task_name")[0]
+        assign_task_form = AssignTaskForm(modified_request, task_name=task_name)
+        if assign_task_form.is_valid():
+            assign_task_form.assign_task()
+            messages.add_message(request, messages.SUCCESS, "Assigned Task!")
+        else:
+            messages.add_message(request, messages.ERROR, "Task does not exist!")
+
+        return redirect("dashboard")
 
 
 @login_required
@@ -289,7 +338,10 @@ class TaskView(LoginRequiredMixin, FormView):
                     due_date=due_date
                 )
                 # Save the form data to create a new Task instance
-                form.save()
+
+                # Simon Stuff
+                assigned_team = request.session["current_team"]
+                form.save(assigned_team=assigned_team)
                 messages.success(request, 'Task Created!')
                 # Redirect to the dashboard or another page
                 return redirect('dashboard')
