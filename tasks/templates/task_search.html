@@ -52,12 +52,12 @@
             </nav>
         </form>
 
-        <table class="table">
+        <table class="table  table-striped" >
             <thead>
             <tr>
                 <th scope="col">Task name</th>
                 <th scope="col">Description</th>
-                <th scope="col">Due date</th>
+                <th scope="col" >Due date</th>
                 <th scope="col">Priority</th>
             </tr>
             </thead>
@@ -65,7 +65,7 @@
             {% for task in data %}
                 <tr>
                     <td>{{ task.name }}</td>
-                    <td>{{ task.description }}</td>
+                    <td style="max-width:420px;word-wrap:break-word;" >{{ task.description }}</td>
                     <td>{{ task.due_date }}</td>
                     <td>{{ task.priority }}</td>
                 </tr>

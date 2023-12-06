@@ -20,6 +20,13 @@ from datetime import datetime
 from django.http import HttpResponseBadRequest
 from django.db.models import Case, Value, When
 
+def formatDateTime(input_date):
+    # Parse the input string
+    parsed_datetime = datetime.strptime(input_date, '%b. %d, %Y, %I:%M %p')
+
+    # Format the datetime object into 'yyyy-mm-dd hh:mm:ss'
+    formatted_datetime = parsed_datetime.strftime('%Y-%m-%d %H:%M:%S')
+
 @login_required
 def dashboard(request):
     """Display and modify the current user's dashboard."""
@@ -376,10 +383,6 @@ class DeleteTaskView(LoginRequiredMixin, View):
     #     all_tasks = Task.objects.all()
     #     return render(request, 'task_form.html', {'tasks': all_tasks, 'form': form, 'lane': lane_name})
 
-def custom_sort(task):
-    priority_mapping = {'low': 1, 'medium': 2, 'high': 3}
-    return priority_mapping.get(task.priority, 0)
-
 
 priority_order = Case(
     When(priority='high', then=Value(3)),
@@ -396,21 +399,20 @@ def task_search(request):
 
     sort_column = request.GET.get('sort_column', None)
     sort_direction = request.GET.get('sort_direction', None)
+    if sort_column == 'priority':
+        data=data.model.objects.alias(priority_order=priority_order)
+        sort_column = 'priority_order'
     if sort_column:
-
         if sort_direction == 'desc':
-           if sort_column == 'priority':
-               data=data.model.objects.alias(priority_order=priority_order).order_by('-priority_order')
-           else:
-                data = data.order_by('-'+sort_column)
+          data = data.order_by('-'+sort_column)
         else:
-            if sort_column == 'priority':
-                data=data.model.objects.alias(priority_order=priority_order).order_by('priority_order')
-            else:
-                data = data.order_by(sort_column)
+          data = data.order_by(sort_column)
+
+    # data = data.model.objects.annotate(
+    #     formatted_due_date=formatDateTime('due_date')
+    # ).values('name', 'description', 'due_date', 'formatted_due_date', 'priority')
 
     context = {'data': data}
-
     if not data.exists():
         context['no_tasks_found'] = True
 
