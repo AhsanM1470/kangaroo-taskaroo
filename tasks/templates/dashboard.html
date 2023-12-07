@@ -281,7 +281,7 @@
               <!-- View/edit task form -->
               <form method="post" action="">
                 {% csrf_token %}
-                <input type="hidden" name="" value="">
+                <input type="hidden" name="task_edit" value="{{ task.name }}">
                 <button type="submit" class="image" title="View and edit task">
                   <img src="../../static/images/edit-icon-grey.png">
                 </button>
@@ -321,7 +321,7 @@
   </div>
 
   <!-- Task create popup -->
-  <div class="collapse collapse-horizontal" id="task_pop_up">
+  <div class="collapse collapse-horizontal" id="task_pop_up" style="width: 100vw;">
     <article id="task_sidebar">
       {% include 'task_create.html' with form=task_form %}
     </article>

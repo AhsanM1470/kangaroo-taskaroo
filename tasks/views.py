@@ -384,6 +384,43 @@ class DeleteTaskView(LoginRequiredMixin, View):
         else:
             delete_form = TaskDeleteForm()
         return render(request, 'task_delete.html', {'task':task, 'delete_form': delete_form})
+    
+# class EditTaskView(LoginRequiredMixin, View):
+#     model = Task
+#     form_class= TaskForm
+#     template_name = 'task_edit.html'
+#     success_url = reverse_lazy('dashboard')
+
+#     def get_success_url(self):
+#         """Return redirect URL after successful update."""
+#         messages.add_message(self.request, messages.SUCCESS, "Task updated!")
+#         return reverse_lazy('dashboard')
+    
+#     def get(self, request, task_name, *args, **kwargs):
+#         task = get_object_or_404(Task, name=task_name)
+#         initial_data = {
+#             'name': task.name,
+#             'description': task.description,
+#             'date_field': task.due_date.date(),  # Extracting date part
+#             'time_field': task.due_date.time()   # Extracting time part
+#         }
+#         form = TaskForm(initial=initial_data, instance=task)  # Passing instance
+#         update_url = reverse_lazy('task_edit', kwargs={'task_name': task_name})
+#         context = {'form': form, 'update_url': update_url, 'task': task}
+#         return render(request, self.template_name, context)
+    
+#     def post(self, request, task_name, *args, **kwargs):
+#         task = get_object_or_404(Task, name=task_name)
+#         if request.method == 'POST':
+#             form = TaskForm(request.POST, instance=task)
+#             if form.is_valid():
+#                 form.save()
+#                 messages.success(request, 'Task Updated!')
+#                 return redirect('dashboard')
+#         else:
+#             form = TaskForm(instance=task)
+#         return render(request, 'task_edit.html', {'task':task, 'form': form})
+
       
 def task_search(request):
     q = request.GET.get('q', '')

@@ -34,12 +34,11 @@ urlpatterns = [
     path('task_create/', views.CreateTaskView.as_view(), name='task_create'),
     path('task_search/', views.task_search, name='task_search'),
     path('task_delete/<str:task_name>/', views.DeleteTaskView.as_view(), name='task_delete'),
-    path('task_update/<str:task_name>/', views.TaskView.as_view(), name = 'task_update'),
+    # path('task_edit/<str:task_name>/', views.EditTaskView.as_view(), name = 'task_edit'),
     path('lane_delete/<int:lane_id>/', views.DeleteLaneView.as_view(), name='lane_delete'),
     path('move_lane_left/<int:lane_id>/', views.move_lane_left, name='move_lane_left'),
     path('move_lane_right/<int:lane_id>/', views.move_lane_right, name='move_lane_right'),
     path('my_teams/', views.my_teams, name="my_teams"),
-    # path('add_lane/', views.add_lane, name="add_lane")
     path('task/<str:task_name>/move-left/', views.move_task_left, name='move_task_left'),
     path('task/<str:task_name>/move-right/', views.move_task_right, name='move_task_right'),
 ]

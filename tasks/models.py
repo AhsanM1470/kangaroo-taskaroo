@@ -164,18 +164,14 @@ class Lane(models.Model):
         
 class Task(models.Model):
     """Model used for tasks and information related to them"""
-    #taskID = models.AutoField(primary_key=True, unique=True)
     alphanumeric = RegexValidator(
         r'^[0-9a-zA-Z]{3,}$', 
         'Must have 3 alphanumeric characters!'
         )
-    #task_id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=30, blank=False, unique=True, validators=[alphanumeric], primary_key=True)
     description = models.CharField(max_length=530, blank=True)
     due_date = models.DateTimeField(default=datetime(1, 1, 1))
     created_at = models.DateTimeField(default=timezone.now)
-    #lane = models.ForeignKey(Lane, on_delete=models.CASCADE)
-    # Could add a boolean field to indicate if the task has expired?
     lane = models.ForeignKey(Lane, on_delete=models.CASCADE, related_name='tasks',default=None)
 
 class Notification(models.Model): 
