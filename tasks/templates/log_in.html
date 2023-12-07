@@ -1,73 +1,18 @@
 {% extends 'base_content.html' %}
 {% block content %}
-
-"""
-<style>
-  body{
-    color: white;
-    height: 100vh;
-    width: 100%;
-    background: linear-gradient(to bottom right, #0076f4, #209e3e);
-  }
-
-  a{
-    display: flex;
-    justify-content: center;
-    margin-top: 0.5em;
-  }
-
-  .row{
-    display: flex;
-    align-items: center;
-    height: 80vh;
-  }
-
-  .login-form{
-    padding-bottom: 1em;
-    padding-top: 1em;
-    border-radius: 10px;
-
-    background: transparent;
-    border: 1px solid white;
-    backdrop-filter: blur(300px);
-    box-shadow: 0 0 10px rgba(0,0,0,0.4);
-  }
-
-  .login-btn{
-    width:80%;
-    margin-top: 2%;
-    border-radius: 50px;
-    background: white;
-    color: black;
-    transition: ease-in 0.3s;
-
-    margin-left: auto;
-    margin-right: auto;
-    display: block;
-  }
-
-  .login-btn:hover{
-    background: #28242c;
-    color: white;
-  }
-
-</style>
-"""
 {#     <div id='cover-image'>#}z
 <div class="container">
   <div class="row">
-    <div class="login-form col-sm-12 col-md-6 offset-md-3">
-      <h1 style="text-align: center;">Log in</h1>
+    <div class="col-sm-12 col-md-6 offset-md-3">
+      <h1>Log in</h1>
       <form action="{% url 'log_in' %}" method="post">
         {% csrf_token %}
         <input type="hidden" name="next" value="{{ next }}">
         {% include 'partials/bootstrap_form.html' with form=form %}
-        <div class="col text-center">
-          <input type="submit" value="Log in" class="login-btn btn">
-        </div>
+        <input type="submit" value="Log in" class="btn btn-primary">
       </form>
-      <a href="{% url 'sign_up' %}">Don't have an account? Sign up.</a>
     </div>
   </div>
 </div>
+{#     </div>#}
 {% endblock %}
