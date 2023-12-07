@@ -1,5 +1,33 @@
+<style>
+  .alert-container {
+      position: fixed;
+      z-index: 9;
+      display: flex;
+      justify-content: center;
+      pointer-events: none;
+  }
+
+  .alert {
+      opacity: 0;
+      pointer-events: auto;
+      animation: fadeInOut 3s ease forwards;
+  }
+
+  @keyframes fadeInOut {
+      0%, 20% {
+          opacity: 0;
+      }
+      20%, 75% {
+          opacity: 1;
+      }
+      100% {
+          opacity: 0;
+      }
+  }
+</style>
+
 {% if messages %}
-  <div class="container">
+  <div class="alert-container container">
     <div class="row">
       <div class="col-12">
         {% for message in messages %}

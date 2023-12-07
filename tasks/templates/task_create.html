@@ -1,26 +1,25 @@
-{% extends 'base_content.html' %}
 {% block content %}
-{% include 'partials/messages.html' %}
     
 <style>
-    form {
-        max-width: 600px;
+    .task-form {
+        font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+        max-width: 50em;
         margin: auto;
-        margin-top: 50px;
+        margin-top: 1em;
         position: relative;
-        background-color: lightgray;
-        padding: 20px;
+        padding: 1em;
         border-radius: 10px;
+        background: linear-gradient(to bottom right, rgb(54, 107, 171), rgb(207, 222, 220));
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
     }
 
-    label {
+    .task-form label {
         font-weight: bold;
         display: block;
-        margin-bottom: 5px;
+        margin-bottom: 1em;
     }
 
-    textarea {
+    .task-form textarea {
         width: 100%;
         padding: 10px;
         border: 1px solid grey;
@@ -28,25 +27,40 @@
         box-sizing: border-box;
     }
 
-    button[type="submit"], .cancel-button {
+    .task-form button{
         display: inline-block;
-        background-color: lightsalmon;
-        color: white;
-        padding: 10px;
+        background-color: #dedccf;
+        color: #15257d;
+        padding: 1em;
         border: none;
         border-radius: 5px;
         cursor: pointer;
         transition: background-color 0.2s ease;
-        z-index: 2;
-        width: 80px;
+        width: 10em;
         box-sizing: border-box;
-        vertical-align: top;
         text-align: center;
+        text-decoration: none;
     }
 
-    button[type="submit"]:hover, .cancel-button:hover {
-        background-color: darksalmon;
-        color: white;
+    .cancel-button{
+        display: inline-block;
+        background-color: #dedccf;
+        color: #15257d;
+        padding: 0.7em;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+        width: 10em;
+        box-sizing: border-box;
+        text-align: center;
+        text-decoration: none;
+        transform: translateY(0.09em);
+    }
+
+    .task-form button:hover, .cancel-button:hover{
+        background-color: #b5b29a;
+        color: rgb(14, 20, 80);
     }
 
     .nameClass {
@@ -60,15 +74,23 @@
     .descriptionClass {
         height: 100px;
     }
+    
+    .task-create-hr {
+        color: white;
+        height: 100px;
+        border: none;
+        padding: 0.3%;
+    }
 </style>
+
 <div class="container">
     <title>Create Task</title>
-    <form method="post" action="{% url 'task_create' %}" id="taskForm">
+    <form method="post" action="{% url 'task_create' %}" class="task-form">
         {% csrf_token %}
         {{ form.as_p }}
-
+        <hr>
         <div>
-            <button type="submit" class="btn btn-primary">Submit</button>
+            <button type="submit">Submit</button>
             <a href="{% url 'dashboard' %}" class="cancel-button">Cancel</a>
         </div>
     </form>
