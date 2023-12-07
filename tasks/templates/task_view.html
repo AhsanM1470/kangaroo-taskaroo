@@ -1,0 +1,26 @@
+{% extends 'base_content.html' %}
+{% block content %}
+{% include 'partials/messages.html' %}
+
+<style>
+    .container {
+        max-width: 800px;
+        margin: 20px auto;
+        padding: 20px;
+        background-color: #fff;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        border-radius: 5px;
+    }
+</style>
+
+<div class="container">
+  <title>Task</title>
+  <h1>{{ task.name }}</h1>
+  
+
+  <div id="currentData">
+    <p>Description: {{ task.description }}</p>
+    <p>Due Date: {{ task.due_date }}</p>
+  </div>
+</div>
+{% endblock %}
