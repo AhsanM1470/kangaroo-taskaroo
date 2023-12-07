@@ -141,6 +141,7 @@ class TaskForm(forms.ModelForm):
         
     def clean(self):
         cleaned_data = super().clean()
+        name = self.cleaned_data.get('name')
         date = self.cleaned_data.get('date_field')
         time = self.cleaned_data.get('time_field')
         # Add validation for this:
@@ -150,6 +151,8 @@ class TaskForm(forms.ModelForm):
                 cleaned_data['due_date'] = datetime.combine(date, time)
             else:
                 raise ValidationError('Pick a date-time in the future!')
+        # if Task.objects.filter(name=name).exists():
+        #     raise forms.ValidationError('Name must be unique.')
         return cleaned_data
     
     def save(self, commit=True):

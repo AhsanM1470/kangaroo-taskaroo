@@ -42,3 +42,5 @@ class InviteAdmin(admin.ModelAdmin):
     
     def get_team(self, invite):
         return [invite.inviting_team]
+    
+
