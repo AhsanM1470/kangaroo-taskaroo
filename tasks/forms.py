@@ -282,8 +282,8 @@ class RemoveMemberForm(forms.Form):
     def remove_member(self):
         """Remove member from team"""
 
+    
 
-        
 
 
 
