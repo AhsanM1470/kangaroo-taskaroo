@@ -146,6 +146,10 @@
     background-color: #064486;
   }
 
+  .collapsing {
+      transition-duration: 0.7s;
+  }
+
 </style>
 
 <div class="header-bar">
@@ -156,7 +160,7 @@
 <div class="flex-container">
   <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block sidebar collapse">
     <ul>
-      <button type="button" data-bs-toggle="collapse" data-bs-target="#create_team" aria-expanded="false" aria-controls="#create_team">Add Team</button>
+      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#create_team" aria-expanded="false" aria-controls="create_team">Add Team</button>
     </ul>
     <h6>Your Teamssssssss:</h6>
     <ul>
@@ -197,7 +201,7 @@
             {% for task in tasks %}
             <div class="task">
               <!---Another change by the maestro-->
-                  <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#task_pop_up{{ task.name }}" aria-expanded="false" aria-controls="#task_pop_up{{ task.name }}">
+                  <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#task_pop_up{{ task.name }}" aria-expanded="false" aria-controls="task_pop_up{{ task.name }}">
                     {{ task.name }}
                   </button>
               <!---up to here--> 
@@ -217,7 +221,7 @@
                 </form>
                 -->
                 
-              <button type="button" class="btn btn-secondary" data-bs-toggle="collapse" data-bs-target="#create_task" aria-expanded="false" aria-controls="#create_task">New Task</button>
+              <button type="button" class="btn btn-secondary" data-bs-toggle="collapse" data-bs-target="#create_task" aria-expanded="false" aria-controls="create_task">New Task</button>
               
               <form method="post" style="display: inline;">
                 {% csrf_token %}
@@ -236,33 +240,36 @@
         </form>
 
         <!--Simon Stuff -->
-        <button type="button" name="view_team" class="btn btn-dark" data-bs-toggle="collapse" data-bs-target="#team_info" aria-expanded="false" aria-controls="#team_info">View Team</button>
+        <button type="button" name="view_team" class="btn btn-dark" data-bs-toggle="collapse" data-bs-target="#team_info" aria-expanded="false" aria-controls="team_info">View Team</button>
 
       </div>
     </div>
   </div>
+  
   <!--Here I changed -->
-  {% for task in tasks %}
-    <div class="collapse collapse-horizontal" id="task_pop_up{{ task.name }}">
+  <div class="accordion" id="popup">
+    {% for task in tasks %}
+      <div class="accordion-collapse collapse" id="task_pop_up{{ task.name }}" data-bs-parent="#popup">
+        <article id="popup_panel">
+          {% include 'assign_task.html' with form=assign_task_form task_name=task.name %}
+        </article>
+      </div>
+    {% endfor %}
+    <div class="accordion-collapse collapse " id="team_info" data-bs-parent="#popup">
       <article id="popup_panel">
-        {% include 'assign_task.html' with form=assign_task_form task_name=task.name %}
+        {% include 'team_info.html' with team=current_team %}
       </article>
     </div>
-  {% endfor %}
-  <div class="collapse collapse-horizontal" id="team_info">
-    <article id="popup_panel">
-      {% include 'team_info.html' with team=current_team %}
-    </article>
-  </div>
-  <div class="collapse collapse-horizontal" id="create_task">
-    <article id="popup_panel">
-      {% include 'task_create.html' with form=create_task_form %}
-    </article>
-  </div>
-  <div class="collapse collapse-horizontal" id="create_team">
-    <article id="popup_panel">
-      {% include 'create_team.html' with team_form=create_team_form %}
-    </article>
+    <div class="accordion-collapse collapse" id="create_task" data-bs-parent="#popup">
+      <article id="popup_panel">
+        {% include 'task_create.html' with form=create_task_form %}
+      </article>
+    </div>
+    <div class="accordion-collapse collapse" id="create_team" data-bs-parent="#popup">
+      <article id="popup_panel">
+        {% include 'create_team.html' with team_form=create_team_form %}
+      </article>
+    </div>
   </div>
 
 

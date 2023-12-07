@@ -57,7 +57,7 @@ def dashboard(request):
         return redirect('dashboard')  # Redirect to the same page to show the updated lanes
     
     # Simon Stuff
-    if "team_name" not in request.session:
+    if "current_team" not in request.session:
         request.session["current_team"] = "Kangaroo" # This is our current board we are looking at for now
         # Should just be the first team created by user
 
@@ -312,11 +312,13 @@ class TaskView(LoginRequiredMixin, FormView):
     success_url = reverse_lazy('dashboard')  # Redirect to the dashboard after successful form submission
     form_title = 'Create Task'
     
+    """ Simon
     def form_valid(self, form):
         self.object = form.save()
         #login(self.request, self.object)
         return super().form_valid(form)
-    
+    """
+
     def get_success_url(self):
         """Return redirect URL after successful update."""
         messages.add_message(self.request, messages.SUCCESS, "Task created!")
@@ -351,8 +353,8 @@ class TaskView(LoginRequiredMixin, FormView):
             form = TaskForm()
         # Fetch all tasks for rendering the form initially
         all_tasks = Task.objects.all()
-
-        return render(request, 'task_create.html', {'tasks': all_tasks, 'form': form})
+        return redirect('dashboard')
+        #return render(request, 'task_create.html', {'tasks': all_tasks, 'form': form})
     
 class DeleteTaskView(LoginRequiredMixin, View):
     model = Task

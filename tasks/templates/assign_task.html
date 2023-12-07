@@ -2,7 +2,7 @@
 <div class="container">
   <div class="row">
     <div class="col-12">
-      <h1>Assign Task</h1>
+      <h1>Assign Task: {{ task_name }}</h1>
       <form action ="{%url 'assign_task'%}" method="post">
         {% csrf_token %}
         {% include 'partials/bootstrap_form.html' with form=assign_task_form %}
