@@ -4,7 +4,7 @@ from django.core.exceptions import ValidationError
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from libgravatar import Gravatar
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from django.utils import timezone
 
 class User(AbstractUser):
@@ -180,6 +180,7 @@ class Lane(models.Model):
 class Task(models.Model):
     """Model used for tasks and information related to them"""
     #taskID = models.AutoField(primary_key=True, unique=True)
+    deadline_keydates = [5,3,2,1]
     alphanumeric = RegexValidator(
         regex=r'^[a-zA-Z0-9 ]{3,}$',
         message='Enter a valid word with at least 3 alphanumeric characters (no special characters allowed).',
@@ -218,6 +219,13 @@ class Task(models.Model):
             notif = TaskNotification.objects.create(task=self,notification_type="AS")
             user.add_notification(notif)
             user.save()
+
+    def notify_keydates(self):
+        while datetime.today().date() >= (self.due_date-timedelta(days=self.deadline_keydates[0])).date():
+            notif = TaskNotification.objects.create(task=self,notification_type="DL")
+            for user in self.assigned_team.team_members.all():
+                user.add_notification(notif)
+            self.deadline_keydates.pop(0)
 
 
     # Could add a boolean field to indicate if the task has expired?

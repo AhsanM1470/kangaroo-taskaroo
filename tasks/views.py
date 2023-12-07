@@ -20,6 +20,11 @@ from django.http import HttpResponseBadRequest
 from datetime import datetime
 from django.db.models import Max, Case, Value, When
 
+def detect_keydates():
+    tasks = Task.objects.all()
+    for task in tasks:
+        task.notify_keydates()
+
 def formatDateTime(input_date):
     # Parse the input string
     parsed_datetime = datetime.strptime(input_date, '%b. %d, %Y, %I:%M %p')
@@ -280,6 +285,7 @@ class LogInView(LoginProhibitedMixin, View):
         user = form.get_user()
         if user is not None:
             login(request, user)
+            detect_keydates()
             return redirect(self.next)
         messages.add_message(request, messages.ERROR, "The credentials provided were invalid!")
         return self.render()
@@ -395,6 +401,7 @@ class CreateTaskView(LoginRequiredMixin, FormView):
                 # Simon Stuff
                 assigned_team = request.session["current_team"]
                 form.save(assigned_team=assigned_team)
+                
                 messages.success(request, 'Task Created!')
                 # Redirect to the dashboard or another page
                 return redirect('dashboard')
