@@ -8,7 +8,7 @@
       margin: auto;
       margin-top: 50px;
       position: relative;
-      background: linear-gradient(to bottom right, rgb(54, 107, 171), rgb(207, 222, 220));
+      background-color: lightgray;
       padding: 20px;
       border-radius: 10px;
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
@@ -20,8 +20,8 @@
 
   button[type="submit"], .cancel-button {
       display: inline-block;
-      background-color: #dedccf;
-      color: #15257d;
+      background-color: lightsalmon;
+      color: white;
       padding: 10px;
       border: none;
       border-radius: 5px;
@@ -35,11 +35,11 @@
   }
 
   button[type="submit"]:hover, .cancel-button:hover {
-      background-color: #b5b29a;
-      color: rgb(14, 20, 80);
+      background-color: darksalmon;
+      color: white;
   }
 
-  .deleteForm input[type="checkbox"].confirmClass {
+  .delete-form input[type="checkbox"].confirmClass {
     display: inline;
     margin-right: 10px;
     margin-bottom: 10px;
@@ -48,11 +48,11 @@
 
 </style>
 <div class="container">
-  <title>Delete Task</title>
+  <title>Delete Lane</title>
   
-    <form method="post" action="{{ delete_url }}" class="deleteForm">
+    <form method="post" action="{{ delete_url }}" class="delete-form">
       {% csrf_token %}
-      <h4>Are you sure you want to delete "{{ task.name }}"?</h4>
+      <h4>Are you sure you want to delete "{{ lane.lane_name }}"?</h4>
       {{ delete_form }}
       <div>
         <button type="submit" class="btn btn-primary">Submit</button>

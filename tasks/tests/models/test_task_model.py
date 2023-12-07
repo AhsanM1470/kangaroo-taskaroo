@@ -1,22 +1,27 @@
 """Unit tests for the Task model."""
 from django.core.exceptions import ValidationError
 from django.test import TestCase
-from tasks.models import Task
+from tasks.models import Task, Lane
 import datetime
 
 class TaskModelTestCase(TestCase):
     """Unit tests for the Task model."""
     def setUp(self):
+        self.lane = Lane.objects.create(
+            lane_id = 1
+        )
         self.task = Task.objects.create(
             name = 'Task1',
             description = 'Amys first task within task manager!',
             due_date = datetime.datetime(2023, 11, 28, 10, 0),
+            lane = self.lane
         )
         
         self.task2 = Task.objects.create(
             name = 'Task2',
             description = 'Amys second task within task manager!',
             due_date = datetime.datetime(2023, 12, 28, 10, 0),
+            lane = self.lane
         )
         
     def test_valid_user(self):
