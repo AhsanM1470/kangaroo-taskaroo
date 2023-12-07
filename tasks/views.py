@@ -38,7 +38,8 @@ def dashboard(request):
             default_lane_names = [("Backlog", 1), ("In Progress", 2), ("Complete", 3)]
             for lane_name, lane_order in default_lane_names:
                 Lane.objects.get_or_create(lane_name=lane_name, lane_order=lane_order)
-        if  'dashboard_team' in request.GET:
+        
+        if 'dashboard_team' in request.GET:
             team_name = request.GET.get("dashboard_team")
             request.session["current_team"] = team_name
     
@@ -59,21 +60,20 @@ def dashboard(request):
         
         return redirect('dashboard')
     
-    # Simon Stuff
-    if "current_team" not in request.session:
-        request.session["current_team"] = "Kangaroo" # This is our current board we are looking at for now
-        # Should just be the first team created by user
-
-    # Retrieve current user and lanes
+    # Get current user
     current_user = request.user
+    teams = current_user.get_teams()
+
+    if "current_team" not in request.session:
+        request.session["current_team"] = teams[:1].get().team_name # Gets the first team in our list of teams    
+
+    # Retrieve current team and lanes
     current_team = Team.objects.get(team_name=request.session["current_team"])
     lanes = lanes = Lane.objects.all().order_by('lane_order')
 
     # THe lanes can then be retrieved using the current team
 
-    #all_tasks = Task.objects.all()
     team_tasks = current_team.get_tasks()
-    teams = current_user.get_teams()
 
     # Simon's stuff
     assign_task_form = AssignTaskForm(team=current_team, user=current_user)
@@ -356,6 +356,15 @@ class SignUpView(LoginProhibitedMixin, FormView):
         return super().form_valid(form)
 
     def get_success_url(self):
+        # Automatically create a default team with the user as its creator
+        team = Team.objects.create(
+            team_name="My Team",
+            team_creator=self.request.user,
+            description="A default team for you to start managing your tasks!"
+        )
+        team.add_invited_member(self.request.user)
+        team.save()
+
         return reverse(settings.REDIRECT_URL_WHEN_LOGGED_IN)
 
 class CreateTaskView(LoginRequiredMixin, FormView):
