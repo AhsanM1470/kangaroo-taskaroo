@@ -261,7 +261,7 @@
             {% if task.lane_id == lane.lane_id %}
             <div class="task">
               <!-- Form for moving tasks to the left lane -->
-              <form method="post" action="{% url 'move_task_left' task.name %}">
+              <form method="post" action="{% url 'move_task_left' task.id %}">
                 {% csrf_token %}
                 <button type="submit" class="image" title="Move task left">
                   <img src="../../static/images/move-left-icon-grey.png">
@@ -271,7 +271,7 @@
               {{ task.name }}
             
               <!-- Form for moving task to the right lane -->
-              <form method="post" action="{% url 'move_task_right' task.name %}">
+              <form method="post" action="{% url 'move_task_right' task.id %}">
                 {% csrf_token %}
                 <button type="submit" class="image" title="Move task right">
                   <img src="../../static/images/move-right-icon-grey.png">
@@ -279,18 +279,16 @@
               </form>
 
               <!-- View/edit task form -->
-              <form method="post" action="">
+              <form method="get" action="{% url 'task_edit' task.id %}">
                 {% csrf_token %}
-                <input type="hidden" name="task_edit" value="{{ task.name }}">
                 <button type="submit" class="image" title="View and edit task">
                   <img src="../../static/images/edit-icon-grey.png">
                 </button>
               </form>
 
               <!-- Delete task form -->
-              <form method="post" action="{% url 'task_delete' task.name %}" style="display: inline;">
+              <form method="post" action="{% url 'task_delete' task.id %}" style="display: inline;">
                 {% csrf_token %}
-                <input type="hidden" name="task_delete" value="{{ task.name }}">
                 <button type="submit" class="image" title="Delete task">
                   <img src="../../static/images/bin-icon-grey.png">
                 </button>

@@ -74,10 +74,10 @@ def dashboard(request):
         'task_form': task_form,
     })
 
-def move_task_left(request, task_name):
+def move_task_left(request, pk):
     """" Move the task to the left lane """
     if request.method == 'POST':
-        task = get_object_or_404(Task, name=task_name)
+        task = get_object_or_404(Task, pk=pk)
         current_lane = task.lane
         left_lane = Lane.objects.filter(lane_order__lt=current_lane.lane_order).order_by('-lane_order').first()
         
@@ -87,10 +87,10 @@ def move_task_left(request, task_name):
 
         return redirect('dashboard')
 
-def move_task_right(request, task_name):
+def move_task_right(request, pk):
     """" Move the task to the right lane """
     if request.method == 'POST':
-        task = get_object_or_404(Task, name=task_name)
+        task = get_object_or_404(Task, pk=pk)
         current_lane = task.lane
         right_lane = Lane.objects.filter(lane_order__gt=current_lane.lane_order).order_by('lane_order').first()
         
@@ -362,17 +362,17 @@ class DeleteTaskView(LoginRequiredMixin, View):
         messages.add_message(self.request, messages.SUCCESS, "Task deleted!")
         return reverse_lazy('dashboard')
     
-    def get(self, request, task_name, *args, **kwargs):
-        task = get_object_or_404(Task, name=task_name)
+    def get(self, request,pk, *args, **kwargs):
+        task = get_object_or_404(Task, pk=pk)
         delete_form = TaskDeleteForm()
         # if this doesnt work use domain explicitly
-        delete_url = '/task_delete/'+task_name+'/'
-        context = {'task': task, 'delete_form': delete_form, 'delete_url': delete_url, 'name': task_name}
+        delete_url = '/task_delete/'+pk+'/'
+        context = {'task': task, 'delete_form': delete_form, 'delete_url': delete_url, 'name': task.name}
         return render(request, self.template_name, context)
     
-    def post(self, request, task_name, *args, **kwargs):
+    def post(self, request, pk, *args, **kwargs):
         #task_name = kwargs["task_name"]
-        task = get_object_or_404(Task, pk=task_name)
+        task = get_object_or_404(Task, pk=pk)
         #task = Task.objects.get(pk = task_name)
         if request.method == 'POST':
             delete_form = TaskDeleteForm(request.POST)
@@ -385,41 +385,48 @@ class DeleteTaskView(LoginRequiredMixin, View):
             delete_form = TaskDeleteForm()
         return render(request, 'task_delete.html', {'task':task, 'delete_form': delete_form})
     
-# class EditTaskView(LoginRequiredMixin, View):
-#     model = Task
-#     form_class= TaskForm
-#     template_name = 'task_edit.html'
-#     success_url = reverse_lazy('dashboard')
-
-#     def get_success_url(self):
-#         """Return redirect URL after successful update."""
-#         messages.add_message(self.request, messages.SUCCESS, "Task updated!")
-#         return reverse_lazy('dashboard')
+class TaskEditView(LoginRequiredMixin, View):
+    model = Task
+    form_class = TaskForm
+    template_name = 'task_edit.html'  # Create a template for your task form
+    success_url = reverse_lazy('dashboard')  # Redirect to the dashboard after successful form submission
     
-#     def get(self, request, task_name, *args, **kwargs):
-#         task = get_object_or_404(Task, name=task_name)
-#         initial_data = {
-#             'name': task.name,
-#             'description': task.description,
-#             'date_field': task.due_date.date(),  # Extracting date part
-#             'time_field': task.due_date.time()   # Extracting time part
-#         }
-#         form = TaskForm(initial=initial_data, instance=task)  # Passing instance
-#         update_url = reverse_lazy('task_edit', kwargs={'task_name': task_name})
-#         context = {'form': form, 'update_url': update_url, 'task': task}
-#         return render(request, self.template_name, context)
+    def get_success_url(self):
+        """Return redirect URL after successful update."""
+        messages.add_message(self.request, messages.SUCCESS, "Task updated!")
+        return reverse_lazy('dashboard')
     
-#     def post(self, request, task_name, *args, **kwargs):
-#         task = get_object_or_404(Task, name=task_name)
-#         if request.method == 'POST':
-#             form = TaskForm(request.POST, instance=task)
-#             if form.is_valid():
-#                 form.save()
-#                 messages.success(request, 'Task Updated!')
-#                 return redirect('dashboard')
-#         else:
-#             form = TaskForm(instance=task)
-#         return render(request, 'task_edit.html', {'task':task, 'form': form})
+    def get(self, request, pk, *args, **kwargs):
+        print("sdujdhsd")
+        
+        task = get_object_or_404(Task, pk=pk)
+        date_field = task.due_date.date()
+        time_field = task.due_date.time()
+        initial_data = {
+            'name' : task.name,
+            'description' : task.description,
+            'date_field' : date_field,
+            'time_field' : time_field
+        }
+        form = TaskForm(initial=initial_data)
+        # if this doesnt work use domain explicitly
+        update_url = reverse('task_edit', kwargs={'pk': pk})
+        context = {'form': form, 'update_url': update_url, 'task': task}
+        return render(request, self.template_name, context)
+    
+    def post(self, request, pk, *args, **kwargs):
+        #task_name = kwargs["task_name"]
+        task = get_object_or_404(Task, pk=pk)
+        #task = Task.objects.get(pk = task_name)
+        if request.method == 'POST':
+            form = TaskForm(request.POST, instance=task)
+            if form.is_valid():
+                form.save()
+                messages.success(request, 'Task Updated!')
+                return redirect('dashboard')
+        else:
+            form = TaskForm(instance=task)
+        return render(request, 'task_edit.html', {'task':task, 'form': form})
 
       
 def task_search(request):
