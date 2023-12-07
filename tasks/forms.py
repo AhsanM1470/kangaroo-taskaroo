@@ -3,7 +3,7 @@ from django import forms
 from django.contrib.auth import authenticate
 from django.core.validators import RegexValidator
 from django.core.exceptions import ValidationError
-from .models import User, Task, Team, Invite
+from .models import User, Task, Team, Invite, Lane
 from django.utils import timezone
 from datetime import datetime
 
@@ -258,3 +258,17 @@ class RemoveMemberForm(forms.Form):
 
     member_to_remove = forms.CharField(max_length=30)
     #thing = forms.CharField(max_length=50, choic)
+
+
+class LaneForm(forms.ModelForm):
+    """Form enabling a user to create a lane in the dashboard"""
+
+    class Meta:
+        model = Lane
+        fields = ['lane_name', 'lane_id']
+    
+class LaneDeleteForm(forms.Form):
+    confirm_deletion = forms.BooleanField(
+        required=True,
+        widget=forms.CheckboxInput(attrs={'class': 'confirmClass'})
+    )

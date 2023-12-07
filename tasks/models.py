@@ -1,244 +1,106 @@
-from typing import Any
-from django.conf import settings
-from django.contrib import messages
-from django.contrib.auth import login, logout
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.core.exceptions import ImproperlyConfigured, ValidationError
-from django.shortcuts import redirect, render, get_object_or_404
-from django.views import View
-from django.views.generic import DeleteView
-from django.views.generic.edit import FormView, UpdateView
-from django.urls import reverse
-from tasks.forms import LogInForm, PasswordForm, UserForm, SignUpForm, CreateTeamForm, InviteForm, RemoveMemberForm, LaneDeleteForm
-from tasks.helpers import login_prohibited
-from django.urls import reverse_lazy
-from django.views.decorators.http import require_POST
-from .forms import TaskForm, TaskDeleteForm
-from .models import Task, Invite, Team, Lane
-from django.http import HttpResponseBadRequest
-from datetime import datetime
-from django.db.models import Max
+from collections.abc import Collection
+from django.core.validators import RegexValidator, MaxLengthValidator
+from django.core.exceptions import ValidationError 
+from django.contrib.auth.models import AbstractUser
+from django.db import models
+from libgravatar import Gravatar
+from datetime import datetime, timezone
+from django.utils import timezone
 
+class User(AbstractUser):
+    """Model used for user authentication, and team member related information."""
 
-@login_required
+    username = models.CharField(
+        max_length=30,
+        unique=True,
+        validators=[RegexValidator(
+            regex=r'^@\w{3,}$',
+            message='Username must consist of @ followed by at least three alphanumericals'
+        )]
+    )
+    first_name = models.CharField(max_length=50, blank=False)
+    last_name = models.CharField(max_length=50, blank=False)
+    email = models.EmailField(unique=True, blank=False)
 
-def dashboard(request):
-    """Display and modify the current user's dashboard."""
+    class Meta:
+        """Model options."""
 
-    # Initialize lanes in the session if they don't exist
-    if request.method == 'GET':
-        if not Lane.objects.exists():
-            default_lane_names = [("Backlog", 1), ("In Progress", 2), ("Complete", 3)]
-            for lane_name, lane_order in default_lane_names:
-                Lane.objects.get_or_create(lane_name=lane_name, lane_order=lane_order)
-    
-    
-    if request.method == 'GET':
-        # Create 3 default lanes when the dashboard is empty
-        if not Lane.objects.exists():
-            default_lanes = ['Backlog', 'In Progress', 'Complete']
-            for lane_name in default_lanes:
-                Lane.objects.get_or_create(lane_name = lane_name)
-    
-    if request.method == 'POST':
-        # Add a lane to the dashboard
-        if 'add_lane' in request.POST:
-            max_order = Lane.objects.aggregate(Max('lane_order'))['lane_order__max'] or 0
-            Lane.objects.create(lane_name="New Lane", lane_order=max_order + 1)
+        ordering = ['last_name', 'first_name']
 
-        # Rename the dashboard lane
-        elif 'rename_lane' in request.POST:
-            lane_id = request.POST.get('rename_lane')
-            new_lane_name = request.POST.get('new_lane_name')
-            # if lane_id and new_lane_name:
-            lane = Lane.objects.get(lane_id=lane_id)
-            lane.lane_name = new_lane_name
-            lane.save()
+    def full_name(self):
+        """Return a string containing the user's full name."""
+
+        return f'{self.first_name} {self.last_name}'
+
+    def gravatar(self, size=120):
+        """Return a URL to the user's gravatar."""
+
+        gravatar_object = Gravatar(self.email)
+        gravatar_url = gravatar_object.get_image(size=size, default='mp')
+        return gravatar_url
+
+    def mini_gravatar(self):
+        """Return a URL to a miniature version of the user's gravatar."""
         
-        return redirect('dashboard')
+        return self.gravatar(size=60)
 
-    # Retrieve current user, lanes, tasks, and the teams
-    current_user = request.user
-    # lanes = request.session['lanes']
-    lanes = lanes = Lane.objects.all().order_by('lane_order')
-    all_tasks = Task.objects.all()
-    # Used to be all teams
-    teams = current_user.get_teams()
-    task_form = TaskForm()
-    return render(request, 'dashboard.html', {
-        'user': current_user,
-        'lanes': lanes,
-        'tasks': all_tasks,
-        'teams': teams,
-        'task_form': task_form,
-    })
+    def get_teams(self):
+        """Returns a query set of set of teams this user is a part of"""
 
-def move_task_left(request, pk):
-    """" Move the task to the left lane """
-    if request.method == 'POST':
-        task = get_object_or_404(Task, pk=pk)
-        current_lane = task.lane
-        left_lane = Lane.objects.filter(lane_order__lt=current_lane.lane_order).order_by('-lane_order').first()
-        
-        if left_lane:
-            task.lane = left_lane
-            task.save()
-
-        return redirect('dashboard')
-
-def move_task_right(request, pk):
-    """" Move the task to the right lane """
-    if request.method == 'POST':
-        task = get_object_or_404(Task, pk=pk)
-        current_lane = task.lane
-        right_lane = Lane.objects.filter(lane_order__gt=current_lane.lane_order).order_by('lane_order').first()
-        
-        if right_lane:
-            task.lane = right_lane
-            task.save()
-
-        return redirect('dashboard')
+        return self.team_set.all()
     
-def move_lane_left(request, lane_id):
-    """" Move the lane 1 space left """
-    if request.method == 'POST':
-        lane = get_object_or_404(Lane, pk=lane_id)
-        # Swap order with the previous lane if it exists
-        previous_lane = Lane.objects.filter(lane_order__lt=lane.lane_order).order_by('-lane_order').first()
-        if previous_lane:
-            lane.lane_order, previous_lane.lane_order = previous_lane.lane_order, lane.lane_order
-            lane.save()
-            previous_lane.save()
-        return redirect('dashboard')
+    def get_created_teams(self):
+        """Returns a query set of all the teams this user has created"""
 
-def move_lane_right(request, lane_id):
-    """" Move the lane 1 space right """
-    if request.method == 'POST':
-        lane = get_object_or_404(Lane, pk=lane_id)
-        # Swap order with the next lane if it exists
-        next_lane = Lane.objects.filter(lane_order__gt=lane.lane_order).order_by('lane_order').first()
-        if next_lane:
-            lane.lane_order, next_lane.lane_order = next_lane.lane_order, lane.lane_order
-            lane.save()
-            next_lane.save()
-        return redirect('dashboard')
-
-@login_required
-def create_team(request):
-    """Form that allows user to create a new team"""
-    if request.method == "POST":
-        # Create the team
-        current_user = request.user
-        team = CreateTeamForm(request.POST)
-        if team.is_valid():
-            team.create_team(current_user)
-            messages.add_message(request, messages.SUCCESS, "Created Team!")
-        else:
-            messages.add_message(request, messages.ERROR, "That team name has already been taken!")
-    return redirect("my_teams")
-
-@login_required
-def my_teams(request):
-    """Display the user's teams page and their invites"""
-
-    current_user = request.user
-    user_teams = current_user.get_teams()
-    user_invites = current_user.get_invites()
-    team_form = CreateTeamForm(user=current_user)
-
-    """Only show the invite and remove form for creators of teams"""
-    if len(current_user.get_created_teams()) > 0:
-        invite_form = InviteForm(user=current_user)
-        remove_form = RemoveMemberForm()
-        return render(request, 'my_teams.html', {'teams': user_teams, 'invites': user_invites, 
-                                                 'team_form': team_form, "invite_form" : invite_form,
-                                                 "remove_form": remove_form})
-    else:
-        return render(request, 'my_teams.html', 
-                      {'teams': user_teams, 'invites': user_invites, 
-                       'team_form': team_form})
-
-@login_required
-def remove_member(request):
-    if request.method == "POST":
-        messages.add_message(request, messages.SUCCESS, "Tried to remove team member, but there ain't no functionality hehe")
-    return redirect("my_teams")
-
-
-@login_required
-def press_invite(request):
-    """Functionality for the accept/reject buttons of invite"""
+        return self.created_teams.all()
     
-    if request.method == "POST":
-        invite = Invite.objects.get(id=request.POST.get('id'))
-        user = request.user
+    def get_invites(self):
+        """Returns a query set of all the invites this user has received"""
 
-        if request.POST.get('status'):
-            invite.status = request.POST.get('status')
-            invite.close(user)
+        return self.invite_set.all()
+
+    
+
+class Team(models.Model):
+    """Model used to hold teams of different users and their relevant information"""
+    
+    team_name = models.CharField(max_length=50, unique=True, blank=False)
+    team_creator = models.ForeignKey(User, on_delete=models.CASCADE, blank=False, related_name="created_teams")
+    team_members = models.ManyToManyField(User, blank=True)
+    description = models.TextField(blank=True, validators=[MaxLengthValidator(200)])
+    
+    def __str__(self):
+        """Overrides string to show the team's name"""
+        
+        return self.team_name
+
+    def add_team_member(self, new_team_members):
+        """Add new team member/s to the team"""
+        
+        for new_team_member in new_team_members.all():
+            self.team_members.add(new_team_member)
+            self.save()
+        
+    def add_invited_member(self, user):
+        """Add a new team member from an invite"""
+
+        self.team_members.add(user)
+        self.save()
+    
+    def remove_team_member(self, user):
+        """Removes user from team"""
+
+        if user == self.team_creator:
+            print("Cannot remove the team's creator!")
+        
         else:
-            messages.add_message(request, messages.ERROR, "A choice wasn't made!")
+            self.team_members.remove(user)
+            self.save()
+    
+    def get_team_members(self):
+        """Returns query set containing all the users in team"""
 
-    return redirect("my_teams")
-
-@login_prohibited
-def home(request):
-    """Display the application's start/home screen."""
-
-    return render(request, 'home.html')
-
-
-class LoginProhibitedMixin:
-    """Mixin that redirects when a user is logged in."""
-
-    redirect_when_logged_in_url = None
-
-    def dispatch(self, *args, **kwargs):
-        """Redirect when logged in, or dispatch as normal otherwise."""
-        if self.request.user.is_authenticated:
-            return self.handle_already_logged_in(*args, **kwargs)
-        return super().dispatch(*args, **kwargs)
-
-    def handle_already_logged_in(self, *args, **kwargs):
-        url = self.get_redirect_when_logged_in_url()
-        return redirect(url)
-
-    def get_redirect_when_logged_in_url(self):
-        """Returns the url to redirect to when not logged in."""
-        if self.redirect_when_logged_in_url is None:
-            raise ImproperlyConfigured(
-                "LoginProhibitedMixin requires either a value for "
-                "'redirect_when_logged_in_url', or an implementation for "
-                "'get_redirect_when_logged_in_url()'."
-            )
-        else:
-            return self.redirect_when_logged_in_url
-
-
-class LogInView(LoginProhibitedMixin, View):
-    """Display login screen and handle user login."""
-
-    http_method_names = ['get', 'post']
-    redirect_when_logged_in_url = settings.REDIRECT_URL_WHEN_LOGGED_IN
-
-    def get(self, request):
-        """Display log in template."""
-
-        self.next = request.GET.get('next') or ''
-        return self.render()
-
-    def post(self, request):
-        """Handle log in attempt."""
-
-        form = LogInForm(request.POST)
-        self.next = request.POST.get('next') or settings.REDIRECT_URL_WHEN_LOGGED_IN
-        user = form.get_user()
-        if user is not None:
-            login(request, user)
-            return redirect(self.next)
-        messages.add_message(request, messages.ERROR, "The credentials provided were invalid!")
-        return self.render()
+        return self.team_members.all()
 
     def get_team_members_list(self):
         """Return a string which shows the list of all the users in team"""
@@ -288,19 +150,32 @@ class Invite(models.Model):
             if user_to_invite:
                 self.get_inviting_team().add_invited_member(user_to_invite)   
         self.delete()
+    
+class Lane(models.Model):
+    lane_name = models.CharField(max_length=100)
+    lane_id = models.AutoField(primary_key=True)
+    lane_order = models.IntegerField(default=0)
+
+    class Meta:
+        ordering = ['lane_order']
+
+    def __str__(self):
+        return self.lane_name
         
 class Task(models.Model):
     """Model used for tasks and information related to them"""
     #taskID = models.AutoField(primary_key=True, unique=True)
     alphanumeric = RegexValidator(
-        r'^[0-9a-zA-Z]{3,}$', 
-        'Must have 3 alphanumeric characters!'
-        )
+        regex=r'^[a-zA-Z0-9 ]{3,}$',
+        message='Enter a valid word with at least 3 alphanumeric characters (no special characters allowed).',
+        code='invalid_word',
+    )
     #task_id = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=30, blank=False, unique=True, validators=[alphanumeric], primary_key=True)
+    name = models.CharField(max_length=30, blank=False, unique=True, validators=[alphanumeric], primary_key=False)
     description = models.CharField(max_length=530, blank=True)
     due_date = models.DateTimeField(default=datetime(1, 1, 1))
     created_at = models.DateTimeField(default=timezone.now)
+    lane = models.ForeignKey(Lane, on_delete=models.CASCADE)
     # Could add a boolean field to indicate if the task has expired?
 
 class Notification(models.Model): 
