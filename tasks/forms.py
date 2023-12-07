@@ -218,7 +218,7 @@ class CreateTeamForm(forms.ModelForm):
             description=self.cleaned_data.get("description"),
         )
 
-        """For now, add the creator to team members as well"""
+        """Add the creator to team members as well"""
         team.add_invited_member(creator)
 
         if members_to_invite != None: # If you had members you added in the form
