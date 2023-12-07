@@ -2,18 +2,23 @@
 {% block body %}
 <style>
   body{
-    color: rgb(80, 127, 189);
+    color: #6b3e3f;
     height: 100vh;
     width: 100%;
     margin: 0;
     font-family: 'Arial', sans-serif;
-    background: linear-gradient(to bottom right, #0076f4, #209e3e);
+    background: linear-gradient(to bottom right, #a25a5e, rgb(32, 143, 158));
   }
 
   a{
     display: flex;
     justify-content: center;
     margin-top: 0.5em;
+    transition: ease-in 0.3s;
+  }
+
+  a:hover {
+    color: white;
   }
 
   .container {
@@ -31,8 +36,8 @@
     width: 100%;
     max-width: 700px;
     height: 400px;
-    background-color: rgb(144, 198, 255);
-    border: 1px solid white;
+    background-color: rgb(160, 118, 118);
+    
     box-shadow: 0 0 10px rgba(0,0,0,0.4);
     border-radius: 4px;
   }
@@ -50,11 +55,10 @@
   .login-btn{
     width:40%;
     margin-top: 2%;
-    border-radius: 50px;
-    background: rgb(80, 127, 189);
-    color: black;
+    
+    background: rgb(70, 107, 112);
+    color: rgb(9, 39, 43);
     transition: ease-in 0.3s;
-
     margin-left: auto;
     margin-right: auto;
     display: block;
@@ -104,6 +108,11 @@
   align-items: center;
 }
 
+.signup-link {
+  color: #381d1d;
+}
+
+
 </style>
 
 <div class="container">
@@ -128,7 +137,7 @@
           <a href="/" class="back-btn btn login-btn">Back</a>
         </div>
       </form>
-      <a href="{% url 'sign_up' %}">Don't have an account? Sign up.</a>
+      <a href="{% url 'sign_up' %}" class="signup-link">Don't have an account? Sign up.</a>
     </div>
   </div>
 </div>

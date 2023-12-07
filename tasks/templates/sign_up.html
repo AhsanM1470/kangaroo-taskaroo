@@ -2,10 +2,10 @@
 {% block body %}
 <style>
   body{
-    background: linear-gradient(to bottom right, #0076f4, #209e3e);
+    background: linear-gradient(to bottom right, #a25a5e, rgb(32, 143, 158));
     height:100vh;
     width: 100%;
-    color: rgb(80, 127, 189);
+    color: rgb(9, 46, 51);
     margin: 0;
     font-family: 'Arial', sans-serif;
   }
@@ -25,9 +25,8 @@
     width: 100%;
     max-width: 700px;
     height: 650px;
-    background-color: rgb(144, 198, 255);
-    border: 1px solid white;
-    box-shadow: 0 0 10px rgba(0,0,0,0.4);
+    background-color: rgb(70, 107, 112);
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
     border-radius: 4px;
   }
 
@@ -36,7 +35,6 @@
     width: 60%;
     height: 95%;
     background: transparent;
-    backdrop-filter: blur(300px);
   }
 
   .signup-form h1{
@@ -48,8 +46,9 @@
     width:80%;
     margin-top: 2%;
     border-radius: 50px;
-    background: rgb(80, 127, 189);
-    color: black;
+    background: #a25a5e;
+    color: #532b2c;
+    border-color: #a25a5e;
     transition: ease-in 0.3s;
     margin-left: auto;
     margin-right: auto;
@@ -60,6 +59,12 @@
     display: flex;
     justify-content: center;
     margin-top: 0.5em;
+    color: rgb(9, 46, 51);
+    transition: ease-in 0.3s;
+  }
+
+  a:hover {
+    color: white;
   }
 
   .signup-btn:hover{
@@ -76,7 +81,7 @@
         {% csrf_token %}
         {% include 'partials/bootstrap_form.html' with form=form %}
         <div class="buttons" style="display: flex; gap: 10px;">
-          <input type="submit" value="Sign up" class="signup-btn btn btn-primary">
+          <input type="submit" value="Sign up" class="signup-btn">
           <a href="/" class="back-btn btn signup-btn">Back</a>
         </div>
       </form>
