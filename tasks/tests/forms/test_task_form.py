@@ -16,7 +16,7 @@ class TaskFormTestCase(TestCase):
             'time_field': '10:05:00',
         }
 
-    def test_valid_task_form(self):
+    def test_valid_sign_up_form(self):
         form = TaskForm(data=self.form_input)
         self.assertTrue(form.is_valid())
 
