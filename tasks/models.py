@@ -21,6 +21,7 @@ class User(AbstractUser):
     first_name = models.CharField(max_length=50, blank=False)
     last_name = models.CharField(max_length=50, blank=False)
     email = models.EmailField(unique=True, blank=False)
+    notifications = models.ManyToManyField('Notification')
 
     class Meta:
         """Model options."""
@@ -63,6 +64,14 @@ class User(AbstractUser):
         """Returns a query set of all the tasks this user has been assigned"""
 
         return self.task_set.all()
+
+    def add_notification(self,notif):
+        """Adds a notification to the user's list of notifications"""
+        self.notifications.add(notif)
+
+    def get_notifications(self):
+        """Returns a query set of the user's notifications"""
+        return self.notifications.all()
 
     
 
@@ -131,6 +140,9 @@ class Invite(models.Model):
         for user in users.all():
             self.invited_users.add(user)
             self.save()
+            notif = InviteNotification.objects.create(invite=self)
+            user.add_notification(notif)
+            user.save()
 
     def set_team(self, team):
         """Set the team that will send the invite"""
@@ -203,6 +215,9 @@ class Task(models.Model):
             print("sdjshdjshdjshdjshd")
             self.assigned_users.add(user)
             self.save()
+            notif = TaskNotification.objects.create(task=self,notification_type="AS")
+            user.add_notification(notif)
+            user.save()
 
 
     # Could add a boolean field to indicate if the task has expired?
@@ -225,16 +240,44 @@ class AssignedTask(models.Model):
 
 
 class Notification(models.Model): 
-    """Model used to represent a notification"""
+    """Generic template model for notifications"""
+    def as_task_notif(self):
+        try:
+            return self.tasknotification
+        except TaskNotification.DoesNotExist:
+            return None
+
+    def as_invite_notif(self):
+        try:
+            return self.invitenotification
+        except InviteNotification.DoesNotExist:
+            return None
+
+    def display(self):
+        return "This is a notification"
+
+class TaskNotification(Notification): 
+    """Model used to represent a notification relating to a specific task"""
 
     class NotificationType(models.TextChoices):
         ASSIGNMENT = "AS"
         DEADLINE = "DL"
 
-    task_name = models.CharField(max_length=50)
+    task = models.ForeignKey(Task,blank=False,on_delete=models.CASCADE)
+    notification_type = models.CharField(max_length=2,choices=NotificationType.choices,default=NotificationType.ASSIGNMENT)
 
-    def display(self,notification_type):
-        if notification_type== self.NotificationType.ASSIGNMENT:
-            return f'{self.task_name} has been assigned to you.'
-        elif notification_type == self.NotificationType.DEADLINE:
-            return f"{self.task_name}'s deadline is approaching."
+    def set_type(new_type):
+        notification_type = new_type
+
+    def display(self):
+        if self.notification_type== self.NotificationType.ASSIGNMENT:
+            return f'{self.task.name} has been assigned to you.'
+        elif self.notification_type == self.NotificationType.DEADLINE:
+            return f"{self.task.name}'s deadline is approaching."
+
+class InviteNotification(Notification): 
+    """Model used to represent a notification relating to a team invite"""
+    invite = models.ForeignKey(Invite,blank=False,on_delete=models.CASCADE)
+
+    def display(self):
+       return f"Do you wish to join {self.invite.get_inviting_team().team_name}?"
