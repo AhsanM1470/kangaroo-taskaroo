@@ -257,10 +257,34 @@ class RemoveMemberForm(forms.Form):
     class Meta:
         """Form options."""
 
-        fields = ['member_to_remove', "thing"]
+        fields = ['member_to_remove']
 
-    member_to_remove = forms.CharField(max_length=30)
+    member_to_remove = forms.ModelChoiceField(queryset=User.objects.all(), required=True)
     #thing = forms.CharField(max_length=50, choic)
+
+    def __init__(self, *args, **kwargs):
+        """Makes sure only members of current team (not including the creator)"""
+
+        self.creator = kwargs.get("user")
+        self.team = kwargs.get("team")
+        if self.creator != None:
+            kwargs.pop("user") 
+        if self.team != None:
+            kwargs.pop("team")
+
+        super().__init__(*args, **kwargs)
+
+        if self.creator != None and self.team != None:
+            """Set the query set to be all members of team excluding the creator"""
+            query_set = self.team.get_team_members()
+            self.fields["members_to_invite"].queryset = query_set.exclude(id=self.creator.id)
+
+    def remove_member(self):
+        """Remove member from team"""
+
+
+        
+
 
 
 class AssignTaskForm(forms.Form):
