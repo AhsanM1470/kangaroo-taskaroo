@@ -173,6 +173,15 @@ class Task(models.Model):
         message='Enter a valid word with at least 3 alphanumeric characters (no special characters allowed).',
         code='invalid_word',
     )
+    priority = models.CharField(
+        max_length=10,
+        choices=[
+            ('low', 'Low'),
+            ('medium', 'Medium'),
+            ('high', 'High'),
+        ],
+        default='medium',
+    )
     #task_id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=30, blank=False, unique=True, validators=[alphanumeric], primary_key=False)
     description = models.CharField(max_length=530, blank=True)
@@ -194,6 +203,7 @@ class Task(models.Model):
             print("sdjshdjshdjshdjshd")
             self.assigned_users.add(user)
             self.save()
+
 
     # Could add a boolean field to indicate if the task has expired?
 

@@ -18,8 +18,14 @@ from .forms import TaskForm, TaskDeleteForm, AssignTaskForm
 from .models import Task, Invite, Team, Lane
 from django.http import HttpResponseBadRequest
 from datetime import datetime
-from django.db.models import Max
+from django.db.models import Max, Case, Value, When
 
+def formatDateTime(input_date):
+    # Parse the input string
+    parsed_datetime = datetime.strptime(input_date, '%b. %d, %Y, %I:%M %p')
+
+    # Format the datetime object into 'yyyy-mm-dd hh:mm:ss'
+    formatted_datetime = parsed_datetime.strftime('%Y-%m-%d %H:%M:%S')
 
 @login_required
 
@@ -377,8 +383,6 @@ class CreateTaskView(LoginRequiredMixin, FormView):
 
             # Check if the form is valid
             if form.is_valid():
-                # Save the form data to create a new Task instance
-
                 # Simon Stuff
                 assigned_team = request.session["current_team"]
                 form.save(assigned_team=assigned_team)
@@ -470,7 +474,13 @@ class TaskEditView(LoginRequiredMixin, View):
             form = TaskForm(instance=task)
         return render(request, 'task_edit.html', {'task':task, 'form': form})
 
-      
+
+priority_order = Case(
+    When(priority='high', then=Value(3)),
+    When(priority='medium', then=Value(2)),
+    When(priority='low', then=Value(1))
+)
+
 def task_search(request):
     q = request.GET.get('q', '')
     data = Task.objects.all()
@@ -478,18 +488,22 @@ def task_search(request):
     if q:
         data = data.filter(name__icontains=q)
 
-    sort_by_due_date = request.GET.get('sort_due_date', None)
-
-    if sort_by_due_date:
-        if sort_by_due_date in ['asc', 'desc']:
-            order_by = 'due_date' if sort_by_due_date == 'asc' else '-due_date'
-            data = data.order_by(order_by)
+    sort_column = request.GET.get('sort_column', None)
+    sort_direction = request.GET.get('sort_direction', None)
+    if sort_column == 'priority':
+        data=data.model.objects.alias(priority_order=priority_order)
+        sort_column = 'priority_order'
+    if sort_column:
+        if sort_direction == 'desc':
+          data = data.order_by('-'+sort_column)
         else:
-            return HttpResponseBadRequest("Invalid value for 'sort_due_date'")
+          data = data.order_by(sort_column)
+
+    # data = data.model.objects.annotate(
+    #     formatted_due_date=formatDateTime('due_date')
+    # ).values('name', 'description', 'due_date', 'formatted_due_date', 'priority')
 
     context = {'data': data}
-
-    # Check if there are no tasks found
     if not data.exists():
         context['no_tasks_found'] = True
 
@@ -531,7 +545,6 @@ class DeleteLaneView(LoginRequiredMixin, View):
         else:
             delete_form = LaneDeleteForm()
         return render(request, 'lane_delete.html', {'lane':lane, 'delete_form': delete_form})
-    
     
 class TaskView(LoginRequiredMixin, View):
     model = Task

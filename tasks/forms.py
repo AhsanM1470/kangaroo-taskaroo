@@ -119,12 +119,18 @@ class TaskForm(forms.ModelForm):
     class Meta:
         """Form options"""
         model = Task
-        fields = ["name", "description", "lane"]
+        fields = ["name", "description", "lane", "priority"]
         widgets = {
             'name' : forms.TextInput(attrs={'class': 'nameClass', 'placeholder': 'Enter the task name...'}),
             'description' : forms.Textarea(attrs={'class': 'descriptionClass', 'placeholder': 'Write a task description...'}),
-            'lane': forms.Select(attrs={'class':'lane_select'})
+            'lane': forms.Select(attrs={'class':'lane_select'}),
+            'priority': forms.Select(attrs={'class': 'priorityClass'}),
         }
+    #
+    # priority = forms.ChoiceField(
+    #     choices=Task.PRIORITY_CHOICES,
+    #     widget=forms.Select(attrs={'class': 'priorityClass'}),
+    # )
      
     date_field = forms.DateField(
         label='Date',
@@ -164,6 +170,8 @@ class TaskForm(forms.ModelForm):
             
         if assigned_team is not None:
             instance.assigned_team = Team.objects.get(team_name=assigned_team)
+
+        instance.priority = self.cleaned_data.get('priority')
 
         if commit:
             instance.save()
