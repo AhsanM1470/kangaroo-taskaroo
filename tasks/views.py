@@ -14,12 +14,18 @@ from tasks.forms import LogInForm, PasswordForm, UserForm, SignUpForm, CreateTea
 from tasks.helpers import login_prohibited
 from django.urls import reverse_lazy
 from django.views.decorators.http import require_POST
-from .forms import TaskForm, TaskDeleteForm
+from .forms import TaskForm, TaskDeleteForm, AssignTaskForm
 from .models import Task, Invite, Team, Lane
 from django.http import HttpResponseBadRequest
 from datetime import datetime
-from django.db.models import Max
+from django.db.models import Max, Case, Value, When
 
+def formatDateTime(input_date):
+    # Parse the input string
+    parsed_datetime = datetime.strptime(input_date, '%b. %d, %Y, %I:%M %p')
+
+    # Format the datetime object into 'yyyy-mm-dd hh:mm:ss'
+    formatted_datetime = parsed_datetime.strftime('%Y-%m-%d %H:%M:%S')
 
 @login_required
 
@@ -32,17 +38,12 @@ def dashboard(request):
             default_lane_names = [("Backlog", 1), ("In Progress", 2), ("Complete", 3)]
             for lane_name, lane_order in default_lane_names:
                 Lane.objects.get_or_create(lane_name=lane_name, lane_order=lane_order)
+        if  'dashboard_team' in request.GET:
+            team_name = request.GET.get("dashboard_team")
+            request.session["current_team"] = team_name
     
-    
-    if request.method == 'GET':
-        # Create 3 default lanes when the dashboard is empty
-        if not Lane.objects.exists():
-            default_lanes = ['Backlog', 'In Progress', 'Complete']
-            for lane_name in default_lanes:
-                Lane.objects.get_or_create(lane_name = lane_name)
-    
+    # Handle form submission for adding a new lane
     if request.method == 'POST':
-        # Add a lane to the dashboard
         if 'add_lane' in request.POST:
             max_order = Lane.objects.aggregate(Max('lane_order'))['lane_order__max'] or 0
             Lane.objects.create(lane_name="New Lane", lane_order=max_order + 1)
@@ -57,21 +58,38 @@ def dashboard(request):
             lane.save()
         
         return redirect('dashboard')
+    
+    # Simon Stuff
+    if "current_team" not in request.session:
+        request.session["current_team"] = "Kangaroo" # This is our current board we are looking at for now
+        # Should just be the first team created by user
 
-    # Retrieve current user, lanes, tasks, and the teams
+    # Retrieve current user and lanes
     current_user = request.user
-    # lanes = request.session['lanes']
+    current_team = Team.objects.get(team_name=request.session["current_team"])
     lanes = lanes = Lane.objects.all().order_by('lane_order')
-    all_tasks = Task.objects.all()
-    # Used to be all teams
+
+    # THe lanes can then be retrieved using the current team
+
+    #all_tasks = Task.objects.all()
+    team_tasks = current_team.get_tasks()
     teams = current_user.get_teams()
-    task_form = TaskForm()
+
+    # Simon's stuff
+    assign_task_form = AssignTaskForm(team=current_team, user=current_user)
+    create_task_form = TaskForm()
+    create_team_form = CreateTeamForm(user=current_user)
+
+    # lane_tasks = {lane: Task.objects.filter(lane=lane) for lane in lanes}
     return render(request, 'dashboard.html', {
         'user': current_user,
         'lanes': lanes,
-        'tasks': all_tasks,
+        'tasks': team_tasks,
         'teams': teams,
-        'task_form': task_form,
+        "current_team": current_team,
+        "assign_task_form" : assign_task_form,
+        "create_task_form": create_task_form,
+        "create_team_form": create_team_form,
     })
 
 def move_task_left(request, pk):
@@ -136,7 +154,7 @@ def create_team(request):
             messages.add_message(request, messages.SUCCESS, "Created Team!")
         else:
             messages.add_message(request, messages.ERROR, "That team name has already been taken!")
-    return redirect("my_teams")
+    return redirect("dashboard")
 
 @login_required
 def my_teams(request):
@@ -164,6 +182,32 @@ def remove_member(request):
     if request.method == "POST":
         messages.add_message(request, messages.SUCCESS, "Tried to remove team member, but there ain't no functionality hehe")
     return redirect("my_teams")
+
+@login_required
+def assign_task(request):
+    """Assigns a task to a user using the AssignedTask Model"""
+
+    """
+    if request.method == "GET":
+        request.team = Team.objects.get(team_name="Kangaroo")
+        assign_task_form = AssignTaskForm(team=request.team, task_name="Simon")
+        
+        #return render(request, "assign_task.html", {"team": request.team, "assign_form": assign_task_form})
+    """
+
+    if request.method == "POST":
+        """Gets the task that has just been pressed"""
+
+        modified_request = request.POST.copy()
+        task_name = modified_request.pop("task_name")[0]
+        assign_task_form = AssignTaskForm(modified_request, task_name=task_name)
+        if assign_task_form.is_valid():
+            assign_task_form.assign_task()
+            messages.add_message(request, messages.SUCCESS, "Assigned Task!")
+        else:
+            messages.add_message(request, messages.ERROR, "Task does not exist!")
+
+        return redirect("dashboard")
 
 
 @login_required
@@ -320,11 +364,13 @@ class CreateTaskView(LoginRequiredMixin, FormView):
     success_url = reverse_lazy('dashboard')  # Redirect to the dashboard after successful form submission
     form_title = 'Create Task'
     
+    """ Simon
     def form_valid(self, form):
         self.object = form.save()
         #login(self.request, self.object)
         return super().form_valid(form)
-    
+    """
+
     def get_success_url(self):
         """Return redirect URL after successful update."""
         messages.add_message(self.request, messages.SUCCESS, "Task created!")
@@ -337,8 +383,9 @@ class CreateTaskView(LoginRequiredMixin, FormView):
 
             # Check if the form is valid
             if form.is_valid():
-                # Save the form data to create a new Task instance
-                form.save()
+                # Simon Stuff
+                assigned_team = request.session["current_team"]
+                form.save(assigned_team=assigned_team)
                 messages.success(request, 'Task Created!')
                 # Redirect to the dashboard or another page
                 return redirect('dashboard')
@@ -346,7 +393,6 @@ class CreateTaskView(LoginRequiredMixin, FormView):
             form = TaskForm()
         # Fetch all tasks for rendering the form initially
         all_tasks = Task.objects.all()
-
         return render(request, 'task_create.html', {'tasks': all_tasks, 'form': form})
     
 class DeleteTaskView(LoginRequiredMixin, View):
@@ -428,7 +474,13 @@ class TaskEditView(LoginRequiredMixin, View):
             form = TaskForm(instance=task)
         return render(request, 'task_edit.html', {'task':task, 'form': form})
 
-      
+
+priority_order = Case(
+    When(priority='high', then=Value(3)),
+    When(priority='medium', then=Value(2)),
+    When(priority='low', then=Value(1))
+)
+
 def task_search(request):
     q = request.GET.get('q', '')
     data = Task.objects.all()
@@ -436,18 +488,22 @@ def task_search(request):
     if q:
         data = data.filter(name__icontains=q)
 
-    sort_by_due_date = request.GET.get('sort_due_date', None)
-
-    if sort_by_due_date:
-        if sort_by_due_date in ['asc', 'desc']:
-            order_by = 'due_date' if sort_by_due_date == 'asc' else '-due_date'
-            data = data.order_by(order_by)
+    sort_column = request.GET.get('sort_column', None)
+    sort_direction = request.GET.get('sort_direction', None)
+    if sort_column == 'priority':
+        data=data.model.objects.alias(priority_order=priority_order)
+        sort_column = 'priority_order'
+    if sort_column:
+        if sort_direction == 'desc':
+          data = data.order_by('-'+sort_column)
         else:
-            return HttpResponseBadRequest("Invalid value for 'sort_due_date'")
+          data = data.order_by(sort_column)
+
+    # data = data.model.objects.annotate(
+    #     formatted_due_date=formatDateTime('due_date')
+    # ).values('name', 'description', 'due_date', 'formatted_due_date', 'priority')
 
     context = {'data': data}
-
-    # Check if there are no tasks found
     if not data.exists():
         context['no_tasks_found'] = True
 
@@ -489,7 +545,6 @@ class DeleteLaneView(LoginRequiredMixin, View):
         else:
             delete_form = LaneDeleteForm()
         return render(request, 'lane_delete.html', {'lane':lane, 'delete_form': delete_form})
-    
     
 class TaskView(LoginRequiredMixin, View):
     model = Task

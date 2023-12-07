@@ -1,0 +1,22 @@
+{% block content %}
+<div class="container">
+  <div class="row">
+    <div class="col-12">
+      {% if invite_form and remove_form %}
+      <h1>Make an invite</h1>
+      <form action ="{%url 'create_invite'%}" method="post">
+        {% csrf_token %}
+        {% include 'partials/bootstrap_form.html' with form=invite_form %}
+      <input type="submit" value="Create Invite" class="btn btn-primary">
+      </form>
+      <h1>Remove a team member</h1>
+      <form action ="{%url 'remove_member'%}" method="post">
+        {% csrf_token %}
+        {% include 'partials/bootstrap_form.html' with form=remove_form %}
+      <input type="submit" value="Remove Member" class="btn btn-primary">
+      </form>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

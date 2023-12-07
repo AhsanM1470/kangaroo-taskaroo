@@ -59,6 +59,11 @@ class User(AbstractUser):
 
         return self.invite_set.all()
 
+    def get_tasks(self):
+        """Returns a query set of all the tasks this user has been assigned"""
+
+        return self.task_set.all()
+
     
 
 class Team(models.Model):
@@ -73,13 +78,6 @@ class Team(models.Model):
         """Overrides string to show the team's name"""
         
         return self.team_name
-
-    def add_team_member(self, new_team_members):
-        """Add new team member/s to the team"""
-        
-        for new_team_member in new_team_members.all():
-            self.team_members.add(new_team_member)
-            self.save()
         
     def add_invited_member(self, user):
         """Add a new team member from an invite"""
@@ -111,6 +109,11 @@ class Team(models.Model):
         for user in users:
             output_str += f'{user.username} '
         return output_str
+
+    def get_tasks(self):
+        """Return query set containing all the tasks of the team"""
+
+        return self.task_set.all()
 
 class Invite(models.Model):
     """Model used to hold information about invites"""
@@ -170,13 +173,56 @@ class Task(models.Model):
         message='Enter a valid word with at least 3 alphanumeric characters (no special characters allowed).',
         code='invalid_word',
     )
+    priority = models.CharField(
+        max_length=10,
+        choices=[
+            ('low', 'Low'),
+            ('medium', 'Medium'),
+            ('high', 'High'),
+        ],
+        default='medium',
+    )
     #task_id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=30, blank=False, unique=True, validators=[alphanumeric], primary_key=False)
     description = models.CharField(max_length=530, blank=True)
     due_date = models.DateTimeField(default=datetime(1, 1, 1))
     created_at = models.DateTimeField(default=timezone.now)
     lane = models.ForeignKey(Lane, on_delete=models.CASCADE)
+    assigned_team = models.ForeignKey(Team, blank=False, on_delete=models.CASCADE, null=True)
+    assigned_users = models.ManyToManyField(User, blank=True)
+
+    def get_assigned_users(self):
+        """Return all users assigned to this task"""
+
+        return self.assigned_users.all()
+
+    def set_assigned_users(self, assigned_users):
+        """Set the assigned users of the task"""
+
+        for user in assigned_users:
+            print("sdjshdjshdjshdjshd")
+            self.assigned_users.add(user)
+            self.save()
+
+
     # Could add a boolean field to indicate if the task has expired?
+
+"""
+class AssignedTask(models.Model):
+    #M odel used for holding the information about a task assigned to a specific user of a team
+    assigned_member = models.ForeignKey(User, blank=True, on_delete=models.CASCADE, default=None)
+    team = models.ForeignKey(Team, blank=False, on_delete=models.CASCADE)
+    task = models.OneToOneField(Task, blank=False, on_delete=models.CASCADE)
+
+    def add_assigned_members(self, assigned_members):
+        #Set assigned team member/s to task
+        
+        for team_member in assigned_members.all():
+            self.assigned_members.add(team_member)
+            self.save()
+
+"""
+
 
 class Notification(models.Model): 
     """Model used to represent a notification"""
