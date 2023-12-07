@@ -162,31 +162,22 @@ class Invite(models.Model):
             if user_to_invite:
                 self.get_inviting_team().add_invited_member(user_to_invite)   
         self.delete()
-    
-class Lane(models.Model):
-    lane_name = models.CharField(max_length=100)
-    lane_id = models.AutoField(primary_key=True)
-    lane_order = models.IntegerField(default=0)
-
-    class Meta:
-        ordering = ['lane_order']
-
-    def __str__(self):
-        return self.lane_name
         
 class Task(models.Model):
     """Model used for tasks and information related to them"""
+    #taskID = models.AutoField(primary_key=True, unique=True)
     alphanumeric = RegexValidator(
         regex=r'^[a-zA-Z0-9 ]{3,}$',
         message='Enter a valid word with at least 3 alphanumeric characters (no special characters allowed).',
         code='invalid_word',
     )
     #task_id = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=30, blank=False, validators=[alphanumeric])
+    name = models.CharField(max_length=30, blank=False, unique=True, validators=[alphanumeric])
     description = models.CharField(max_length=530, blank=True)
     due_date = models.DateTimeField(default=datetime(1, 1, 1))
     created_at = models.DateTimeField(default=timezone.now)
-    lane = models.ForeignKey(Lane, on_delete=models.CASCADE, related_name='tasks',default=None)
+    #lane = models.ForeignKey(Lane, on_delete=models.CASCADE)
+    # Could add a boolean field to indicate if the task has expired?
 
 class Notification(models.Model): 
     """Generic template model for notifications"""
@@ -227,12 +218,6 @@ class TaskNotification(Notification):
 class InviteNotification(Notification): 
     """Model used to represent a notification relating to a team invite"""
     invite = models.ForeignKey(Invite,blank=False,on_delete=models.CASCADE)
-    
-    def display(self,notification_type):
-        if notification_type== self.NotificationType.ASSIGNMENT:
-            return f'{self.task_name} has been assigned to you.'
-        elif notification_type == self.NotificationType.DEADLINE:
-            return f"{self.task_name}'s deadline is approaching." 
-        else:
-          return f"Do you wish to join {self.invite.get_inviting_team().team_name}?"
 
+    def display(self):
+       return f"Do you wish to join {self.invite.get_inviting_team().team_name}?"

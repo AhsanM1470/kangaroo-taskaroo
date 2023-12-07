@@ -2,25 +2,6 @@
 {% block content %}
 
 <style>
-  /* For Firefox */
-  * {
-      scrollbar-width: thin;
-      scrollbar-color: #888 transparent;
-  }
-
-  .lane-header::-webkit-scrollbar, .board-container::-webkit-scrollbar, .task::-webkit-scrollbar {
-      width: 0.5em; /* Width of the scrollbar */
-      height: 0.3em;
-  }
-
-  ::-webkit-scrollbar-thumb {
-      background: #ffffff88;
-      border-radius: 4px;
-  }
-
-  ::-webkit-scrollbar-thumb:hover {
-      background: #555555;
-  }
 
   body{
     background: linear-gradient(to bottom right, #0076f4, #209e3e);
@@ -28,23 +9,12 @@
 
   h3{
     margin-bottom: 0;
-    margin-left:1em;
+    margin-left:1%;
   }
 
   h6{
-    margin-top: 0.5em;
-    padding-left: 0.5em;
-  }
-
-  .username h5{
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  .image{
-    border: none;
-    background: transparent;
+    margin-top: 5%;
+    padding-left: 5%;
   }
 
   .flex-container{
@@ -57,7 +27,6 @@
     border: 1px solid #FFFFFF55;
     display: flex;
     color: white;
-    padding: 0.2em;
   }
 
   .username{
@@ -66,56 +35,41 @@
     display: flex;
     justify-content: center;
     width:12vw;
-    word-wrap: break-word;
   }
 
-  .board-container{
+  .board{
     overflow: auto;
     height: 100vh;
     width: 88vw;
   }
 
-  .board{
+  .task-board{
     display: flex;
     align-items: flex-start;
     justify-content: start;
-    gap: 1em;
+    gap: 16px;
   }
 
   .lane{
     display: flex;
     flex-direction: column;
-    gap: 0.9em;
+    gap: 12px;
 
     background: rgb(205, 205, 205);
     box-shadow: 0px 5px 15px rgba(0,0,0,0.25);
 
-    padding: 0.8em;
+    padding: 12px;
     border-radius: 4px;
-    min-width: 20vw;
-    min-height: 10vh;
-    max-width: 30vw;
-    overflow: hidden;
-    /* text-overflow: ellipsis;
-    white-space: nowrap;    */
+    width: 225px;
+    min-height: 120px;
   }
 
-  .lane-name-label, .lane-name-input{
+  .lane-name-label{
     display: block;
-    font-size: 1.2em;
+    font-size: 1.5em;
     font-weight: bold;
     border: none;
     cursor: pointer;
-    width: 100%;
-    /* overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;*/
-    overflow-wrap: break-word;
-    max-width: 20vw;
-  }
-
-  .lane-header{
-    overflow: auto;
   }
 
   .lane-name-input{
@@ -138,25 +92,15 @@
   .task{
     background: rgb(221, 221, 221);
     box-shadow: 0px 5px 15px rgba(0,0,0,0.1);
-    padding: 0.5em;
+    padding: 5px;
     border-radius: 4px;
 
-    font-size: 0.95em;
-    cursor: pointer;
-
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-
-    overflow-x:auto;
-  }
-
-  .task img{
-    transform: scale(0.8);
+    font-size: 15px;
+    cursor: move;
   }
 
   #sidebar{
-    width: 12.4vw;
+    width: 12.1vw;
     height: 100vh;
     background-color: #064486cc;
     border-right: 1px solid #FFFFFF55;
@@ -174,34 +118,23 @@
 
   #sidebar li{
     transition: background-color 0.3s;
-    padding-left: 0.5em;
+    padding-left: 5%;
   }
 
   #sidebar li:hover{
     background-color: #064486;
   }
 
-  #task_sidebar{
-    height: 100vh;
-    padding: 1empx;
-    background-color: rgba(222, 206, 206, 0.8);
-    border: 10px solid #00000055;
-    overflow-wrap: break-word;
-    word-wrap: break-word;
-  }
-
 </style>
 
 <div class="header-bar">
-  <div class="username">
-    <h5>{{ user.username }}</h5>
-  </div>
+  <h5 class="username">{{ user.username }}</h5>
   <h3>Welcome to your dashboard</h3>
 </div>
 
 <div class="flex-container">
   <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block sidebar collapse">
-    <h6>YOUR TEAMS:</h6>
+    <h6>Your Teamssssssss:</h6>
     <ul>
       {% for team in teams %}
         <li>{{ team.team_name }}</li>
@@ -210,104 +143,48 @@
   </nav>
   
   <!--Used to be container board-->
-  <div class="board-container">
+  <div class="board">
     <div class="row">
-      <div class="d-flex align-items-start" style="margin-top: 1em; margin-left: 1em;">
-        <div class="board">
-          <!-- Lanes of the dashboard -->
+      <div class="d-flex align-items-start" style="margin-top: 2%; margin-left: 2%;">
+        <div class="task-board">
           {% for lane in lanes %}
           <div class="lane">
-            <div class="lane-header" style="display: flex; justify-content: space-between; align-items: center;">
-              
-              <!-- Move lane left form -->
-              <form method="post" action="{% url 'move_lane_left' lane.lane_id %}" style="display: inline;">
-                {% csrf_token %}
-                <button type="submit" class="image" title="Move lane left">
-                    <img src="../../static/images/move-left-icon.png">
-                </button>
-              </form>
-
-              <!-- Lane name form -->
+  
+            <form method="post">
+              {% csrf_token %}
+              <input type="hidden" name="lane_index" value="{{ forloop.counter0 }}">
+  
+              <!-- Toggle checkbox to rename -->
+              <input type="checkbox" id="lane-name-{{ forloop.counter }}" class="toggle-lane-name" style="display:none;">
+  
+              <label for="lane-name-{{ forloop.counter }}" class="lane-name-label">{{ lane }}</label>
+  
+              <input type="text" name="new_lane_name" value="{{ lane }}" required class="lane-name-input">
+              <input type="submit" name="rename_lane" style="display: none;">
+            </form>
+  
+            <!-- <p class="task">Do Thing</p> -->
+            {% for task in tasks %}
+            <div class="task">
+              {{ task.name }}
+            </div>
+            {% empty %}
+            <p>No tasks in this lane.</p>
+            {% endfor %}
+  
+            <div>
+                <form method="get" style="display: inline;;" action="{% url 'task_create' %}">
+                  <input type="hidden" name="lane" value="{{ lane }}">
+                  <button type="submit" class="btn btn-secondary">New Task</button>
+                </form>
+  
               <form method="post" style="display: inline;">
                 {% csrf_token %}
-                <input type="hidden" name="rename_lane" value="{{ lane.lane_id }}">
-
-                <label id="label-{{ forloop.counter }}" class="lane-name-label" onclick="toggleEdit('{{ forloop.counter }}')">{{ lane.lane_name }}</label>
-                
-                <!-- Rename input (initially hidden) -->
-                <input type="text" name="new_lane_name" value="{{ lane.lane_name }}" id="input-{{ forloop.counter }}" maxlength="50" class="lane-name-input" style="display:none;" onkeypress="enterName(event,'{{forloop.counter}}')">
-              </form>
-
-              <!-- Move lane right form -->
-              <form method="post" action="{% url 'move_lane_right' lane.lane_id %}" style="display: inline;">
-                {% csrf_token %}
-                <button type="submit" class="image" title="Move lane right">
-                    <img src="../../static/images/move-right-icon.png">
-                </button>
-              </form>
-
-              <!-- Delete lane form -->
-              <form method="post" action="{% url 'lane_delete' lane.lane_id %}" style="display: inline;">
-                  {% csrf_token %}
-                  <input type="hidden" name="delete_lane" value="{{ lane.lane_id }}">
-                  <button type="submit" class="image" title="Delete lane">
-                      <img src="../../static/images/bin-icon.png">
-                  </button>
+                <input type="hidden" name="delete_lane" value="{{ lane }}">
+                <button type="submit" class="btn btn-danger">Delete</button>
               </form>
             </div>
-
-            <!-- Tasks for each lane -->
-            {% for task in tasks %}
-            {% if task.lane_id == lane.lane_id %}
-            <div class="task">
-              <!-- Form for moving tasks to the left lane -->
-              <form method="post" action="{% url 'move_task_left' task.name %}">
-                {% csrf_token %}
-                <button type="submit" class="image" title="Move task left">
-                  <img src="../../static/images/move-left-icon-grey.png">
-                </button>
-              </form>
-
-              {{ task.name }}
-            
-              <!-- Form for moving task to the right lane -->
-              <form method="post" action="{% url 'move_task_right' task.name %}">
-                {% csrf_token %}
-                <button type="submit" class="image" title="Move task right">
-                  <img src="../../static/images/move-right-icon-grey.png">
-                </button>
-              </form>
-
-              <!-- View/edit task form -->
-              <form method="post" action="">
-                {% csrf_token %}
-                <input type="hidden" name="task_edit" value="{{ task.name }}">
-                <button type="submit" class="image" title="View and edit task">
-                  <img src="../../static/images/edit-icon-grey.png">
-                </button>
-              </form>
-
-              <!-- Delete task form -->
-              <form method="post" action="{% url 'task_delete' task.name %}" style="display: inline;">
-                {% csrf_token %}
-                <input type="hidden" name="task_delete" value="{{ task.name }}">
-                <button type="submit" class="image" title="Delete task">
-                  <img src="../../static/images/bin-icon-grey.png">
-                </button>
-              </form>
-            </div>
-            {% endif %}
-            {% empty %}
-                <p>No tasks currently in this lane.</p>
-            {% endfor %}
-    
-            <div>
-              <form method="get" style="display: inline;" action="{% url 'task_create' %}">
-                  <input type="hidden" name="lane" value="{{ lane.id }}">
-                  <!-- <button type="submit" class="btn btn-secondary" style="width: 100%;">New Task</button> -->
-                  <button type="button" class="btn btn-secondary" data-bs-toggle="collapse" data-bs-target="#task_pop_up" aria-expanded="false" aria-controls="#task_pop_up" style="width: 100%;">New Task</button>
-              </form>
-            </div>
+  
           </div>
           {% endfor %}
         </div>
@@ -319,34 +196,6 @@
       </div>
     </div>
   </div>
-
-  <!-- Task create popup -->
-  <div class="collapse collapse-horizontal" id="task_pop_up" style="width: 100vw;">
-    <article id="task_sidebar">
-      {% include 'task_create.html' with form=task_form %}
-    </article>
-  </div>
 </div>
-
-<script>
-  // Toggle between the lanes name and the editable input
-  function toggleEdit(counter) {
-      let label = document.getElementById('label-' + counter);
-      let nameInput = document.getElementById('input-' + counter);
-      label.style.display = 'none';
-      nameInput.style.display = 'block';
-      nameInput.focus();
-  }
-  
-  function enterName(event, counter) {
-      if (event.key === 'Enter') {
-          event.preventDefault();
-  
-          // find the closest form to the input and submit it
-          let nameInput = document.getElementById('input-' + counter);
-          nameInput.closest('form').submit();
-      }
-  }
-</script>
 
 {% endblock %}
