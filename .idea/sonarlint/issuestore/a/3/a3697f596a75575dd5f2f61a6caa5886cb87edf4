@@ -1,15 +1,0 @@
-
-mpython:S1192d"NDefine a constant instead of duplicating this literal 'my_teams.html' 3 times.(Àö‡ý8£ì©ŠÄ1
-xpython:S1542"TRename function "formatDateTime" to match the regular expression ^[a-z_][a-z0-9_]*$.(¸ñÉóýÿÿÿÿ8¾ì©ŠÄ1
-Upython:S1481"6Remove the unused local variable "formatted_datetime".(Ê›í„8Äì©ŠÄ1
-=python:S125A"Remove this commented out code.(»¿¶ñ8Æì©ŠÄ1
-Spython:S1172•".Remove the unused function parameter "kwargs".(ÄÀŸëÿÿÿÿÿ8Ìì©ŠÄ1
-Qpython:S1172•",Remove the unused function parameter "args".(ÄÀŸëÿÿÿÿÿ8Èì©ŠÄ1
-Lpython:S1481£",Remove the unused local variable "priority".(•’»û8Ôì©ŠÄ1
-Npython:S1481¥")Remove the unused local variable "model".(ê›Øÿûÿÿÿÿ8Îì©ŠÄ1
-€python:S1845Ý"`Rename field "POST" to prevent any misunderstanding/clash with method "post" defined on line 331(Š°Ü€8Ûì©ŠÄ1
-_python:S5720Ú"?Rename "request" to "self" or add the missing "self" parameter.(Ï¹Ž®8èì©ŠÄ1
->python:S125Ì"Remove this commented out code.(Øçì¶8ïì©ŠÄ1
->python:S125Î"Remove this commented out code.(”š®Ú8ñì©ŠÄ1
->python:S125›"Remove this commented out code.(Ö¹†ê8€á¯ŠÄ1
-Cpython:S125ª"Remove this commented out code.(àÛ¼µýÿÿÿÿ8ýì©ŠÄ1
