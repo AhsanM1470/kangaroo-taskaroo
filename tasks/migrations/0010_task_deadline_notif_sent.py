@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tasks', '0008_remove_notification_task_name_user_notifications_and_more'),
+        ('tasks', '0009_alter_team_team_name'),
     ]
 
     operations = [
