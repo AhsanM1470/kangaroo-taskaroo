@@ -19,6 +19,7 @@ class TaskNotificationModelTestCase(TestCase):
             team_creator= self.user,
             description = "A random test team"
         )
+        self.team.add_invited_member(self.user)
         self.lane = Lane.objects.create(
             lane_id = 1
         )
@@ -33,28 +34,30 @@ class TaskNotificationModelTestCase(TestCase):
         self.task.notify_keydates()
         self.notifications = self.user.get_notifications()
         self.task_notifs = [notif.as_task_notif() for notif in self.notifications.select_related("tasknotification")]
-        self.assign_notifications = list(filter(lambda notif: notif.notification_type=="AS",self.task_notifs))
-        self.deadline_notifications = list(filter(lambda notif: notif.notification_type=="DL",self.task_notifs))
+        self.assign_notifications = list(filter(lambda notif: notif.notification_type==TaskNotification.NotificationType.ASSIGNMENT,self.task_notifs))
+        self.deadline_notifications = list(filter(lambda notif: notif.notification_type==TaskNotification.NotificationType.DEADLINE,self.task_notifs))
 
     def test_correct_task_name(self):
         self.assertEqual(self.assign_notifications[0].task.name,"test-task")
         self.assertEqual(self.deadline_notifications[0].task.name,"test-task")
 
     def test_assignment_notification_displays_correctly(self):
-        display_result = self.assign_notification.display()
+        self.assertEqual(len(self.assign_notifications),1)
+        display_result = self.assign_notifications[0].display()
         target = "test-task has been assigned to you."
         self.assertEquals(display_result,target)
 
     def test_deadline_notification_displays_correctly(self):
-        display_result = self.deadline_notification.display()
+        self.assertEqual(len(self.deadline_notifications),1)
+        display_result = self.deadline_notifications[0].display()
         target = "test-task's deadline is in 5 day(s)."
         self.assertEqual(display_result,target)
 
     def test_notifications_stored_correctly(self):
         self.assertEqual(self.notifications.count(),2)
-        self.assertEqual(self.task_notifs.count(),2)
-        self.assertEqual(self.assign_notifications.count(),1)
-        self.assertEqual(self.deadline_notifications.count(),1)
+        self.assertEqual(len(self.task_notifs),2)
+        
+        
 
 
 class InviteNotificationModelTestCase(TestCase):
