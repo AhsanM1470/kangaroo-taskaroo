@@ -180,7 +180,6 @@ class Lane(models.Model):
 class Task(models.Model):
     """Model used for tasks and information related to them"""
     #taskID = models.AutoField(primary_key=True, unique=True)
-    deadline_keydates = [5,3,2,1]
     alphanumeric = RegexValidator(
         regex=r'^[a-zA-Z0-9 ]{3,}$',
         message='Enter a valid word with at least 3 alphanumeric characters (no special characters allowed).',
@@ -203,6 +202,7 @@ class Task(models.Model):
     lane = models.ForeignKey(Lane, on_delete=models.CASCADE)
     assigned_team = models.ForeignKey(Team, blank=False, on_delete=models.CASCADE, null=True)
     assigned_users = models.ManyToManyField(User, blank=True)
+    deadline_notif_sent = models.BooleanField(default=False)
 
     def get_assigned_users(self):
         """Return all users assigned to this task"""
@@ -221,11 +221,12 @@ class Task(models.Model):
             user.save()
 
     def notify_keydates(self):
-        while datetime.today().date() >= (self.due_date-timedelta(days=self.deadline_keydates[0])).date():
+        if datetime.today().date() >= (self.due_date-timedelta(days=5)).date() and not self.deadline_notif_sent:
+            self.deadline_notif_sent=True
             notif = TaskNotification.objects.create(task=self,notification_type="DL")
             for user in self.assigned_team.team_members.all():
                 user.add_notification(notif)
-            self.deadline_keydates.pop(0)
+        self.save()
 
 
     # Could add a boolean field to indicate if the task has expired?

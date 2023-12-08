@@ -85,6 +85,8 @@ def dashboard(request):
     create_task_form = TaskForm()
     create_team_form = CreateTeamForm(user=current_user)
 
+    detect_keydates()
+
     # lane_tasks = {lane: Task.objects.filter(lane=lane) for lane in lanes}
     return render(request, 'dashboard.html', {
         'user': current_user,
@@ -233,7 +235,7 @@ def press_invite(request):
 
 @login_prohibited
 def home(request):
-    """Display the application's start/home screen."""
+    """Display the application's start/home screen."""#
 
     return render(request, 'home.html')
 
@@ -285,7 +287,6 @@ class LogInView(LoginProhibitedMixin, View):
         user = form.get_user()
         if user is not None:
             login(request, user)
-            detect_keydates()
             return redirect(self.next)
         messages.add_message(request, messages.ERROR, "The credentials provided were invalid!")
         return self.render()
