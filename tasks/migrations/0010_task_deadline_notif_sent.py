@@ -9,6 +9,7 @@ class Migration(migrations.Migration):
         ('tasks', '0009_alter_team_team_name'),
     ]
 
+
     operations = [
         migrations.AddField(
             model_name='task',

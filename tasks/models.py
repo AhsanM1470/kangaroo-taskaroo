@@ -68,6 +68,7 @@ class User(AbstractUser):
     def add_notification(self,notif):
         """Adds a notification to the user's list of notifications"""
         self.notifications.add(notif)
+        self.save()
 
     def get_notifications(self):
         """Returns a query set of the user's notifications"""
@@ -143,7 +144,6 @@ class Invite(models.Model):
             self.save()
             notif = InviteNotification.objects.create(invite=self)
             user.add_notification(notif)
-            user.save()
 
     def set_team(self, team):
         """Set the team that will send the invite"""
@@ -219,7 +219,6 @@ class Task(models.Model):
             self.save()
             notif = TaskNotification.objects.create(task=self,notification_type="AS")
             user.add_notification(notif)
-            user.save()
 
     def notify_keydates(self):
         if datetime.today().date() >= (self.due_date-timedelta(days=5)).date() and not self.deadline_notif_sent:
@@ -283,7 +282,10 @@ class TaskNotification(Notification):
         if self.notification_type== self.NotificationType.ASSIGNMENT:
             return f'{self.task.name} has been assigned to you.'
         elif self.notification_type == self.NotificationType.DEADLINE:
-            return f"{self.task.name}'s deadline is approaching."
+            if datetime.today().date()<self.task.due_date.date():
+                return f"{self.task.name}'s deadline is in {(self.task.due_date.date()-datetime.today().date()).days} day(s)."
+            else:
+                return f"{self.task.name}'s deadline has passed."
 
 class InviteNotification(Notification): 
     """Model used to represent a notification relating to a team invite"""
