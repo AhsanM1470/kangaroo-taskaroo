@@ -164,8 +164,14 @@ class Invite(models.Model):
 
         if self.status == "Accept":
             if user_to_invite:
-                self.get_inviting_team().add_invited_member(user_to_invite)   
-        self.delete()
+                self.get_inviting_team().add_invited_member(user_to_invite) 
+                self.invited_users.remove(user_to_invite)  
+                notifs = user_to_invite.get_notifications()
+                notif = list(filter(lambda notif: notif.as_invite_notif() != None and notif.as_invite_notif().invite == self,notifs))[0]
+                notif.delete()
+                self.save()
+        if self.invited_users.count()==0:
+            self.delete()
     
 class Lane(models.Model):
     lane_name = models.CharField(max_length=100)

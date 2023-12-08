@@ -43,4 +43,5 @@ urlpatterns = [
     path('my_teams/', views.my_teams, name="my_teams"),
     path('task/<int:pk>/move-left/', views.move_task_left, name='move_task_left'),
     path('task/<int:pk>/move-right/', views.move_task_right, name='move_task_right'),
+    path('notif_delete/<int:notif_id>/',views.notif_delete,name='notif_delete')
 ]

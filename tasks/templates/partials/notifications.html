@@ -13,7 +13,14 @@
                 <input type="hidden" name="id" value= {{ notification.invitenotification.invite.id }}>
                 </form> <hr>
             {% elif notification.as_task_notif != None %}
-                {{notification.tasknotification.display}} <hr>
+                {{notification.tasknotification.display}}
+                <form method="post" action="{% url 'notif_delete' notification.id %}" style="display: inline;">
+                {% csrf_token %}
+                <button type="submit" class="btn">
+                    <span class="bi-trash"></span>
+                </button>
+                </form>
+                <hr>
             {% endif %} 
         {% empty %}
             No notifications currently
