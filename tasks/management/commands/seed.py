@@ -49,15 +49,13 @@ class Command(BaseCommand):
         last_name = self.faker.last_name()
         email = create_email(first_name, last_name)
         username = create_username(first_name, last_name)
-        user = self.try_create_user({'username': username, 'email': email, 'first_name': first_name, 'last_name': last_name})
-        if user is not None:
-            print("waosaos")
-            self.try_create_team(user)
+        self.try_create_user({'username': username, 'email': email, 'first_name': first_name, 'last_name': last_name})
        
     def try_create_user(self, data):
         try:
             user = self.create_user(data)
-            return user
+            if user is not None:
+                self.try_create_team(user)
         except:
             pass
     
@@ -66,7 +64,7 @@ class Command(BaseCommand):
         try:
             self.create_team(user)
         except:
-            print("f me")
+            print("bruh")
             pass
 
     def create_user(self, data):
@@ -87,8 +85,7 @@ class Command(BaseCommand):
         )
         team.add_invited_member(user)
         team.save()
-        print("sdsdo")
-
+        user.save()
 
 def create_username(first_name, last_name):
     return '@' + first_name.lower() + last_name.lower()

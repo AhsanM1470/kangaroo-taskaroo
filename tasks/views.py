@@ -64,11 +64,11 @@ def dashboard(request):
     current_user = request.user
     teams = current_user.get_teams()
 
-    if "current_team" not in request.session:
-        request.session["current_team"] = teams[:1].get().team_name # Gets the first team in our list of teams    
+    if "current_team_id" not in request.session:
+        request.session["current_team_id"] = teams[:1].get().id # Gets the first team in our list of teams    
 
     # Retrieve current team and lanes
-    current_team = Team.objects.get(team_name=request.session["current_team"])
+    current_team = Team.objects.get(id=request.session["current_team_id"])
     lanes = lanes = Lane.objects.all().order_by('lane_order')
 
     # THe lanes can then be retrieved using the current team
