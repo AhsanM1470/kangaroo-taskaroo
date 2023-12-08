@@ -362,20 +362,20 @@ class SignUpView(LoginProhibitedMixin, FormView):
     redirect_when_logged_in_url = settings.REDIRECT_URL_WHEN_LOGGED_IN
 
     def form_valid(self, form):
+        """Create a new user while automatically creating a default team with the user as its creator"""
         self.object = form.save()
         login(self.request, self.object)
-        return super().form_valid(form)
-
-    def get_success_url(self):
-        """Sign in, while automatically creating a default team with the user as its creator"""
+        
+        # Create default team
         team = Team.objects.create(
             team_name="My Team",
             team_creator=self.request.user,
             description="A default team for you to start managing your tasks!"
         )
         team.add_invited_member(self.request.user)
-        team.save()
+        return super().form_valid(form)
 
+    def get_success_url(self):
         return reverse(settings.REDIRECT_URL_WHEN_LOGGED_IN)
 
 class CreateTaskView(LoginRequiredMixin, FormView):

@@ -220,7 +220,6 @@ class Task(models.Model):
         """Set the assigned users of the task"""
 
         for user in assigned_users:
-            print("sdjshdjshdjshdjshd")
             self.assigned_users.add(user)
             self.save()
             notif = TaskNotification.objects.create(task=self,notification_type="AS")
