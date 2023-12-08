@@ -2,18 +2,22 @@
 from django import forms
 from django.test import TestCase
 from tasks.forms import TaskForm
-from tasks.models import Task
+from tasks.models import Task, Lane
 from datetime import date, time, timezone, datetime
 
 class TaskFormTestCase(TestCase):
     """Unit tests of the task form."""
 
     def setUp(self):
+        self.lane = Lane.objects.create(
+            lane_id = 1
+        )
         self.form_input = {
             'name': 'Task5',
             'description': 'Amys fifth task within task manager!',
             'date_field': date(2023, 12, 19), 
             'time_field': '10:05:00',
+            'lane': 1,
         }
 
     def test_valid_sign_up_form(self):

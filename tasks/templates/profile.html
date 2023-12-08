@@ -1,13 +1,62 @@
 {% extends 'base_content.html' %}
 {% block content %}
+
+<style>
+  body{
+    color: white;
+    height: 100vh;
+    width: 100%;
+    background: linear-gradient(to bottom right, #0076f4, #209e3e);
+  }
+
+  .row{
+    display: flex;
+    align-items: center;
+    height: 80vh;
+  }
+
+  .profile-form{
+    padding-bottom: 1em;
+    padding-top: 1em;
+    border-radius: 10px;
+
+    background: transparent;
+    border: 1px solid white;
+    backdrop-filter: blur(300px);
+    box-shadow: 0 0 10px rgba(0,0,0,0.4);
+  }
+
+  .profile-form h1{
+    text-align: center;
+  }
+
+  .update-btn{
+    width:80%;
+    margin-top: 2%;
+    border-radius: 50px;
+    background: white;
+    color: black;
+    transition: ease-in 0.3s;
+
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+  }
+
+  .update-btn:hover{
+    background: #28242c;
+    color: white;
+  }
+</style>
+
 <div class="container">
   <div class="row">
-    <div class="col-sm-12 col-md-6 offset-md-3">
-      <h1>Edit profile</h1>
+    <div class="profile-form col-sm-12 col-md-6 offset-md-3">
+      <h1>Edit Profile</h1>
       <form action="{% url 'profile' %}" method="post">
         {% csrf_token %}
         {% include 'partials/bootstrap_form.html' with form=form %}
-        <input type="submit" value="Update" class="btn btn-primary">
+        <input type="submit" value="Update" class="update-btn btn btn-primary">
       </form>
     </div>
   </div>

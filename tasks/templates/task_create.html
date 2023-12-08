@@ -1,6 +1,4 @@
-{% extends 'base_content.html' %}
 {% block content %}
-{% include 'partials/messages.html' %}
     
 <style>
     body{
@@ -14,20 +12,21 @@
     form {
         max-width: 600px;
         margin: auto;
-        margin-top: 50px;
+        margin-top: 1em;
         position: relative;
         background-color: rgb(144, 198, 255);
         border: 1px solid white;
         box-shadow: 0 0 10px rgba(0,0,0,0.4);
         padding: 20px;
         border-radius: 10px;
+        background: linear-gradient(to bottom right, rgb(54, 107, 171), rgb(207, 222, 220));
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
     }
 
-    label {
+    .task-form label {
         font-weight: bold;
         display: block;
-        margin-bottom: 5px;
+        margin-bottom: 1em;
     }
 
     textarea {
@@ -41,7 +40,22 @@
         resize: vertical; 
     }
 
-    button[type="submit"], .cancel-button {
+    .task-form button{
+        display: inline-block;
+        background-color: #dedccf;
+        color: #15257d;
+        padding: 1em;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+        width: 10em;
+        box-sizing: border-box;
+        text-align: center;
+        text-decoration: none;
+    }
+
+    .cancel-button{
         display: inline-block;
         background-color: rgb(80, 127, 189);
         color: white;
@@ -50,11 +64,11 @@
         border-radius: 5px;
         cursor: pointer;
         transition: background-color 0.2s ease;
-        z-index: 2;
-        width: 80px;
+        width: 10em;
         box-sizing: border-box;
-        vertical-align: top;
         text-align: center;
+        text-decoration: none;
+        transform: translateY(0.09em);
     }
 
     button[type="submit"]:hover, .cancel-button:hover {
@@ -75,16 +89,17 @@
     }
 
 </style>
+
 <div class="container">
     <title>Create Task</title>
-    <form method="post" action="{% url 'task_create' %}" id="taskForm">
+    <form method="post" action="{% url 'task_create' %}" class="task-form">
         {% csrf_token %}
         
         {% include 'partials/bootstrap_form.html' with form=form %}
         <div>
-            <button type="submit" class="btn btn-primary">Submit</button>
+            <button type="submit">Submit</button>
             <a href="{% url 'dashboard' %}" class="cancel-button">Cancel</a>
-        </div>
     </form>
+
 </div>
 {% endblock %}

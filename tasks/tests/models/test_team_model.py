@@ -20,6 +20,7 @@ class TeamModelTestCase(TestCase):
             team_creator=self.user,
             description="The team we all wanted to be part of. Oh wait."
         )
+        self.team.add_invited_member(self.user) # Add the creator to team
         self.team.add_invited_member(self.other_user)
         
 

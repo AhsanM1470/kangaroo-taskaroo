@@ -3,7 +3,7 @@ from django.contrib import messages
 from django.test import TestCase
 from django.urls import reverse
 from tasks.forms import LogInForm
-from tasks.models import User
+from tasks.models import User, Team
 from tasks.tests.helpers import LogInTester, MenuTesterMixin, reverse_with_next
 
 class LogInViewTestCase(TestCase, LogInTester, MenuTesterMixin):
@@ -14,6 +14,13 @@ class LogInViewTestCase(TestCase, LogInTester, MenuTesterMixin):
     def setUp(self):
         self.url = reverse('log_in')
         self.user = User.objects.get(username='@johndoe')
+        team = Team.objects.create(
+            team_name="My Team",
+            team_creator=self.user,
+            description="A default team for you to start managing your tasks!"
+        )
+        team.add_invited_member(self.user)
+
 
     def test_log_in_url(self):
         self.assertEqual(self.url,'/log_in/')

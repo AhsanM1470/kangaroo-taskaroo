@@ -3,7 +3,7 @@ from django.contrib.auth.hashers import check_password
 from django.test import TestCase
 from django.urls import reverse
 from tasks.forms import SignUpForm
-from tasks.models import User
+from tasks.models import User, Team
 from tasks.tests.helpers import LogInTester
 
 class SignUpViewTestCase(TestCase, LogInTester):
@@ -22,6 +22,12 @@ class SignUpViewTestCase(TestCase, LogInTester):
             'password_confirmation': 'Password123'
         }
         self.user = User.objects.get(username='@johndoe')
+        team = Team.objects.create(
+            team_name="My Team",
+            team_creator=self.user,
+            description="A default team for you to start managing your tasks!"
+        )
+        team.add_invited_member(self.user)
 
     def test_sign_up_url(self):
         self.assertEqual(self.url,'/sign_up/')

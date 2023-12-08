@@ -3,7 +3,7 @@ from django.contrib import messages
 from django.test import TestCase
 from django.urls import reverse
 from tasks.forms import UserForm
-from tasks.models import User
+from tasks.models import User, Team
 from tasks.tests.helpers import reverse_with_next
 
 class ProfileViewTest(TestCase):
@@ -16,6 +16,13 @@ class ProfileViewTest(TestCase):
 
     def setUp(self):
         self.user = User.objects.get(username='@johndoe')
+        team = Team.objects.create(
+            team_name="My Team",
+            team_creator=self.user,
+            description="A default team for you to start managing your tasks!"
+        )
+        team.add_invited_member(self.user)
+
         self.url = reverse('profile')
         self.form_input = {
             'first_name': 'John2',

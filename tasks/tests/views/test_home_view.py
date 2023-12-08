@@ -1,7 +1,7 @@
 """Tests of the home view."""
 from django.test import TestCase
 from django.urls import reverse
-from tasks.models import User
+from tasks.models import User, Team
 
 class HomeViewTestCase(TestCase):
     """Tests of the home view."""
@@ -11,6 +11,13 @@ class HomeViewTestCase(TestCase):
     def setUp(self):
         self.url = reverse('home')
         self.user = User.objects.get(username='@johndoe')
+        team = Team.objects.create(
+            team_name="My Team",
+            team_creator=self.user,
+            description="A default team for you to start managing your tasks!"
+        )
+        team.add_invited_member(self.user)
+
 
     def test_home_url(self):
         self.assertEqual(self.url,'/')
