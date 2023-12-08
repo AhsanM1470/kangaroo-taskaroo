@@ -1,7 +1,7 @@
 from django.core.exceptions import ValidationError
 from django.test import TestCase
-from tasks.models import TaskNotification, InviteNotification,Task,Team,Invite,User
-import datetime
+from tasks.models import TaskNotification, InviteNotification,Task,Team,Invite,User,Lane
+from datetime import datetime,timedelta
 
 class TaskNotificationModelTestCase(TestCase):
     """Testing for the TaskNotification model"""
@@ -14,20 +14,31 @@ class TaskNotificationModelTestCase(TestCase):
     def setUp(self):
         
         self.user = User.objects.get(username='@johndoe')
+        self.team = Team.objects.create(
+            team_name = 'test-team',
+            team_creator= self.user,
+            description = "A random test team"
+        )
+        self.lane = Lane.objects.create(
+            lane_id = 1
+        )
         self.task = Task.objects.create(
             name = 'test-task',
             description = 'A random test task',
-            due_date = datetime.datetime(2023, 11, 28, 10, 0),
+            due_date = datetime.today()+timedelta(days=5),
+            assigned_team=self.team,
+            lane = self.lane
         )
-        self.assign_notification = TaskNotification.objects.create(task=self.task,notification_type="AS")
-        self.deadline_notification = TaskNotification.objects.create(task=self.task,notification_type="DL")
-        self.user.add_notification(self.assign_notification)
-        self.user.add_notification(self.deadline_notification)
-        self.task_notifs = self.user.notifications.select_related("tasknotification")
+        self.task.set_assigned_users(User.objects.filter(username="@johndoe"))
+        self.task.notify_keydates()
+        self.notifications = self.user.get_notifications()
+        self.task_notifs = [notif.as_task_notif() for notif in self.notifications.select_related("tasknotification")]
+        self.assign_notifications = list(filter(lambda notif: notif.notification_type=="AS",self.task_notifs))
+        self.deadline_notifications = list(filter(lambda notif: notif.notification_type=="DL",self.task_notifs))
 
     def test_correct_task_name(self):
-        self.assertEqual(self.assign_notification.task.name,"test-task")
-        self.assertEqual(self.deadline_notification.task.name,"test-task")
+        self.assertEqual(self.assign_notifications[0].task.name,"test-task")
+        self.assertEqual(self.deadline_notifications[0].task.name,"test-task")
 
     def test_assignment_notification_displays_correctly(self):
         display_result = self.assign_notification.display()
@@ -36,13 +47,14 @@ class TaskNotificationModelTestCase(TestCase):
 
     def test_deadline_notification_displays_correctly(self):
         display_result = self.deadline_notification.display()
-        target = "test-task's deadline is approaching."
+        target = "test-task's deadline is in 5 day(s)."
         self.assertEqual(display_result,target)
 
     def test_notifications_stored_correctly(self):
+        self.assertEqual(self.notifications.count(),2)
         self.assertEqual(self.task_notifs.count(),2)
-        for notif in self.task_notifs:
-            self.assertIsInstance(notif.tasknotification,TaskNotification)
+        self.assertEqual(self.assign_notifications.count(),1)
+        self.assertEqual(self.deadline_notifications.count(),1)
 
 
 class InviteNotificationModelTestCase(TestCase):
@@ -82,5 +94,5 @@ class InviteNotificationModelTestCase(TestCase):
         self.assertEqual(display_result,target)
 
     def test_notification_gets_stored(self):
+        self.assertEqual(self.notifications.count(),1)
         self.assertEqual(self.invite_notifs.count(),1)
-        self.assertIsInstance(self.invite_notifs[0].invitenotification,InviteNotification)
