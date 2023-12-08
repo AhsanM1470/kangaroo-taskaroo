@@ -1,13 +1,16 @@
 from django.test import TestCase
 from django.urls import reverse
-from tasks.models import Task
+from tasks.models import Task, Lane
 from tasks.tests.helpers import LogInTester
 
 class TaskSearchViewTests(TestCase, LogInTester):
     def setUp(self):
-        Task.objects.create(name="Task 1", description="Description 1", due_date="2023-12-01", priority='low')
-        Task.objects.create(name="Task 2", description="Description 2", due_date="2023-12-02", priority='medium')
-        Task.objects.create(name="Task 3", description="Description 3", due_date="2023-12-03", priority='high')
+        self.lane = Lane.objects.create(
+            lane_id = 1
+        )
+        Task.objects.create(name="Task 1", description="Description 1", due_date="2023-12-01", priority='low', lane=self.lane)
+        Task.objects.create(name="Task 2", description="Description 2", due_date="2023-12-02", priority='medium', lane=self.lane)
+        Task.objects.create(name="Task 3", description="Description 3", due_date="2023-12-03", priority='high', lane=self.lane)
 
     def test_search_view_with_results(self):
         response = self.client.get(reverse('task_search'), {'q': 'Task 1'})

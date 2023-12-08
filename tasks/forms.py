@@ -160,7 +160,7 @@ class TaskForm(forms.ModelForm):
                 #raise ValidationError('Pick a date-time in the future!')
         return cleaned_data
     
-    def save(self, assigned_team=None, commit=True):
+    def save(self, assigned_team_id=None, commit=True):
         instance = super(TaskForm, self).save(commit=False)
         date = self.cleaned_data.get('date_field')
         time = self.cleaned_data.get('time_field')
@@ -168,8 +168,8 @@ class TaskForm(forms.ModelForm):
         if date is not None and time is not None:
             instance.due_date = datetime.combine(date, time)
             
-        if assigned_team is not None:
-            instance.assigned_team = Team.objects.get(team_name=assigned_team)
+        if assigned_team_id is not None:
+            instance.assigned_team = Team.objects.get(id=assigned_team_id)
 
         instance.priority = self.cleaned_data.get('priority')
 
@@ -293,6 +293,12 @@ class RemoveMemberForm(forms.Form):
     def remove_member(self):
         """Remove member from team"""
         pass
+
+class DeleteTeamForm(forms.Form):
+    confirm_deletion = forms.BooleanField(
+        required=True,
+        widget=forms.CheckboxInput(attrs={'class': 'confirmClass'})
+    )
 
 class LaneForm(forms.ModelForm):
     """Form enabling a user to create a lane in the dashboard"""

@@ -25,6 +25,7 @@ urlpatterns = [
     path("create_team/", views.create_team, name="create_team"),
     path("create_invite/", views.InviteView.as_view(), name="create_invite"),
     path("remove_member/", views.remove_member, name="remove_member"),
+    path('delete_team/<int:team_id>/', views.DeleteTeamView.as_view(), name='delete_team'),
     path("press_invite/", views.press_invite, name="press_invite"),
     path('dashboard/', views.dashboard, name='dashboard'),
     path('log_in/', views.LogInView.as_view(), name='log_in'),
