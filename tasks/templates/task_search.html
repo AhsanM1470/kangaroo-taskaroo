@@ -21,18 +21,14 @@
             <th scope="col">Description</th>
             <th scope="col">Due date
                 {% if request.GET.sort_column == 'due_date' and request.GET.sort_direction == 'desc' %}
-                <a href="{% url 'task_search' %}?sort_column=due_date&sort_direction=asc">
-                    <i class="bi bi-arrow-down"></i>
-                </a>
-                {% else %}
-                <a href="{% url 'task_search' %}?sort_column=due_date&sort_direction=desc">
-                    {% if request.GET.sort_column == 'due_date' and request.GET.sort_direction == 'asc' %}
-                    <i class="bi bi-arrow-up"></i>
+                        <a href="{% url 'task_search' %}?sort_column=due_date&sort_direction=asc">
+                            <i class="bi bi-arrow-down"></i>
+                        </a>
                     {% else %}
-                    <i class="bi bi-arrow-down"></i>
-                    {% endif %}
-                </a>
-                {% endif %}
+                        <a href="{% url 'task_search' %}?sort_column=due_date&sort_direction=desc">
+                            <i class="bi bi-arrow-up"></i>
+                        </a>
+                     {% endif %}
             </th>
             <th scope="col">priority
                 {% if request.GET.sort_column == 'priority' and request.GET.sort_direction == 'desc' %}
@@ -41,11 +37,7 @@
                 </a>
                 {% else %}
                 <a href="{% url 'task_search' %}?sort_column=priority&sort_direction=desc">
-                    {% if request.GET.sort_column == 'priority' and request.GET.sort_direction == 'asc' %}
                     <i class="bi bi-arrow-up"></i>
-                    {% else %}
-                    <i class="bi bi-arrow-down"></i>
-                    {% endif %}
                 </a>
                 {% endif %}
             </th>
