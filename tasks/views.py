@@ -15,7 +15,7 @@ from tasks.helpers import login_prohibited
 from django.urls import reverse_lazy
 from django.views.decorators.http import require_POST
 from .forms import TaskForm, TaskDeleteForm, AssignTaskForm
-from .models import Task, Invite, Team, Lane
+from .models import Task, Invite, Team, Lane, Notification
 from django.http import HttpResponseBadRequest
 from datetime import datetime
 from django.db.models import Max, Case, Value, When
@@ -529,6 +529,11 @@ def task_search(request):
         context['no_tasks_found'] = True
 
     return render(request, 'task_search.html', context)
+
+def notif_delete(request,notif_id):
+    notification = Notification.objects.get(pk=notif_id)
+    notification.delete()
+    return redirect('dashboard')
 
 class DeleteLaneView(LoginRequiredMixin, View):
     """Display form to confirm the deletion of a lane"""
