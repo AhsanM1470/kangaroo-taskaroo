@@ -46,7 +46,7 @@ def dashboard(request):
         
         if 'dashboard_team' in request.GET:
             team_name = request.GET.get("dashboard_team")
-            request.session["current_team"] = team_name
+            request.session["current_team_id"] = Team.objects.get(team_name=team_name).id
     
     # Handle form submission for adding a new lane
     if request.method == 'POST':
@@ -400,8 +400,8 @@ class CreateTaskView(LoginRequiredMixin, FormView):
             # Check if the form is valid
             if form.is_valid():
                 # Simon Stuff
-                assigned_team = request.session["current_team"]
-                form.save(assigned_team=assigned_team)
+                assigned_team_id = request.session["current_team_id"]
+                form.save(assigned_team_id=assigned_team_id)
                 
                 messages.success(request, 'Task Created!')
                 # Redirect to the dashboard or another page
