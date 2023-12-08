@@ -221,11 +221,12 @@ class Task(models.Model):
             user.save()
 
     def notify_keydates(self):
-        if datetime.today().date() >= (self.due_date-timedelta(days=5)).date() and not deadline_notif_sent:
-            deadline_notif_sent=True
+        if datetime.today().date() >= (self.due_date-timedelta(days=5)).date() and not self.deadline_notif_sent:
+            self.deadline_notif_sent=True
             notif = TaskNotification.objects.create(task=self,notification_type="DL")
             for user in self.assigned_team.team_members.all():
                 user.add_notification(notif)
+        self.save()
 
 
     # Could add a boolean field to indicate if the task has expired?
