@@ -294,6 +294,12 @@ class RemoveMemberForm(forms.Form):
         """Remove member from team"""
         pass
 
+class DeleteTeamForm(forms.Form):
+    confirm_deletion = forms.BooleanField(
+        required=True,
+        widget=forms.CheckboxInput(attrs={'class': 'confirmClass'})
+    )
+
 class LaneForm(forms.ModelForm):
     """Form enabling a user to create a lane in the dashboard"""
 

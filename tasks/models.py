@@ -78,7 +78,8 @@ class User(AbstractUser):
 class Team(models.Model):
     """Model used to hold teams of different users and their relevant information"""
     
-    team_name = models.CharField(max_length=50, unique=True, blank=False)
+    
+    team_name = models.CharField(max_length=50, blank=False)
     team_creator = models.ForeignKey(User, on_delete=models.CASCADE, blank=False, related_name="created_teams")
     team_members = models.ManyToManyField(User, blank=True)
     description = models.TextField(blank=True, validators=[MaxLengthValidator(200)])
