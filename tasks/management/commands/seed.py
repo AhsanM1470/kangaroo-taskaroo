@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand, CommandError
 
-from tasks.models import User
+from tasks.models import User, Team
 
 import pytz
 from faker import Faker
@@ -26,6 +26,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         self.create_users()
         self.users = User.objects.all()
+        self.teams = Team.objects.all()
 
     def create_users(self):
         self.generate_user_fixtures()
@@ -48,22 +49,46 @@ class Command(BaseCommand):
         last_name = self.faker.last_name()
         email = create_email(first_name, last_name)
         username = create_username(first_name, last_name)
-        self.try_create_user({'username': username, 'email': email, 'first_name': first_name, 'last_name': last_name})
+        user = self.try_create_user({'username': username, 'email': email, 'first_name': first_name, 'last_name': last_name})
+        if user is not None:
+            print("waosaos")
+            self.try_create_team(user)
        
     def try_create_user(self, data):
         try:
-            self.create_user(data)
+            user = self.create_user(data)
+            return user
         except:
+            pass
+    
+    def try_create_team(self, user):
+        """Create a starting team for every user"""
+        try:
+            self.create_team(user)
+        except:
+            print("f me")
             pass
 
     def create_user(self, data):
-        User.objects.create_user(
+        user = User.objects.create_user(
             username=data['username'],
             email=data['email'],
             password=Command.DEFAULT_PASSWORD,
             first_name=data['first_name'],
             last_name=data['last_name'],
         )
+        return user 
+    
+    def create_team(self, user):
+        team = Team.objects.create(
+            team_name="My Team",
+            team_creator=user,
+            description="A default team for you to start managing your tasks!"
+        )
+        team.add_invited_member(user)
+        team.save()
+        print("sdsdo")
+
 
 def create_username(first_name, last_name):
     return '@' + first_name.lower() + last_name.lower()

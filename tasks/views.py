@@ -10,7 +10,7 @@ from django.views import View
 from django.views.generic import DeleteView
 from django.views.generic.edit import FormView, UpdateView
 from django.urls import reverse
-from tasks.forms import LogInForm, PasswordForm, UserForm, SignUpForm, CreateTeamForm, InviteForm, RemoveMemberForm, LaneDeleteForm
+from tasks.forms import LogInForm, PasswordForm, UserForm, SignUpForm, CreateTeamForm, InviteForm, RemoveMemberForm, LaneDeleteForm, DeleteTeamForm
 from tasks.helpers import login_prohibited
 from django.urls import reverse_lazy
 from django.views.decorators.http import require_POST
@@ -356,7 +356,7 @@ class SignUpView(LoginProhibitedMixin, FormView):
         return super().form_valid(form)
 
     def get_success_url(self):
-        # Automatically create a default team with the user as its creator
+        """Sign in, while automatically creating a default team with the user as its creator"""
         team = Team.objects.create(
             team_name="My Team",
             team_creator=self.request.user,
@@ -554,37 +554,6 @@ class DeleteLaneView(LoginRequiredMixin, View):
         else:
             delete_form = LaneDeleteForm()
         return render(request, 'lane_delete.html', {'lane':lane, 'delete_form': delete_form})
-    
-class TaskView(LoginRequiredMixin, View):
-    model = Task
-    form_class = TaskForm
-    template_name = 'task_update.html'  # Create a template for your task form
-    success_url = reverse_lazy('dashboard')  # Redirect to the dashboard after successful form submission
-    
-    def get_success_url(self):
-        """Return redirect URL after successful update."""
-        messages.add_message(self.request, messages.SUCCESS, "Task updated!")
-        return reverse_lazy('dashboard')
-    
-    def get(self, request, task_name, *args, **kwargs):
-        task = get_object_or_404(Task, name=task_name)
-        form = TaskForm()
-        # if this doesnt work use domain explicitly
-        update_url = '/task_update/'+task_name+'/'
-        context = {'form': form, 'update_url': update_url}
-        return render(request, self.template_name, context)
-    
-    def post(self, request, task_name, *args, **kwargs):
-        #task_name = kwargs["task_name"]
-        task = get_object_or_404(Task, pk=task_name)
-        #task = Task.objects.get(pk = task_name)
-        if request.method == 'POST':
-            form = TaskForm(request.POST)
-            if form.is_valid():
-                return redirect('dashboard')
-        else:
-            delete_form = TaskDeleteForm()
-        return render(request, 'task_delete.html', {'task':task, 'delete_form': delete_form})
 
 class InviteView(LoginRequiredMixin, FormView):
     """Functionality for using the invite form"""
@@ -610,3 +579,29 @@ class InviteView(LoginRequiredMixin, FormView):
 
         messages.add_message(self.request, messages.SUCCESS, "Invite Sent!")
         return reverse('my_teams')
+
+class DeleteTeamView(LoginRequiredMixin, View):
+    model = Team
+    form_class = DeleteTeamForm
+    template_name = 'delete_team.html' 
+    form_title = 'Delete Team'
+    context_object_name = 'team'
+    
+    def post(self, request, team_id):
+        """Get the team, and render the team delete form"""
+        team = get_object_or_404(Team, id=team_id)
+        user = request.user
+        if (len(user.get_teams()) > 1): 
+            delete_form = DeleteTeamForm(request.POST)
+            if delete_form.is_valid():
+                if delete_form.cleaned_data['confirm_deletion']:
+                    team.delete()
+                    messages.success(request, 'Team Deleted!')
+                    return redirect('dashboard')
+            else:
+                delete_form = TaskDeleteForm()
+        else:
+            messages.error(request, 'Cannot have 0 teams!')
+            return redirect("dashboard")
+            
+        return render(request, "delete_team.html", {'team':team, 'delete_form': delete_form})
