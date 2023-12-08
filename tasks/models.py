@@ -282,7 +282,10 @@ class TaskNotification(Notification):
         if self.notification_type== self.NotificationType.ASSIGNMENT:
             return f'{self.task.name} has been assigned to you.'
         elif self.notification_type == self.NotificationType.DEADLINE:
-            return f"{self.task.name}'s deadline is approaching."
+            if datetime.today().date()<self.task.due_date.date():
+                return f"{self.task.name}'s deadline is in {(self.task.due_date.date()-datetime.today().date()).days} day(s)."
+            else:
+                return f"{self.task.name}'s deadline has passed."
 
 class InviteNotification(Notification): 
     """Model used to represent a notification relating to a team invite"""
