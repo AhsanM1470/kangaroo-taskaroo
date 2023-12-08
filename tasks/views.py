@@ -45,8 +45,8 @@ def dashboard(request):
                 Lane.objects.get_or_create(lane_name=lane_name, lane_order=lane_order)
         
         if 'dashboard_team' in request.GET:
-            team_name = request.GET.get("dashboard_team")
-            request.session["current_team_id"] = Team.objects.get(team_name=team_name).id
+            team_id = request.GET.get("dashboard_team")
+            request.session["current_team_id"] = team_id
     
     # Handle form submission for adding a new lane
     if request.method == 'POST':
@@ -73,7 +73,11 @@ def dashboard(request):
         request.session["current_team_id"] = teams[:1].get().id # Gets the first team in our list of teams    
 
     # Retrieve current team and lanes
-    current_team = Team.objects.get(id=request.session["current_team_id"])
+    current_team = Team.objects.filter(id=request.session["current_team_id"]).first()
+    if current_team is None:
+        request.session["current_team_id"] = teams[:1].get().id
+        current_team = Team.objects.get(id=request.session["current_team_id"])
+
     lanes = lanes = Lane.objects.all().order_by('lane_order')
 
     # THe lanes can then be retrieved using the current team
