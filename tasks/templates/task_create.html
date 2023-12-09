@@ -3,20 +3,18 @@
 <style>
     .task-form {
         font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-        max-width: 50em;
         margin: auto;
-        margin-top: 1em;
         position: relative;
         padding: 1em;
         border-radius: 10px;
         background: linear-gradient(to bottom right, rgb(54, 107, 171), rgb(207, 222, 220));
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+        min-height: 70vh;
     }
 
     .task-form label {
         font-weight: bold;
         display: block;
-        margin-bottom: 1em;
     }
 
     .task-form textarea {
@@ -83,7 +81,7 @@
     }
 </style>
 
-<div class="container">
+<div class="container" style="overflow-x: auto;">
     <title>Create Task</title>
     <form method="post" action="{% url 'task_create' %}" class="task-form">
         {% csrf_token %}

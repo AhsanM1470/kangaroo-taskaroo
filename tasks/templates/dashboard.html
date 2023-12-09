@@ -324,8 +324,8 @@
               </form>
 
               <!-- Assign a Task -->
-              <button type="button" class="image" data-bs-toggle="collapse" data-bs-target="#task_pop_up{{ task.id }}" aria-expanded="false" aria-controls="task_pop_up{{ task.id }}" style="width: 100%;"title="Assign Task">
-                <img src="../../static/images/edit-icon-grey.png" style="background-color: yellow;">
+              <button type="button" class="image" data-bs-toggle="collapse" data-bs-target="#task_pop_up{{ task.id }}" aria-expanded="false" aria-controls="task_pop_up{{ task.id }}" title="Assign Task">
+                  <img src="../../static/images/user-icon-grey.png">       
               </button>
 
               <!-- View/edit task form -->
@@ -375,7 +375,7 @@
   <div class="accordion" id="popup">
     {% for task in tasks %}
       <div class="accordion-collapse collapse" id="task_pop_up{{ task.id }}" data-bs-parent="#popup">
-        <article id="popup_panel">
+        <article id="popup_panel"  style="overflow: auto;">
           {% include 'assign_task.html' with form=assign_task_form task_name=task.name %}
         </article>
       </div>
@@ -386,12 +386,12 @@
       </article>
     </div>
     <div class="accordion-collapse collapse" id="create_task" data-bs-parent="#popup" style="width: 100%;">
-      <article id="popup_panel">
+      <article id="popup_panel" style="overflow: auto;">
         {% include 'task_create.html' with form=create_task_form %}
       </article>
     </div>
     <div class="accordion-collapse collapse" id="create_team" data-bs-parent="#popup">
-      <article id="popup_panel">
+      <article id="popup_panel" style="overflow: auto;">
         {% include 'create_team.html' with team_form=create_team_form %}
       </article>
     </div>
