@@ -23,7 +23,7 @@
   }
 
   body{
-    background: linear-gradient(to bottom right, #0076f4, #209e3e);
+    background: linear-gradient(to bottom right, #bb4e1b, rgb(32, 143, 158));
   }
 
   h3{
@@ -50,23 +50,6 @@
   .flex-container{
     display: flex;
     height: 100vh;
-  }
-
-  .header-bar{
-    background-color: #064486cc;
-    border: 1px solid #FFFFFF55;
-    display: flex;
-    color: white;
-    padding: 0.2em;
-  }
-
-  .username{
-    border-right: 1px solid #FFFFFF55;
-    margin-bottom: 0;
-    display: flex;
-    justify-content: center;
-    width:12vw;
-    word-wrap: break-word;
   }
 
   .board-container{
@@ -168,7 +151,7 @@
   #sidebar{
     width: 12.4vw;
     height: 100vh;
-    background-color: #064486cc;
+    background-color: rgba(15, 77, 85, 0.541);
     border-right: 1px solid #FFFFFF55;
     border-left: 1px solid #FFFFFF55;
     color: white;
@@ -188,7 +171,7 @@
   }
 
   #sidebar li:hover{
-    background-color: #064486;
+    background-color: #068286;
   }
 
   #task_sidebar{
@@ -199,21 +182,40 @@
     overflow-wrap: break-word;
     word-wrap: break-word;
   }
+
+  .addteamstyle {
+    border-style: solid;
+    border-color: rgba(255, 255, 255, 0.295);
+    border-width: 2px;
+    background-color: #00000055;
+  }
+
   #sidebar button{
+    color: white;
     border: none;
     background-color: inherit;
-    color: white;
     transition: background-color 0.3s;
     padding-left: 5%;
   }
 
   #sidebar button:hover{
-    background-color: #064486;
+    background-color: #067d867c;
   }
 
   .collapsing {
       transition-duration: 0.7s;
   }
+
+  .accordion-button.collapsed::after {
+    /* Styles for the collapsed state (arrow pointing right) */
+    border-color: transparent transparent transparent orange !important; /* Adjust 'orange' to your desired color */
+  }
+
+  .accordion-button:not(.collapsed)::after {
+    /* Styles for the expanded state (arrow pointing down) */
+    border-color: orange transparent transparent transparent !important; /* Adjust 'orange' to your desired color */
+  }
+
 
 </style>
 
@@ -221,10 +223,13 @@
 
 <div class="flex-container">
   <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block sidebar collapse">
-    <h6>YOUR TEAMS:</h6>
     <ul>
-      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#create_team" aria-expanded="false" aria-controls="create_team">Add Team</button>
+      <div class="addteamstyle">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#create_team" aria-expanded="false" aria-controls="create_team">Add Team</button>
+      </div>
     </ul>
+    <h6>YOUR TEAMS:</h6>
+    
     {% for team in teams %}
       <ul>
         <!--Switch dashboard by pressing team name-->
