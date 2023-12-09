@@ -2,14 +2,14 @@
 <div class="container">
   <div class="row">
     <div class="col-12">
-      <h1>Assign Task: {{ task_name }}</h1>
-      <form action ="{%url 'assign_task'%}" method="post">
+      <h1>Assign Task: {{ task.name }}</h1>
+      <form action ="{{ assign_task_url }}" method="post">
         {% csrf_token %}
-        {% include 'partials/bootstrap_form.html' with form=assign_task_form %}
+        {{ form.as_p }}
 
-        <!--More adding for simon-->
+        <!--More adding for simon
         <input type="hidden" name="task_name" value="{{ task_name }}">
-        <!--Up to here -->
+        -->
         <input type="submit" value="Assign Task" class="btn btn-primary">
       </form>
     </div>

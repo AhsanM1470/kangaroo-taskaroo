@@ -164,6 +164,12 @@
     overflow-wrap: break-word;
     word-wrap: break-word;
   }
+  #popup_panel ul{
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+
 
   #sidebar{
     width: 12.4vw;
@@ -324,9 +330,17 @@
               </form>
 
               <!-- Assign a Task -->
+              <form method="post" action="{% url 'assign_task' task.id %}">
+              {% csrf_token %}
+              <button type="submit" class="image" title="Assign Task">
+                <img src="../../static/images/edit-icon-grey.png" style="background-color: yellow;">
+              </button>
+
+              <!--Commented out for now, as we are going to put this into edit tasks
               <button type="button" class="image" data-bs-toggle="collapse" data-bs-target="#task_pop_up{{ task.id }}" aria-expanded="false" aria-controls="task_pop_up{{ task.id }}" style="width: 100%;"title="Assign Task">
                 <img src="../../static/images/edit-icon-grey.png" style="background-color: yellow;">
               </button>
+              -->
 
               <!-- View/edit task form -->
               <form method="get" action="{% url 'task_edit' task.id %}">
@@ -373,6 +387,7 @@
   
   <!--Here I changed -->
   <div class="accordion" id="popup">
+    <!--Comment out for now, 
     {% for task in tasks %}
       <div class="accordion-collapse collapse" id="task_pop_up{{ task.id }}" data-bs-parent="#popup">
         <article id="popup_panel">
@@ -380,9 +395,10 @@
         </article>
       </div>
     {% endfor %}
+    -->
     <div class="accordion-collapse collapse " id="team_info" data-bs-parent="#popup">
       <article id="popup_panel">
-        {% include 'team_info.html' with team=current_team %}
+        {% include 'team_info.html' with team=current_team user=user %}
       </article>
     </div>
     <div class="accordion-collapse collapse" id="create_task" data-bs-parent="#popup" style="width: 100%;">

@@ -15,7 +15,7 @@ from tasks.helpers import login_prohibited
 from django.urls import reverse_lazy
 from django.views.decorators.http import require_POST
 from .forms import TaskForm, TaskDeleteForm, AssignTaskForm
-from .models import Task, Invite, Team, Lane, Notification
+from .models import Task, Invite, Team, Lane, Notification, User
 from django.http import HttpResponseBadRequest
 from datetime import datetime
 from django.db.models import Max, Case, Value, When
@@ -85,7 +85,7 @@ def dashboard(request):
     team_tasks = current_team.get_tasks()
 
     # Simon's stuff
-    assign_task_form = AssignTaskForm(team=current_team, user=current_user)
+    #assign_task_form = AssignTaskForm(team=current_team)
     create_task_form = TaskForm()
     create_team_form = CreateTeamForm(user=current_user)
 
@@ -98,7 +98,6 @@ def dashboard(request):
         'tasks': team_tasks,
         'teams': teams,
         "current_team": current_team,
-        "assign_task_form" : assign_task_form,
         "create_task_form": create_task_form,
         "create_team_form": create_team_form,
     })
@@ -195,31 +194,43 @@ def remove_member(request):
     return redirect("my_teams")
 
 @login_required
-def assign_task(request):
+def assign_task(request, task_id):
     """Assigns a task to a user using the AssignedTask Model"""
 
-    """
+    task = Task.objects.get(id=task_id)
+    current_team = Team.objects.filter(id=request.session["current_team_id"]).first()
+    
     if request.method == "GET":
-        request.team = Team.objects.get(team_name="Kangaroo")
-        assign_task_form = AssignTaskForm(team=request.team, task_name="Simon")
-        
-        #return render(request, "assign_task.html", {"team": request.team, "assign_form": assign_task_form})
-    """
+        assign_task_form = AssignTaskForm(team=current_team, task=task)
+        return render(request, "assign_task.html", {"assign_form": assign_task_form})
 
     if request.method == "POST":
         """Gets the task that has just been pressed"""
 
-        modified_request = request.POST.copy()
-        task_name = modified_request.pop("task_name")[0]
-        assign_task_form = AssignTaskForm(modified_request, task_name=task_name)
+        assign_task_form = AssignTaskForm(request.POST, task=task)
         if assign_task_form.is_valid():
             assign_task_form.assign_task()
             messages.add_message(request, messages.SUCCESS, "Assigned Task!")
+            return redirect("dashboard")
         else:
             messages.add_message(request, messages.ERROR, "Task does not exist!")
+            return render (request, "assign_task.html", {"form": assign_task_form})
 
-        return redirect("dashboard")
-
+class AssignTaskView(LoginRequiredMixin, View):
+    template_name = 'assign_task.html'  # Create a template for your task form
+    success_url = reverse_lazy('dashboard')  # Redirect to the dashboard after successful form submission
+    
+    def post(self, request, task_id):
+        task = Task.objects.get(id=task_id)
+        current_team = Team.objects.get(id=request.session["current_team_id"])
+        assign_task_form = AssignTaskForm(request.POST, task=task)
+        if assign_task_form.is_valid():
+            assign_task_form.assign_task()
+            messages.success(request, 'Assigned Task!')
+            return redirect('dashboard')
+        else:
+            assign_task_form = AssignTaskForm(team=current_team, task=task)
+        return render(request, 'assign_task.html', {'task': task, 'form': assign_task_form})
 
 @login_required
 def press_invite(request):
@@ -602,7 +613,6 @@ class DeleteTeamView(LoginRequiredMixin, View):
     form_class = DeleteTeamForm
     template_name = 'delete_team.html' 
     form_title = 'Delete Team'
-    context_object_name = 'team'
     
     def post(self, request, team_id):
         """Get the team, and render the team delete form"""
@@ -616,9 +626,35 @@ class DeleteTeamView(LoginRequiredMixin, View):
                     messages.success(request, 'Team Deleted!')
                     return redirect('dashboard')
             else:
-                delete_form = TaskDeleteForm()
+                delete_form = DeleteTeamForm()
         else:
             messages.error(request, 'Cannot have 0 teams!')
             return redirect("dashboard")
             
         return render(request, "delete_team.html", {'team':team, 'delete_form': delete_form})
+    
+class RemoveMemberView(LoginRequiredMixin, View):
+    form_class = RemoveMemberForm
+    template_name = 'remove_team_member.html' 
+    form_title = 'Remove Team Member'
+
+    def post(self, request, member_id):
+        """Get the team, and remove the requested team member"""
+
+        if "team_id" in request.POST:
+            request.session["team_id"] = request.POST.get("team_id")
+
+        team = get_object_or_404(Team, id=request.session["team_id"])
+        user = User.objects.get(id=member_id)
+
+        remove_member_form = RemoveMemberForm(request.POST)
+        if remove_member_form.is_valid():
+            if remove_member_form.cleaned_data['confirm_deletion']:
+                team.remove_team_member(user)
+                messages.success(request, f'{user.username} has been removed from {team.team_name}!')
+                return redirect('dashboard')
+        else:
+            remove_member_form = RemoveMemberForm()
+            
+        return render(request, "remove_team_member.html", {'user':user, 'team':team, 'remove_member_form': remove_member_form})
+    
