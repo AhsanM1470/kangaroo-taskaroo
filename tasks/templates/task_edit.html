@@ -3,25 +3,77 @@
 {% include 'partials/messages.html' %}
 
 <style>
-  .hidden {
+  .hidden, .task-info-container {
       display: none;
   }
 
-  #editToggle:checked ~ #editForm {
-    display: block;
-}
+  #editToggle:not(:checked) + #editForm {
+      display: block;
+  }
 
-#editToggle:not(:checked) + #editForm {
+  #editToggle:checked + .task-info-container {
     display: block;
-}
+  }
+
+  .task-info-container {
+    font-family: Arial, sans-serif;
+    max-width: 600px;
+    margin: 50px auto;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    padding: 20px;
+  }
+
+  .task-info h2 {
+    color: #333;
+  }
+
+  .task-details {
+    margin-top: 20px;
+  }
+
+  .field-label {
+    font-weight: bold;
+  }
+
+  .field-value {
+    margin-bottom: 10px;
+  }
 </style>
 
 <div class="container">
-  <title>Update Task</title>
+  <title>Task:</title>
   <input type="checkbox" id="editToggle">
-  <label for="editToggle" id="editButton">Edit</label>
+  <div class="task-info-container">
+    <div class="task-info">
+        <h2>Task Details</h2>
+        <div class="task-details">
+          <div class="field-label">Name:</div>
+          <div class="field-value">{{ task.name }}</div>
 
-  <form method="post" action="{{ update_url }}" id="editForm" class="hidden">
+          <div class="field-label">Description:</div>
+          <div class="field-value">{{ task.description }}</div>
+
+          <div class="field-label">Due Date:</div>
+          <div class="field-value">{{ task.due_date }}</div>
+
+          <div class="field-label">Created At:</div>
+          <div class="field-value">{{ task.created_at }}</div>
+
+          <div class="field-label">Current Lane:</div>
+          <div class="field-value">{{ task.lane }}</div>
+
+          <div class="field-label">Assigned Team:</div>
+          <div class="field-value">{{ task.assigned_team }}</div>
+
+          <div class="field-label">Assigned Users:</div>
+          <div class="field-value">{{ task.assigned_users.all|join:", " }}</div>
+        </div>
+    </div>
+  </div>
+  <label for="editToggle" id="editButton">Edit</label>
+  <form method="get" action="{{ update_url }}" id="editForm" class="hidden">
     {% csrf_token %}
     {{ form.as_p }}
     <div>

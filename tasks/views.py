@@ -396,15 +396,6 @@ class CreateTaskView(LoginRequiredMixin, FormView):
         messages.add_message(self.request, messages.SUCCESS, "Task created!")
         return reverse_lazy('dashboard')
     
-    def get(self, request,pk, *args, **kwargs):
-        print("nom")
-        default_lane = Lane.objects.get(name='Backlog')
-        form = TaskForm(initial={'lane': default_lane})
-        all_tasks = Task.objects.all()
-        # if this doesnt work use domain explicitly
-        context = {'tasks': all_tasks, 'form': form}
-        return render(request, self.template_name, context)
-    
     def post(self, request):
         if request.method == 'POST':
             # Use TaskForm to handle form data, including validation and cleaning
@@ -475,8 +466,6 @@ class TaskEditView(LoginRequiredMixin, View):
         return reverse_lazy('dashboard')
     
     def get(self, request, pk, *args, **kwargs):
-        print("sdujdhsd")
-        
         task = get_object_or_404(Task, pk=pk)
         date_field = task.due_date.date()
         time_field = task.due_date.time()
@@ -505,6 +494,20 @@ class TaskEditView(LoginRequiredMixin, View):
         else:
             form = TaskForm(instance=task)
         return render(request, 'task_edit.html', {'task':task, 'form': form})
+    
+class TaskView(LoginRequiredMixin, View):
+    model = Task
+    template_name = 'task.html' 
+    
+    def get_success_url(self):
+        """Return redirect URL after successful update."""
+        return reverse_lazy('dashboard')
+    
+    def get(self, request, pk, *args, **kwargs):
+        task = get_object_or_404(Task, pk=pk)
+        context = {'task': task}
+        return render(request, self.template_name, context)
+    
 
 
 priority_order = Case(
