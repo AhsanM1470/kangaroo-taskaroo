@@ -10,16 +10,27 @@ from django.views import View
 from django.views.generic import DeleteView
 from django.views.generic.edit import FormView, UpdateView
 from django.urls import reverse
-from tasks.forms import LogInForm, PasswordForm, UserForm, SignUpForm, CreateTeamForm, InviteForm, RemoveMemberForm, LaneDeleteForm
+from tasks.forms import LogInForm, PasswordForm, UserForm, SignUpForm, CreateTeamForm, InviteForm, RemoveMemberForm, LaneDeleteForm, DeleteTeamForm
 from tasks.helpers import login_prohibited
 from django.urls import reverse_lazy
 from django.views.decorators.http import require_POST
-from .forms import TaskForm, TaskDeleteForm
-from .models import Task, Invite, Team, Lane
+from .forms import TaskForm, TaskDeleteForm, AssignTaskForm
+from .models import Task, Invite, Team, Lane, Notification
 from django.http import HttpResponseBadRequest
 from datetime import datetime
-from django.db.models import Max
+from django.db.models import Max, Case, Value, When
 
+def detect_keydates():
+    tasks = Task.objects.all()
+    for task in tasks:
+        task.notify_keydates()
+
+def formatDateTime(input_date):
+    # Parse the input string
+    parsed_datetime = datetime.strptime(input_date, '%b. %d, %Y, %I:%M %p')
+
+    # Format the datetime object into 'yyyy-mm-dd hh:mm:ss'
+    formatted_datetime = parsed_datetime.strftime('%Y-%m-%d %H:%M:%S')
 
 @login_required
 
@@ -32,17 +43,13 @@ def dashboard(request):
             default_lane_names = [("Backlog", 1), ("In Progress", 2), ("Complete", 3)]
             for lane_name, lane_order in default_lane_names:
                 Lane.objects.get_or_create(lane_name=lane_name, lane_order=lane_order)
+        
+        if 'dashboard_team' in request.GET:
+            team_id = request.GET.get("dashboard_team")
+            request.session["current_team_id"] = team_id
     
-    
-    if request.method == 'GET':
-        # Create 3 default lanes when the dashboard is empty
-        if not Lane.objects.exists():
-            default_lanes = ['Backlog', 'In Progress', 'Complete']
-            for lane_name in default_lanes:
-                Lane.objects.get_or_create(lane_name = lane_name)
-    
+    # Handle form submission for adding a new lane
     if request.method == 'POST':
-        # Add a lane to the dashboard
         if 'add_lane' in request.POST:
             max_order = Lane.objects.aggregate(Max('lane_order'))['lane_order__max'] or 0
             Lane.objects.create(lane_name="New Lane", lane_order=max_order + 1)
@@ -57,21 +64,43 @@ def dashboard(request):
             lane.save()
         
         return redirect('dashboard')
-
-    # Retrieve current user, lanes, tasks, and the teams
+    
+    # Get current user
     current_user = request.user
-    # lanes = request.session['lanes']
-    lanes = lanes = Lane.objects.all().order_by('lane_order')
-    all_tasks = Task.objects.all()
-    # Used to be all teams
     teams = current_user.get_teams()
-    task_form = TaskForm()
+
+    if "current_team_id" not in request.session:
+        request.session["current_team_id"] = teams[:1].get().id # Gets the first team in our list of teams    
+
+    # Retrieve current team and lanes
+    current_team = Team.objects.filter(id=request.session["current_team_id"]).first()
+    if current_team is None:
+        request.session["current_team_id"] = teams[:1].get().id
+        current_team = Team.objects.get(id=request.session["current_team_id"])
+
+    lanes = lanes = Lane.objects.all().order_by('lane_order')
+
+    # THe lanes can then be retrieved using the current team
+
+    team_tasks = current_team.get_tasks()
+
+    # Simon's stuff
+    assign_task_form = AssignTaskForm(team=current_team, user=current_user)
+    create_task_form = TaskForm()
+    create_team_form = CreateTeamForm(user=current_user)
+
+    detect_keydates()
+
+    # lane_tasks = {lane: Task.objects.filter(lane=lane) for lane in lanes}
     return render(request, 'dashboard.html', {
         'user': current_user,
         'lanes': lanes,
-        'tasks': all_tasks,
+        'tasks': team_tasks,
         'teams': teams,
-        'task_form': task_form,
+        "current_team": current_team,
+        "assign_task_form" : assign_task_form,
+        "create_task_form": create_task_form,
+        "create_team_form": create_team_form,
     })
 
 def move_task_left(request, pk):
@@ -136,7 +165,7 @@ def create_team(request):
             messages.add_message(request, messages.SUCCESS, "Created Team!")
         else:
             messages.add_message(request, messages.ERROR, "That team name has already been taken!")
-    return redirect("my_teams")
+    return redirect("dashboard")
 
 @login_required
 def my_teams(request):
@@ -165,6 +194,32 @@ def remove_member(request):
         messages.add_message(request, messages.SUCCESS, "Tried to remove team member, but there ain't no functionality hehe")
     return redirect("my_teams")
 
+@login_required
+def assign_task(request):
+    """Assigns a task to a user using the AssignedTask Model"""
+
+    """
+    if request.method == "GET":
+        request.team = Team.objects.get(team_name="Kangaroo")
+        assign_task_form = AssignTaskForm(team=request.team, task_name="Simon")
+        
+        #return render(request, "assign_task.html", {"team": request.team, "assign_form": assign_task_form})
+    """
+
+    if request.method == "POST":
+        """Gets the task that has just been pressed"""
+
+        modified_request = request.POST.copy()
+        task_name = modified_request.pop("task_name")[0]
+        assign_task_form = AssignTaskForm(modified_request, task_name=task_name)
+        if assign_task_form.is_valid():
+            assign_task_form.assign_task()
+            messages.add_message(request, messages.SUCCESS, "Assigned Task!")
+        else:
+            messages.add_message(request, messages.ERROR, "Task does not exist!")
+
+        return redirect("dashboard")
+
 
 @login_required
 def press_invite(request):
@@ -180,11 +235,11 @@ def press_invite(request):
         else:
             messages.add_message(request, messages.ERROR, "A choice wasn't made!")
 
-    return redirect("my_teams")
+    return redirect("dashboard")
 
 @login_prohibited
 def home(request):
-    """Display the application's start/home screen."""
+    """Display the application's start/home screen."""#
 
     return render(request, 'home.html')
 
@@ -307,8 +362,17 @@ class SignUpView(LoginProhibitedMixin, FormView):
     redirect_when_logged_in_url = settings.REDIRECT_URL_WHEN_LOGGED_IN
 
     def form_valid(self, form):
+        """Create a new user while automatically creating a default team with the user as its creator"""
         self.object = form.save()
         login(self.request, self.object)
+        
+        # Create default team
+        team = Team.objects.create(
+            team_name="My Team",
+            team_creator=self.request.user,
+            description="A default team for you to start managing your tasks!"
+        )
+        team.add_invited_member(self.request.user)
         return super().form_valid(form)
 
     def get_success_url(self):
@@ -320,11 +384,13 @@ class CreateTaskView(LoginRequiredMixin, FormView):
     success_url = reverse_lazy('dashboard')  # Redirect to the dashboard after successful form submission
     form_title = 'Create Task'
     
+    """ Simon
     def form_valid(self, form):
         self.object = form.save()
         #login(self.request, self.object)
         return super().form_valid(form)
-    
+    """
+
     def get_success_url(self):
         """Return redirect URL after successful update."""
         messages.add_message(self.request, messages.SUCCESS, "Task created!")
@@ -337,8 +403,10 @@ class CreateTaskView(LoginRequiredMixin, FormView):
 
             # Check if the form is valid
             if form.is_valid():
-                # Save the form data to create a new Task instance
-                form.save()
+                # Simon Stuff
+                assigned_team_id = request.session["current_team_id"]
+                form.save(assigned_team_id=assigned_team_id)
+                
                 messages.success(request, 'Task Created!')
                 # Redirect to the dashboard or another page
                 return redirect('dashboard')
@@ -346,7 +414,6 @@ class CreateTaskView(LoginRequiredMixin, FormView):
             form = TaskForm()
         # Fetch all tasks for rendering the form initially
         all_tasks = Task.objects.all()
-
         return render(request, 'task_create.html', {'tasks': all_tasks, 'form': form})
     
 class DeleteTaskView(LoginRequiredMixin, View):
@@ -428,7 +495,13 @@ class TaskEditView(LoginRequiredMixin, View):
             form = TaskForm(instance=task)
         return render(request, 'task_edit.html', {'task':task, 'form': form})
 
-      
+
+priority_order = Case(
+    When(priority='high', then=Value(3)),
+    When(priority='medium', then=Value(2)),
+    When(priority='low', then=Value(1))
+)
+
 def task_search(request):
     q = request.GET.get('q', '')
     data = Task.objects.all()
@@ -436,22 +509,31 @@ def task_search(request):
     if q:
         data = data.filter(name__icontains=q)
 
-    sort_by_due_date = request.GET.get('sort_due_date', None)
-
-    if sort_by_due_date:
-        if sort_by_due_date in ['asc', 'desc']:
-            order_by = 'due_date' if sort_by_due_date == 'asc' else '-due_date'
-            data = data.order_by(order_by)
+    sort_column = request.GET.get('sort_column', None)
+    sort_direction = request.GET.get('sort_direction', None)
+    if sort_column == 'priority':
+        data=data.model.objects.alias(priority_order=priority_order)
+        sort_column = 'priority_order'
+    if sort_column:
+        if sort_direction == 'desc':
+          data = data.order_by('-'+sort_column)
         else:
-            return HttpResponseBadRequest("Invalid value for 'sort_due_date'")
+          data = data.order_by(sort_column)
+
+    # data = data.model.objects.annotate(
+    #     formatted_due_date=formatDateTime('due_date')
+    # ).values('name', 'description', 'due_date', 'formatted_due_date', 'priority')
 
     context = {'data': data}
-
-    # Check if there are no tasks found
     if not data.exists():
         context['no_tasks_found'] = True
 
     return render(request, 'task_search.html', context)
+
+def notif_delete(request,notif_id):
+    notification = Notification.objects.get(pk=notif_id)
+    notification.delete()
+    return redirect('dashboard')
 
 class DeleteLaneView(LoginRequiredMixin, View):
     """Display form to confirm the deletion of a lane"""
@@ -489,38 +571,6 @@ class DeleteLaneView(LoginRequiredMixin, View):
         else:
             delete_form = LaneDeleteForm()
         return render(request, 'lane_delete.html', {'lane':lane, 'delete_form': delete_form})
-    
-    
-class TaskView(LoginRequiredMixin, View):
-    model = Task
-    form_class = TaskForm
-    template_name = 'task_update.html'  # Create a template for your task form
-    success_url = reverse_lazy('dashboard')  # Redirect to the dashboard after successful form submission
-    
-    def get_success_url(self):
-        """Return redirect URL after successful update."""
-        messages.add_message(self.request, messages.SUCCESS, "Task updated!")
-        return reverse_lazy('dashboard')
-    
-    def get(self, request, task_name, *args, **kwargs):
-        task = get_object_or_404(Task, name=task_name)
-        form = TaskForm()
-        # if this doesnt work use domain explicitly
-        update_url = '/task_update/'+task_name+'/'
-        context = {'form': form, 'update_url': update_url}
-        return render(request, self.template_name, context)
-    
-    def post(self, request, task_name, *args, **kwargs):
-        #task_name = kwargs["task_name"]
-        task = get_object_or_404(Task, pk=task_name)
-        #task = Task.objects.get(pk = task_name)
-        if request.method == 'POST':
-            form = TaskForm(request.POST)
-            if form.is_valid():
-                return redirect('dashboard')
-        else:
-            delete_form = TaskDeleteForm()
-        return render(request, 'task_delete.html', {'task':task, 'delete_form': delete_form})
 
 class InviteView(LoginRequiredMixin, FormView):
     """Functionality for using the invite form"""
@@ -546,3 +596,29 @@ class InviteView(LoginRequiredMixin, FormView):
 
         messages.add_message(self.request, messages.SUCCESS, "Invite Sent!")
         return reverse('my_teams')
+
+class DeleteTeamView(LoginRequiredMixin, View):
+    model = Team
+    form_class = DeleteTeamForm
+    template_name = 'delete_team.html' 
+    form_title = 'Delete Team'
+    context_object_name = 'team'
+    
+    def post(self, request, team_id):
+        """Get the team, and render the team delete form"""
+        team = get_object_or_404(Team, id=team_id)
+        user = request.user
+        if (len(user.get_teams()) > 1): 
+            delete_form = DeleteTeamForm(request.POST)
+            if delete_form.is_valid():
+                if delete_form.cleaned_data['confirm_deletion']:
+                    team.delete()
+                    messages.success(request, 'Team Deleted!')
+                    return redirect('dashboard')
+            else:
+                delete_form = TaskDeleteForm()
+        else:
+            messages.error(request, 'Cannot have 0 teams!')
+            return redirect("dashboard")
+            
+        return render(request, "delete_team.html", {'team':team, 'delete_form': delete_form})

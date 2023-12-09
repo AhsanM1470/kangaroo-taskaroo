@@ -155,6 +155,16 @@
     transform: scale(0.8);
   }
 
+  #popup_panel{
+    height: 100vh;
+    width: 20vw;
+    padding: 15px;
+    background-color: rgba(222, 206, 206, 0.8);
+    border: 10px solid #00000055;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+  }
+
   #sidebar{
     width: 12.4vw;
     height: 100vh;
@@ -189,6 +199,21 @@
     overflow-wrap: break-word;
     word-wrap: break-word;
   }
+  #sidebar button{
+    border: none;
+    background-color: inherit;
+    color: white;
+    transition: background-color 0.3s;
+    padding-left: 5%;
+  }
+
+  #sidebar button:hover{
+    background-color: #064486;
+  }
+
+  .collapsing {
+      transition-duration: 0.7s;
+  }
 
 </style>
 
@@ -196,17 +221,37 @@
   <div class="username">
     <h5>{{ user.username }}</h5>
   </div>
-  <h3>Welcome to your dashboard</h3>
+  <h3>Welcome to {{ current_team.team_name }}'s dashboard</h3>
 </div>
 
 <div class="flex-container">
   <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block sidebar collapse">
     <h6>YOUR TEAMS:</h6>
     <ul>
-      {% for team in teams %}
-        <li>{{ team.team_name }}</li>
-      {% endfor %}
+      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#create_team" aria-expanded="false" aria-controls="create_team">Add Team</button>
     </ul>
+    {% for team in teams %}
+      <ul>
+        <!--Switch dashboard by pressing team name-->
+        <form method="get" style="display: inline;">
+          <button type="submit" name="dashboard_team" value="{{ team.id }}">
+            {{ team.team_name }}
+          </button>
+        </form>
+        
+        <!--Delete team, shown if you are the team's creator-->
+        {% if user == team.team_creator %}
+        <form method="post" style="display: inline;" action="{% url 'delete_team' team.id %}">
+          {% csrf_token %}
+          <button type="submit" class="image" title="Delete Team">
+            <img src="../../static/images/bin-icon-grey.png">
+          </button>
+        </form>
+        {% endif %}
+      {% empty %}
+        <p>You currently are not part of any teams 0-0</p>
+      </ul>
+    {% endfor %}
   </nav>
   
   <!--Used to be container board-->
@@ -227,35 +272,35 @@
                 </button>
               </form>
 
-              <!-- Lane name form -->
-              <form method="post" style="display: inline;">
-                {% csrf_token %}
-                <input type="hidden" name="rename_lane" value="{{ lane.lane_id }}">
 
-                <label id="label-{{ forloop.counter }}" class="lane-name-label" onclick="toggleEdit('{{ forloop.counter }}')">{{ lane.lane_name }}</label>
-                
-                <!-- Rename input (initially hidden) -->
-                <input type="text" name="new_lane_name" value="{{ lane.lane_name }}" id="input-{{ forloop.counter }}" maxlength="50" class="lane-name-input" style="display:none;" onkeypress="enterName(event,'{{forloop.counter}}')">
-              </form>
+            <!-- Lane name form -->
+            <form method="post" style="display: inline;">
+              {% csrf_token %}
+              <input type="hidden" name="rename_lane" value="{{ lane.lane_id }}">
 
-              <!-- Move lane right form -->
-              <form method="post" action="{% url 'move_lane_right' lane.lane_id %}" style="display: inline;">
+              <label id="label-{{ forloop.counter }}" class="lane-name-label" onclick="toggleEdit('{{ forloop.counter }}')">{{ lane.lane_name }}</label>
+              
+              <!-- Rename input (initially hidden) -->
+              <input type="text" name="new_lane_name" value="{{ lane.lane_name }}" id="input-{{ forloop.counter }}" maxlength="50" class="lane-name-input" style="display:none;" onkeypress="enterName(event,'{{forloop.counter}}')">
+            </form>
+
+            <!-- Move lane right form -->
+            <form method="post" action="{% url 'move_lane_right' lane.lane_id %}" style="display: inline;">
+              {% csrf_token %}
+              <button type="submit" class="image" title="Move lane right">
+                  <img src="../../static/images/move-right-icon.png">
+              </button>
+            </form>
+
+            <!-- Delete lane form -->
+            <form method="post" action="{% url 'lane_delete' lane.lane_id %}" style="display: inline;">
                 {% csrf_token %}
-                <button type="submit" class="image" title="Move lane right">
-                    <img src="../../static/images/move-right-icon.png">
+                <input type="hidden" name="delete_lane" value="{{ lane.lane_id }}">
+                <button type="submit" class="image" title="Delete lane">
+                    <img src="../../static/images/bin-icon.png">
                 </button>
-              </form>
-
-              <!-- Delete lane form -->
-              <form method="post" action="{% url 'lane_delete' lane.lane_id %}" style="display: inline;">
-                  {% csrf_token %}
-                  <input type="hidden" name="delete_lane" value="{{ lane.lane_id }}">
-                  <button type="submit" class="image" title="Delete lane">
-                      <img src="../../static/images/bin-icon.png">
-                  </button>
-              </form>
-            </div>
-
+            </form>
+          </div>
             <!-- Tasks for each lane -->
             {% for task in tasks %}
             {% if task.lane_id == lane.lane_id %}
@@ -277,6 +322,11 @@
                   <img src="../../static/images/move-right-icon-grey.png">
                 </button>
               </form>
+
+              <!-- Assign a Task -->
+              <button type="button" class="image" data-bs-toggle="collapse" data-bs-target="#task_pop_up{{ task.id }}" aria-expanded="false" aria-controls="task_pop_up{{ task.id }}" style="width: 100%;"title="Assign Task">
+                <img src="../../static/images/edit-icon-grey.png" style="background-color: yellow;">
+              </button>
 
               <!-- View/edit task form -->
               <form method="get" action="{% url 'task_edit' task.id %}">
@@ -303,8 +353,8 @@
               <form method="get" style="display: inline;" action="{% url 'task_create' %}">
                   <input type="hidden" name="lane" value="{{ lane.id }}">
                   <!-- <button type="submit" class="btn btn-secondary" style="width: 100%;">New Task</button> -->
-                  <button type="button" class="btn btn-secondary" data-bs-toggle="collapse" data-bs-target="#task_pop_up" aria-expanded="false" aria-controls="#task_pop_up" style="width: 100%;">New Task</button>
-              </form>
+                  <button type="button" class="btn btn-secondary" data-bs-toggle="collapse" data-bs-target="#create_task" aria-expanded="false" aria-controls="create_task" style="width: 100%;">New Task</button>
+                </form>
             </div>
           </div>
           {% endfor %}
@@ -314,16 +364,40 @@
           {% csrf_token %}
           <button type="submit" name="add_lane" class="btn btn-dark">Add Lane</button>
         </form>
+
+        <!--Simon Stuff -->
+        <button type="button" name="view_team" class="btn btn-dark" data-bs-toggle="collapse" data-bs-target="#team_info" aria-expanded="false" aria-controls="team_info">View Team</button>
       </div>
     </div>
   </div>
-
-  <!-- Task create popup -->
-  <div class="collapse collapse-horizontal" id="task_pop_up" style="width: 100vw;">
-    <article id="task_sidebar">
-      {% include 'task_create.html' with form=task_form %}
-    </article>
+  
+  <!--Here I changed -->
+  <div class="accordion" id="popup">
+    {% for task in tasks %}
+      <div class="accordion-collapse collapse" id="task_pop_up{{ task.id }}" data-bs-parent="#popup">
+        <article id="popup_panel">
+          {% include 'assign_task.html' with form=assign_task_form task_name=task.name %}
+        </article>
+      </div>
+    {% endfor %}
+    <div class="accordion-collapse collapse " id="team_info" data-bs-parent="#popup">
+      <article id="popup_panel">
+        {% include 'team_info.html' with team=current_team %}
+      </article>
+    </div>
+    <div class="accordion-collapse collapse" id="create_task" data-bs-parent="#popup" style="width: 100%;">
+      <article id="popup_panel">
+        {% include 'task_create.html' with form=create_task_form %}
+      </article>
+    </div>
+    <div class="accordion-collapse collapse" id="create_team" data-bs-parent="#popup">
+      <article id="popup_panel">
+        {% include 'create_team.html' with team_form=create_team_form %}
+      </article>
+    </div>
   </div>
+
+  <!--sdsdsd-->
 </div>
 
 <script>

@@ -21,9 +21,11 @@ from tasks import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.home, name='home'),
+    path("assign_task/", views.assign_task, name="assign_task"),
     path("create_team/", views.create_team, name="create_team"),
     path("create_invite/", views.InviteView.as_view(), name="create_invite"),
     path("remove_member/", views.remove_member, name="remove_member"),
+    path('delete_team/<int:team_id>/', views.DeleteTeamView.as_view(), name='delete_team'),
     path("press_invite/", views.press_invite, name="press_invite"),
     path('dashboard/', views.dashboard, name='dashboard'),
     path('log_in/', views.LogInView.as_view(), name='log_in'),
@@ -41,4 +43,5 @@ urlpatterns = [
     path('my_teams/', views.my_teams, name="my_teams"),
     path('task/<int:pk>/move-left/', views.move_task_left, name='move_task_left'),
     path('task/<int:pk>/move-right/', views.move_task_right, name='move_task_right'),
+    path('notif_delete/<int:notif_id>/',views.notif_delete,name='notif_delete')
 ]

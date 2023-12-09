@@ -4,7 +4,7 @@ from django.core.exceptions import ValidationError
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from libgravatar import Gravatar
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from django.utils import timezone
 
 class User(AbstractUser):
@@ -21,6 +21,7 @@ class User(AbstractUser):
     first_name = models.CharField(max_length=50, blank=False)
     last_name = models.CharField(max_length=50, blank=False)
     email = models.EmailField(unique=True, blank=False)
+    notifications = models.ManyToManyField('Notification')
 
     class Meta:
         """Model options."""
@@ -59,12 +60,27 @@ class User(AbstractUser):
 
         return self.invite_set.all()
 
+    def get_tasks(self):
+        """Returns a query set of all the tasks this user has been assigned"""
+
+        return self.task_set.all()
+
+    def add_notification(self,notif):
+        """Adds a notification to the user's list of notifications"""
+        self.notifications.add(notif)
+        self.save()
+
+    def get_notifications(self):
+        """Returns a query set of the user's notifications"""
+        return self.notifications.all()
+
     
 
 class Team(models.Model):
     """Model used to hold teams of different users and their relevant information"""
     
-    team_name = models.CharField(max_length=50, unique=True, blank=False)
+    
+    team_name = models.CharField(max_length=50, blank=False)
     team_creator = models.ForeignKey(User, on_delete=models.CASCADE, blank=False, related_name="created_teams")
     team_members = models.ManyToManyField(User, blank=True)
     description = models.TextField(blank=True, validators=[MaxLengthValidator(200)])
@@ -73,13 +89,6 @@ class Team(models.Model):
         """Overrides string to show the team's name"""
         
         return self.team_name
-
-    def add_team_member(self, new_team_members):
-        """Add new team member/s to the team"""
-        
-        for new_team_member in new_team_members.all():
-            self.team_members.add(new_team_member)
-            self.save()
         
     def add_invited_member(self, user):
         """Add a new team member from an invite"""
@@ -112,6 +121,11 @@ class Team(models.Model):
             output_str += f'{user.username} '
         return output_str
 
+    def get_tasks(self):
+        """Return query set containing all the tasks of the team"""
+
+        return self.task_set.all()
+
 class Invite(models.Model):
     """Model used to hold information about invites"""
     invited_users = models.ManyToManyField(User, blank=False)
@@ -128,6 +142,8 @@ class Invite(models.Model):
         for user in users.all():
             self.invited_users.add(user)
             self.save()
+            notif = InviteNotification.objects.create(invite=self)
+            user.add_notification(notif)
 
     def set_team(self, team):
         """Set the team that will send the invite"""
@@ -148,8 +164,14 @@ class Invite(models.Model):
 
         if self.status == "Accept":
             if user_to_invite:
-                self.get_inviting_team().add_invited_member(user_to_invite)   
-        self.delete()
+                self.get_inviting_team().add_invited_member(user_to_invite) 
+                self.invited_users.remove(user_to_invite)  
+                notifs = user_to_invite.get_notifications()
+                notif = list(filter(lambda notif: notif.as_invite_notif() != None and notif.as_invite_notif().invite == self,notifs))[0]
+                notif.delete()
+                self.save()
+        if self.invited_users.count()==0:
+            self.delete()
     
 class Lane(models.Model):
     lane_name = models.CharField(max_length=100)
@@ -170,25 +192,109 @@ class Task(models.Model):
         message='Enter a valid word with at least 3 alphanumeric characters (no special characters allowed).',
         code='invalid_word',
     )
+    priority = models.CharField(
+        max_length=10,
+        choices=[
+            ('low', 'Low'),
+            ('medium', 'Medium'),
+            ('high', 'High'),
+        ],
+        default='medium',
+    )
     #task_id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=30, blank=False, unique=True, validators=[alphanumeric], primary_key=False)
     description = models.CharField(max_length=530, blank=True)
     due_date = models.DateTimeField(default=datetime(1, 1, 1))
     created_at = models.DateTimeField(default=timezone.now)
     lane = models.ForeignKey(Lane, on_delete=models.CASCADE)
+    assigned_team = models.ForeignKey(Team, blank=False, on_delete=models.CASCADE, null=True)
+    assigned_users = models.ManyToManyField(User, blank=True)
+    deadline_notif_sent = models.BooleanField(default=False)
+
+    def get_assigned_users(self):
+        """Return all users assigned to this task"""
+
+        return self.assigned_users.all()
+
+    def set_assigned_users(self, assigned_users):
+        """Set the assigned users of the task"""
+
+        for user in assigned_users:
+            self.assigned_users.add(user)
+            self.save()
+            notif = TaskNotification.objects.create(task=self,notification_type="AS")
+            user.add_notification(notif)
+
+    def notify_keydates(self):
+        if datetime.today().date() >= (self.due_date-timedelta(days=5)).date() and not self.deadline_notif_sent:
+            self.deadline_notif_sent=True
+            notif = TaskNotification.objects.create(task=self,notification_type="DL")
+            for user in self.assigned_team.team_members.all():
+                user.add_notification(notif)
+        self.save()
+
+
     # Could add a boolean field to indicate if the task has expired?
 
+"""
+class AssignedTask(models.Model):
+    #M odel used for holding the information about a task assigned to a specific user of a team
+    assigned_member = models.ForeignKey(User, blank=True, on_delete=models.CASCADE, default=None)
+    team = models.ForeignKey(Team, blank=False, on_delete=models.CASCADE)
+    task = models.OneToOneField(Task, blank=False, on_delete=models.CASCADE)
+
+    def add_assigned_members(self, assigned_members):
+        #Set assigned team member/s to task
+        
+        for team_member in assigned_members.all():
+            self.assigned_members.add(team_member)
+            self.save()
+
+"""
+
+
 class Notification(models.Model): 
-    """Model used to represent a notification"""
+    """Generic template model for notifications"""
+    def as_task_notif(self):
+        try:
+            return self.tasknotification
+        except TaskNotification.DoesNotExist:
+            return None
+
+    def as_invite_notif(self):
+        try:
+            return self.invitenotification
+        except InviteNotification.DoesNotExist:
+            return None
+
+    def display(self):
+        return "This is a notification"
+
+class TaskNotification(Notification): 
+    """Model used to represent a notification relating to a specific task"""
 
     class NotificationType(models.TextChoices):
         ASSIGNMENT = "AS"
         DEADLINE = "DL"
 
-    task_name = models.CharField(max_length=50)
+    task = models.ForeignKey(Task,blank=False,on_delete=models.CASCADE)
+    notification_type = models.CharField(max_length=2,choices=NotificationType.choices,default=NotificationType.ASSIGNMENT)
 
-    def display(self,notification_type):
-        if notification_type== self.NotificationType.ASSIGNMENT:
-            return f'{self.task_name} has been assigned to you.'
-        elif notification_type == self.NotificationType.DEADLINE:
-            return f"{self.task_name}'s deadline is approaching."
+    def set_type(new_type):
+        notification_type = new_type
+
+    def display(self):
+        if self.notification_type== self.NotificationType.ASSIGNMENT:
+            return f'{self.task.name} has been assigned to you.'
+        elif self.notification_type == self.NotificationType.DEADLINE:
+            if datetime.today().date()<self.task.due_date.date():
+                return f"{self.task.name}'s deadline is in {(self.task.due_date.date()-datetime.today().date()).days} day(s)."
+            else:
+                return f"{self.task.name}'s deadline has passed."
+
+class InviteNotification(Notification): 
+    """Model used to represent a notification relating to a team invite"""
+    invite = models.ForeignKey(Invite,blank=False,on_delete=models.CASCADE)
+
+    def display(self):
+       return f"Do you wish to join {self.invite.get_inviting_team().team_name}?"
