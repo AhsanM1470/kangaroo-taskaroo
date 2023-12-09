@@ -206,7 +206,7 @@ class Task(models.Model):
     description = models.CharField(max_length=530, blank=True)
     due_date = models.DateTimeField(default=datetime(1, 1, 1))
     created_at = models.DateTimeField(default=timezone.now)
-    lane = models.ForeignKey(Lane, on_delete=models.CASCADE)
+    lane = models.ForeignKey(Lane, on_delete=models.CASCADE, default=Lane.objects.first)
     assigned_team = models.ForeignKey(Team, blank=False, on_delete=models.CASCADE, null=True)
     assigned_users = models.ManyToManyField(User, blank=True)
     deadline_notif_sent = models.BooleanField(default=False)

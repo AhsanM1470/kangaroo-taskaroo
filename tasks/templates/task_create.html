@@ -1,15 +1,8 @@
 {% block content %}
     
 <style>
-    body{
-        color: rgb(80, 127, 189);
-        height: 100vh;
-        width: 100%;
-        margin: 0;
-        font-family: 'Arial', sans-serif;
-        background: linear-gradient(to bottom right, #0076f4, #209e3e);
-      }
-    form {
+    .task-form {
+        font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
         max-width: 600px;
         margin: auto;
         margin-top: 1em;
@@ -29,7 +22,7 @@
         margin-bottom: 1em;
     }
 
-    textarea {
+    .task-form textarea {
         padding: 10px;
         border: 1px solid grey;
         border-radius: 5px;
@@ -44,34 +37,33 @@
         display: inline-block;
         background-color: #dedccf;
         color: #15257d;
-        padding: 1em;
         border: none;
         border-radius: 5px;
         cursor: pointer;
         transition: background-color 0.2s ease;
-        width: 10em;
+        width: 8em;
         box-sizing: border-box;
         text-align: center;
         text-decoration: none;
+        height: 2em;
     }
 
-    .cancel-button{
+    .cancel-button {
         display: inline-block;
         background-color: rgb(80, 127, 189);
         color: white;
-        padding: 10px;
         border: none;
         border-radius: 5px;
         cursor: pointer;
         transition: background-color 0.2s ease;
-        width: 10em;
+        width: 8em;
         box-sizing: border-box;
         text-align: center;
         text-decoration: none;
-        transform: translateY(0.09em);
+        height: 2em;
     }
 
-    button[type="submit"]:hover, .cancel-button:hover {
+    .task-form button:hover, .cancel-button:hover{
         background: #28242c;
         color: white;
     }
@@ -87,6 +79,20 @@
     .descriptionClass {
         height: 100px;
     }
+    
+    .task-create-hr {
+        color: white;
+        height: 100px;
+        border: none;
+        padding: 0.3%;
+    }
+    .clearfix{
+        clear:both
+    }
+
+    .form-btns {
+        display: flex;
+    }
 
 </style>
 
@@ -96,10 +102,11 @@
         {% csrf_token %}
         
         {% include 'partials/bootstrap_form.html' with form=form %}
-        <div>
+        <div class="form-btns">
             <button type="submit">Submit</button>
             <a href="{% url 'dashboard' %}" class="cancel-button">Cancel</a>
+        </div>
+        <div class="clearfix"></div>
     </form>
-
 </div>
 {% endblock %}

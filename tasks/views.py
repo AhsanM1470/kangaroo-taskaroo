@@ -396,6 +396,15 @@ class CreateTaskView(LoginRequiredMixin, FormView):
         messages.add_message(self.request, messages.SUCCESS, "Task created!")
         return reverse_lazy('dashboard')
     
+    def get(self, request,pk, *args, **kwargs):
+        print("nom")
+        default_lane = Lane.objects.get(name='Backlog')
+        form = TaskForm(initial={'lane': default_lane})
+        all_tasks = Task.objects.all()
+        # if this doesnt work use domain explicitly
+        context = {'tasks': all_tasks, 'form': form}
+        return render(request, self.template_name, context)
+    
     def post(self, request):
         if request.method == 'POST':
             # Use TaskForm to handle form data, including validation and cleaning
@@ -405,16 +414,18 @@ class CreateTaskView(LoginRequiredMixin, FormView):
             if form.is_valid():
                 # Simon Stuff
                 assigned_team_id = request.session["current_team_id"]
+                # form.instance.lane = Lane.objects.first()
                 form.save(assigned_team_id=assigned_team_id)
                 
                 messages.success(request, 'Task Created!')
                 # Redirect to the dashboard or another page
                 return redirect('dashboard')
         else:
-            form = TaskForm()
+            default_lane = Lane.objects.get(name='Backlog')
+            form = TaskForm(initial={'lane': default_lane})
         # Fetch all tasks for rendering the form initially
         all_tasks = Task.objects.all()
-        return render(request, 'task_create.html', {'tasks': all_tasks, 'form': form})
+        return render(request, self.template_name, {'tasks': all_tasks, 'form': form})
     
 class DeleteTaskView(LoginRequiredMixin, View):
     model = Task

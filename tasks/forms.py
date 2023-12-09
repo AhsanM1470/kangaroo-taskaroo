@@ -145,6 +145,8 @@ class TaskForm(forms.ModelForm):
         super(TaskForm, self).__init__(*args, **kwargs)
         self.fields['lane'].queryset = Lane.objects.all()
         
+        # self.fields['lane'].initial = Lane.objects.first()
+        
     def clean(self):
         cleaned_data = super().clean()
         date = self.cleaned_data.get('date_field')
