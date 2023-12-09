@@ -72,7 +72,7 @@ class User(AbstractUser):
 
     def get_notifications(self):
         """Returns a query set of the user's notifications"""
-        return self.notifications.all()
+        return self.notifications.all().order_by("-id")
 
     
 
@@ -209,7 +209,7 @@ class Task(models.Model):
     lane = models.ForeignKey(Lane, on_delete=models.CASCADE)
     assigned_team = models.ForeignKey(Team, blank=False, on_delete=models.CASCADE, null=True)
     assigned_users = models.ManyToManyField(User, blank=True)
-    deadline_notif_sent = models.BooleanField(default=False)
+    deadline_notif_sent = models.DateField(default=(datetime.today()-timedelta(days=1)).date())
 
     def get_assigned_users(self):
         """Return all users assigned to this task"""
@@ -227,11 +227,17 @@ class Task(models.Model):
             user.add_notification(notif)
 
     def notify_keydates(self):
-        if datetime.today().date() >= (self.due_date-timedelta(days=5)).date() and not self.deadline_notif_sent:
-            self.deadline_notif_sent=True
-            notif = TaskNotification.objects.create(task=self,notification_type="DL")
+        if datetime.today().date() < (self.due_date-timedelta(days=5)).date():
+            self.deadline_notif_sent = (datetime.today()-timedelta(days=1)).date()
+        if self.deadline_notif_sent != datetime.today().date():
             for user in self.assigned_team.team_members.all():
-                user.add_notification(notif)
+                current_notifs = list(filter(lambda notif: notif.as_task_notif() != None and notif.as_task_notif().task == self and notif.as_task_notif().notification_type=="DL",user.get_notifications()))
+                if len(current_notifs)>0:
+                    current_notifs[0].delete()
+                if datetime.today().date() >= (self.due_date-timedelta(days=5)).date():
+                    self.deadline_notif_sent=datetime.today().date()
+                    notif_to_add = TaskNotification.objects.create(task=self,notification_type="DL")
+                    user.add_notification(notif_to_add)
         self.save()
 
 
