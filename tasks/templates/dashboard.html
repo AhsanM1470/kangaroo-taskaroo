@@ -217,12 +217,7 @@
 
 </style>
 
-<div class="header-bar">
-  <div class="username">
-    <h5>{{ user.username }}</h5>
-  </div>
-  <h3>Welcome to {{ current_team.team_name }}'s dashboard</h3>
-</div>
+
 
 <div class="flex-container">
   <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block sidebar collapse">
@@ -324,12 +319,12 @@
               </form>
 
               <!-- Assign a Task -->
-              <button type="button" class="image" data-bs-toggle="collapse" data-bs-target="#task_pop_up{{ task.id }}" aria-expanded="false" aria-controls="task_pop_up{{ task.id }}" style="width: 100%;"title="Assign Task">
-                <img src="../../static/images/edit-icon-grey.png" style="background-color: yellow;">
+              <button type="button" class="image" data-bs-toggle="collapse" data-bs-target="#task_pop_up{{ task.id }}" aria-expanded="false" aria-controls="task_pop_up{{ task.id }}" title="Assign Task">
+                <img src="../../static/images/person-icon-grey.png">
               </button>
 
               <!-- View/edit task form -->
-              <form method="get" action="{% url 'task_edit' task.id %}">
+              <form method="get" action="{% url 'task' task.id %}">
                 {% csrf_token %}
                 <button type="submit" class="image" title="View and edit task">
                   <img src="../../static/images/edit-icon-grey.png">

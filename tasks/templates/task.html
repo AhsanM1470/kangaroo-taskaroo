@@ -15,7 +15,8 @@
     }
 
     .task-info h2 {
-        color: #333;
+        color: #000000;
+        margin-right:auto;
     }
 
     .task-details {
@@ -29,33 +30,66 @@
     .field-value {
         margin-bottom: 10px;
     }
+    .edit-button,
+    .back-button{
+        display: inline-block;
+        background-color: rgb(80, 127, 189);
+        color: white;
+        padding: 10px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+        z-index: 2;
+        width: 5em;
+        height: 2.5em;
+        box-sizing: border-box;
+        vertical-align: top;
+        text-align: center;
+    }
+  
+    .edit-button:hover,
+    .back-button:hover{
+      background: #28242c;
+      color: white;
+    }
+
+    .task-header {
+        display: flex;
+    }
 </style>
 
 <div class="task-info-container">
     <div class="task-info">
-        <h2>Task Details</h2>
-            <div class="task-details">
-                <div class="field-label">Name:</div>
-                <div class="field-value">{{ task.name }}</div>
-
-                <div class="field-label">Description:</div>
-                <div class="field-value">{{ task.description }}</div>
-
-                <div class="field-label">Due Date:</div>
-                <div class="field-value">{{ task.due_date }}</div>
-
-                <div class="field-label">Created At:</div>
-                <div class="field-value">{{ task.created_at }}</div>
-
-                <div class="field-label">Current Lane:</div>
-                <div class="field-value">{{ task.lane }}</div>
-
-                <div class="field-label">Assigned Team:</div>
-                <div class="field-value">{{ task.assigned_team }}</div>
-
-                <div class="field-label">Assigned Users:</div>
-                <div class="field-value">{{ task.assigned_users.all|join:", " }}</div>
+        <div class="task-header">
+            <h2>Task Details</h2>
+            <div class="task-info-btn">
+                <a href="{% url 'task_edit' task.id %}" class="edit-button">Edit</a>
+                <a href="{% url 'dashboard' %}" class="back-button">Back</a>
             </div>
+        </div>
+        <div class="task-details">
+            <div class="field-label">Name:</div>
+            <div class="field-value">{{ task.name }}</div>
+
+            <div class="field-label">Description:</div>
+            <div class="field-value">{{ task.description }}</div>
+
+            <div class="field-label">Due Date:</div>
+            <div class="field-value">{{ task.due_date }}</div>
+
+            <div class="field-label">Created At:</div>
+            <div class="field-value">{{ task.created_at }}</div>
+
+            <div class="field-label">Current Lane:</div>
+            <div class="field-value">{{ task.lane }}</div>
+
+            <div class="field-label">Assigned Team:</div>
+            <div class="field-value">{{ task.assigned_team }}</div>
+
+            <div class="field-label">Assigned Users:</div>
+            <div class="field-value">{{ task.assigned_users.all|join:", " }}</div>
+        </div>
     </div>
 </div>
 {% endblock %}

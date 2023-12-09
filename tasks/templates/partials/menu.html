@@ -1,7 +1,19 @@
-<div class="d-flex justify-content start">
-  <a class="team-btn" href="{% url 'create_team' %}" style="background-color: #787878;">Create Team</a>
-  <a class="team-btn" href="{% url 'my_teams' %}" style="background-color: #787878;">View Teams</a>
-</div>
+<style>
+  .dropdown-username {
+    display: block;
+    width: 100%;
+    padding: .25rem 1rem;
+    clear: both;
+    font-weight: 400;
+    color: #212529;
+    text-align: inherit;
+    text-decoration: none;
+    white-space: nowrap;
+    background-color: transparent;
+    border: 0;
+    font-weight: bold;
+  }
+</style>
 
 <div class="collapse navbar-collapse" id="navbarSupportedContent">
 
@@ -9,7 +21,7 @@
 
   <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
     <a href="{% url 'task_search' %}" style="transform: scale(0.35) translateY(-0.5em); margin-right: 0;">
-      <img src="../../static/images/filter-icon.png">
+      <img src="../../static/images/search-icon.png">
     </a>
     <li class="nav-item dropdown">
       <a class="nav-link" href="#" id="notifications-dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -25,6 +37,7 @@
         <span class="bi-person-circle"></span>
       </a>
       <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="user-account-dropdown">
+        <li><div class="dropdown-username">{{ user.username }}</div></li>
         <li><a class="dropdown-item" href="{% url 'profile' %}">Change profile</a></li>
         <li><a class="dropdown-item" href="{% url 'password' %}">Change password</a></li>
         <li><hr class="dropdown-divider"></li>

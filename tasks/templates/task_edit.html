@@ -3,19 +3,8 @@
 {% include 'partials/messages.html' %}
 
 <style>
-  .hidden, .task-info-container {
-      display: none;
-  }
 
-  #editToggle:not(:checked) + #editForm {
-      display: block;
-  }
-
-  #editToggle:checked + .task-info-container {
-    display: block;
-  }
-
-  .task-info-container {
+  .task-edit-container {
     font-family: Arial, sans-serif;
     max-width: 600px;
     margin: 50px auto;
@@ -25,8 +14,9 @@
     padding: 20px;
   }
 
-  .task-info h2 {
-    color: #333;
+  .task-edit-container h2 {
+    color: #000000;
+    margin-right:auto;
   }
 
   .task-details {
@@ -40,45 +30,73 @@
   .field-value {
     margin-bottom: 10px;
   }
+  .submit-btn{
+    display: inline-block;
+    background-color: rgb(80, 127, 189);
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    z-index: 2;
+    width: 5em;
+    height: 3em;
+    box-sizing: border-box;
+    text-align: center;
+    vertical-align: middle;
+  }
+
+  .submit-btn:hover{
+    background: #28242c;
+    color: white;
+  }
+
+  .task-header {
+    display: flex;
+  }
+
+  .task-edit-form textarea {
+  padding: 10px;
+  border: 1px solid grey;
+  border-radius: 5px;
+  box-sizing: border-box;
+  width: 100%; 
+  max-width: 600px;
+  height: 100px; 
+  resize: vertical; 
+  }
+
+  .cancel-button {
+    display: inline-block;
+    background-color: rgb(80, 127, 189);
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    z-index: 2;
+    width: 5em;
+    height: 3em;
+    box-sizing: border-box;
+    text-align: center;
+    vertical-align: middle;
+  }
+
+  .cancel-button:hover {
+    background: #28242c;
+    color: white;
+  }
 </style>
-
-<div class="container">
+<div class="task-edit-container">
   <title>Task:</title>
-  <input type="checkbox" id="editToggle">
-  <div class="task-info-container">
-    <div class="task-info">
-        <h2>Task Details</h2>
-        <div class="task-details">
-          <div class="field-label">Name:</div>
-          <div class="field-value">{{ task.name }}</div>
-
-          <div class="field-label">Description:</div>
-          <div class="field-value">{{ task.description }}</div>
-
-          <div class="field-label">Due Date:</div>
-          <div class="field-value">{{ task.due_date }}</div>
-
-          <div class="field-label">Created At:</div>
-          <div class="field-value">{{ task.created_at }}</div>
-
-          <div class="field-label">Current Lane:</div>
-          <div class="field-value">{{ task.lane }}</div>
-
-          <div class="field-label">Assigned Team:</div>
-          <div class="field-value">{{ task.assigned_team }}</div>
-
-          <div class="field-label">Assigned Users:</div>
-          <div class="field-value">{{ task.assigned_users.all|join:", " }}</div>
-        </div>
-    </div>
-  </div>
-  <label for="editToggle" id="editButton">Edit</label>
-  <form method="get" action="{{ update_url }}" id="editForm" class="hidden">
+  <form method="post" action="{% url 'task_edit' task.id %}" class="task-edit-form">
     {% csrf_token %}
-    {{ form.as_p }}
+    {% include 'partials/bootstrap_form.html' with form=form %}
     <div>
-      <button type="submit" class="btn btn-primary">Submit</button>
-      <a href="{% url 'dashboard' %}" class="cancel-button">Cancel</a>
+      <button class="submit-btn">Submit</button>
+      <a href="{% url 'task' task.id %}" class="cancel-button">Cancel</a>
     </div>
   </form>
 </div>

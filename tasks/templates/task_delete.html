@@ -61,7 +61,7 @@
 <div class="container">
   <title>Delete Task</title>
   
-    <form method="post" action="{{ delete_url }}" class="deleteForm">
+    <form method="post" action="{% url 'task_delete' task.id %}" class="deleteForm">
       {% csrf_token %}
       <h4>Are you sure you want to delete "{{ task.name }}"?</h4>
       {{ delete_form }}

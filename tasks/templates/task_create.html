@@ -33,20 +33,29 @@
         resize: vertical; 
     }
 
-    .task-form button{
+    .submit-btn{
         display: inline-block;
-        background-color: #dedccf;
-        color: #15257d;
+        background-color: rgb(80, 127, 189);
+        color: white;
+        padding: 5px;
         border: none;
         border-radius: 5px;
         cursor: pointer;
         transition: background-color 0.2s ease;
-        width: 8em;
+        z-index: 2;
+        width: 5em;
+        height: 2em;
         box-sizing: border-box;
         text-align: center;
         text-decoration: none;
-        height: 2em;
-    }
+        vertical-align: middle;
+        margin-right: auto;
+      }
+    
+      .submit-btn:hover{
+        background: #28242c;
+        color: white;
+      }
 
     .cancel-button {
         display: inline-block;
@@ -56,14 +65,16 @@
         border-radius: 5px;
         cursor: pointer;
         transition: background-color 0.2s ease;
-        width: 8em;
+        width: 5em;
         box-sizing: border-box;
         text-align: center;
         text-decoration: none;
+        vertical-align: middle;
         height: 2em;
+        padding: 5px;
     }
 
-    .task-form button:hover, .cancel-button:hover{
+    .cancel-button:hover{
         background: #28242c;
         color: white;
     }
@@ -93,7 +104,6 @@
     .form-btns {
         display: flex;
     }
-
 </style>
 
 <div class="container">
@@ -103,7 +113,7 @@
         
         {% include 'partials/bootstrap_form.html' with form=form %}
         <div class="form-btns">
-            <button type="submit">Submit</button>
+            <button class="submit-btn">Submit</button>
             <a href="{% url 'dashboard' %}" class="cancel-button">Cancel</a>
         </div>
         <div class="clearfix"></div>
