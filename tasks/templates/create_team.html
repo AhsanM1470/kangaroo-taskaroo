@@ -1,11 +1,113 @@
 {% block content %}
 
-<div>
-    <h1>Create Team</h1>
-    <form action ="{%url 'create_team'%}" method="post">
+<style>
+    .team-form {
+        font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+        max-width: 600px;
+        margin: auto;
+        position: relative;
+        border: 1px solid rgba(255, 255, 255, 0.623);
+        box-shadow: 0 0 10px rgba(0,0,0,0.4);
+        padding: 20px;
+        background: linear-gradient(to bottom right, #a55a37, rgba(207, 222, 220, 0.438));
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.589);
+    }
+
+    .team-form label {
+        font-weight: bold;
+        display: block;
+        margin-bottom: 1em;
+    }
+
+    .team-form textarea {
+        padding: 10px;
+        border: 1px solid grey;
+        border-radius: 5px;
+        box-sizing: border-box;
+        width: 100%; 
+        max-width: 600px;
+        height: 100px; 
+        resize: vertical; 
+    }
+
+    .create-team-btn {
+        display: inline-block;
+        background-color: rgb(32, 143, 158);
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+        width: 7em;
+        box-sizing: border-box;
+        text-align: center;
+        text-decoration: none;
+        vertical-align: middle;
+        height: 2em;
+        padding: 5px;
+    }
+
+    .create-team-btn:hover{
+        background: #28242c;
+        color: white;
+    }
+
+    .nameClass {
+        width: 100%;
+        padding: 10px;
+        box-sizing: border-box;
+        border: 1px solid black;
+        border-radius: 5px;
+    }
+
+    .descriptionClass {
+        height: 100px;
+    }
+    .clearfix{
+        clear:both
+    }
+
+    .form-btns {
+        display: flex;
+    }
+
+    .teamcontainer {
+        padding-left: 0;
+        padding-right: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 2;
+    }
+
+    #id_team_name,
+    #id_description,
+    #id_members_to_invite {
+        background-color: rgba(0, 0, 0, 0.342); 
+        padding: 10px; 
+        border: 1px solid #ccc; 
+        border-radius: 4px; 
+        box-sizing: border-box; 
+        color: #ffffff; 
+    }
+
+    input#id_team_name::placeholder,
+    textarea#id_description::placeholder,
+    input#id_members_to_invite::placeholder {
+    color: white; 
+    }
+
+    .createteamtext {
+        font-weight: bolder;
+        font-size: 1.5em;
+    }
+</style>
+
+<div class="teamcontainer">
+    <form action ="{%url 'create_team'%}" method="post" class="team-form">
+        <p class="createteamtext">Create Team</p>
         {% csrf_token %}
         {% include 'partials/bootstrap_form.html' with form=team_form %}
-    <input type="submit" value="Create Team" class="btn btn-primary">
+    <input type="submit" value="Create Team" class="create-team-btn">
     </form>
 </div>
 {% endblock %}

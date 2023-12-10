@@ -194,6 +194,10 @@ class CreateTeamForm(forms.ModelForm):
 
         model = Team
         fields = ['team_name', 'description', 'members_to_invite']
+        widgets = {
+            'team_name' : forms.TextInput(attrs={'placeholder': 'Enter the task name...'}),
+            'description' : forms.Textarea(attrs={'placeholder': 'Write a task description...'}),
+        }
 
     members_to_invite = forms.ModelMultipleChoiceField(User.objects.all(), required=False)
 
@@ -206,7 +210,7 @@ class CreateTeamForm(forms.ModelForm):
 
         super().__init__(*args, **kwargs)
 
-        if self.creator != None:  
+        if self.creator != None:
             self.fields["members_to_invite"].queryset = User.objects.exclude(username=self.creator.username)
     
     def create_team(self, creator):
