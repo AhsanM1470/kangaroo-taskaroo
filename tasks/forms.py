@@ -121,8 +121,8 @@ class TaskForm(forms.ModelForm):
         model = Task
         fields = ["name", "description", "lane", "priority"]
         widgets = {
-            'name' : forms.TextInput(attrs={'class': 'nameClass', 'placeholder': 'Enter the task name...'}),
-            'description' : forms.Textarea(attrs={'class': 'descriptionClass', 'placeholder': 'Write a task description...'}),
+            'name' : forms.TextInput(attrs={'class': 'nameClass', 'placeholder': 'Enter the team name...'}),
+            'description' : forms.Textarea(attrs={'class': 'descriptionClass', 'placeholder': 'Write a team description...'}),
             'lane': forms.Select(attrs={'class':'lane_select'}),
             'priority': forms.Select(attrs={'class': 'priorityClass'}),
         }
