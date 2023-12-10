@@ -65,3 +65,23 @@ class TaskFormTestCase(TestCase):
         self.assertEqual(task.description, 'Amys fifth task within task manager!')
         expected_due_date = datetime.strptime('2023-12-19 10:05', '%Y-%m-%d %H:%M').replace(tzinfo=timezone.utc)
         self.assertEqual(task.due_date, expected_due_date)
+
+    def test_invalid_task_name_too_short(self):
+        self.form_input['name'] = 'T1'
+        form = TaskForm(data=self.form_input)
+        self.assertFalse(form.is_valid())
+        self.assertEqual(form.errors['name'], [
+            'Enter a valid word with at least 3 alphanumeric characters (no special characters allowed).'])
+
+    def test_valid_name_with_space(self):
+        self.form_input['name'] = 'Tasks name with space'
+        form = TaskForm(data=self.form_input)
+        self.assertTrue(form.is_valid())
+
+    def test_invalid_past_date_and_time_combination(self):
+        self.form_input['date_field'] = date(2020, 12, 19)
+        self.form_input['time_field'] = '10:06:00'
+        form = TaskForm(data=self.form_input)
+        self.assertFalse(form.is_valid())
+        self.assertIn('date_field', form.errors)
+        self.assertEqual(form.errors['date_field'], ['Pick a date-time in the future!'])
