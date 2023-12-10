@@ -76,6 +76,15 @@ class TaskNotificationModelTestCase(TestCase):
         self.assertEqual(new_deadline_notifs[0].display(),target)
         self.assertEqual(new_notifs[1].notification_type,TaskNotification.NotificationType.ASSIGNMENT)
         self.assertEqual(new_notifs[0].notification_type,TaskNotification.NotificationType.DEADLINE)
+
+    def test_notification_shows_deadline_passed(self):
+        self.task.due_date = datetime.today()
+        self.task.notify_keydates()
+        new_notifs = [notif.as_task_notif() for notif in self.user.notifications.select_related("tasknotification")]
+        new_deadline_notifs = list(filter(lambda notif: notif.notification_type==TaskNotification.NotificationType.DEADLINE,new_notifs))
+        target = "test-task's deadline has passed."
+        self.assertEqual(new_deadline_notifs[0].display(),target)
+
         
 
 

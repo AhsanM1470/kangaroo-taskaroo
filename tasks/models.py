@@ -287,9 +287,6 @@ class TaskNotification(Notification):
     task = models.ForeignKey(Task,blank=False,on_delete=models.CASCADE)
     notification_type = models.CharField(max_length=2,choices=NotificationType.choices,default=NotificationType.ASSIGNMENT)
 
-    def set_type(new_type):
-        notification_type = new_type
-
     def display(self):
         if self.notification_type== self.NotificationType.ASSIGNMENT:
             return f'{self.task.name} has been assigned to you.'
