@@ -227,7 +227,7 @@ class Task(models.Model):
             user.add_notification(notif)
 
     def notify_keydates(self):
-        if datetime.today().date() < (self.due_date-timedelta(days=5)).date():
+        if datetime.today().date() < (self.due_date-timedelta(days=5)).date() and self.deadline_notif_sent == datetime.today().date():
             self.deadline_notif_sent = (datetime.today()-timedelta(days=1)).date()
         if self.deadline_notif_sent != datetime.today().date():
             for user in self.assigned_team.team_members.all():
