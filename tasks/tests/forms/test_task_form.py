@@ -15,14 +15,15 @@ class TaskFormTestCase(TestCase):
         self.form_input = {
             'name': 'Task5',
             'description': 'Amys fifth task within task manager!',
-            'date_field': date(2023, 12, 19), 
+            'date_field': date(2023, 12, 19),
+            'priority':'medium',
             'time_field': '10:05:00',
             'lane': 1,
         }
 
     def test_valid_sign_up_form(self):
         form = TaskForm(data=self.form_input)
-        self.assertTrue(form.is_valid())
+        self.assertTrue(form.is_valid(), form.errors)
 
     def test_form_has_necessary_fields(self):
         form = TaskForm()
