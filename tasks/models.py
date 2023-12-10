@@ -174,9 +174,16 @@ class Invite(models.Model):
             self.delete()
     
 class Lane(models.Model):
-    lane_name = models.CharField(max_length=100)
+    """Model used for lanes and information related to them"""
+    alphanumeric = RegexValidator(
+        regex=r'^[a-zA-Z0-9 ]{1,}$',
+        message='Enter a valid word with at least 1 alphanumeric character (no special characters allowed).',
+        code='invalid_lane_name'
+    )
+
+    lane_name = models.CharField(max_length=50, blank=False, validators=[alphanumeric])
     lane_id = models.AutoField(primary_key=True)
-    lane_order = models.IntegerField(default=0)
+    lane_order = models.IntegerField(default=0, unique=True, blank=False)
 
     class Meta:
         ordering = ['lane_order']
