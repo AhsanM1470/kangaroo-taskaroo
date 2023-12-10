@@ -1,6 +1,28 @@
 {% extends 'base_content.html' %}
 
 {% block content %}
+
+<style>
+    body{
+        color: #6b3e3f;
+        height: 100vh;
+        width: 100%;
+        margin: 0;
+        font-family: 'Arial', sans-serif;
+        background: linear-gradient(to bottom right, #bb4e1b, rgb(32, 143, 158));
+      }
+
+    .styledsearchbtn {
+        color: black;
+        border-color: black;
+    }
+
+    .styledtable {
+        background-color: rgba(255, 255, 255, 0.397);
+    }
+    
+</style>
+
 <div class="container">
     <form method="get" action="{% url 'task_search' %}" id="taskForm">
         {% csrf_token %}
@@ -9,13 +31,13 @@
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <input class="form-control me-2" name="q" type="search" placeholder="Search"
                            aria-label="Search">
-                    <button class="btn btn-outline-success" type="submit">Search</button>
+                    <button class="btn btn-outline-success styledsearchbtn" type="submit">Search</button>
                 </div>
             </div>
         </nav>
     </form>
-    <table class="table table-striped">
-        <thead>
+    <table class="table table-striped styledtable">
+        <thea
         <tr>
             <th scope="col">Task name</th>
             <th scope="col">Description</th>
