@@ -231,27 +231,33 @@
       <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#create_team" aria-expanded="false" aria-controls="create_team">Add Team</button>
     </ul>
     {% for team in teams %}
-      <ul>
-        <!--Switch dashboard by pressing team name-->
-        <form method="get" style="display: inline;">
+
+    <ul style="display: flex; justify-content: space-between; align-items: center;">
+      <!--Switch dashboard by pressing team name-->
+      <form method="get" style="display: inline;">
           <button type="submit" name="dashboard_team" value="{{ team.id }}">
-            {{ team.team_name }}
+              {{ team.team_name }}
           </button>
-        </form>
-        
-        <!--Delete team, shown if you are the team's creator-->
+      </form>
+
+      <div style="display: flex; justify-content: end;">
+        <!-- View team info -->
+        <button type="button" name="view_team" class="image" data-bs-toggle="collapse" data-bs-target="#team_info" aria-expanded="false" aria-controls="team_info">
+          <img src="../../static/images/info-icon-blue.png" alt="Info Icon">
+        </button>
+
+        <!-- Delete team, shown if you are the team's creator -->
         {% if user == team.team_creator %}
-        <form method="post" style="display: inline;" action="{% url 'delete_team' team.id %}">
+          <form method="post" style="display: inline;" action="{% url 'delete_team' team.id %}">
           {% csrf_token %}
-          <button type="submit" class="image" title="Delete Team">
-            <img src="../../static/images/bin-icon-grey.png">
-          </button>
-        </form>
+            <button type="submit" class="image" title="Delete Team" style="margin-right: 0.5em;">
+              <img src="../../static/images/bin-icon-blue.png" alt="Delete Icon">
+            </button>
+          </form>
         {% endif %}
-      {% empty %}
-        <p>You currently are not part of any teams 0-0</p>
+        </div>
       </ul>
-    {% endfor %}
+      {% endfor %}
   </nav>
   
   <!--Used to be container board-->
