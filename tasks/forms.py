@@ -152,7 +152,7 @@ class TaskForm(forms.ModelForm):
         
         if instance is None:
             if team is not None:
-                self.fields['dependencies'].queryset = Task.objects.filter(assigned_team=kwargs.get("team"))
+                self.fields['dependencies'].queryset = Task.objects.filter(assigned_team=team)
         else:
             self.fields['dependencies'].queryset = Task.objects.filter(assigned_team=instance.assigned_team).exclude(id=instance.id)
 
