@@ -368,13 +368,9 @@
                 <p>No tasks currently in this lane.</p>
             {% endfor %}
     
-            <div>
-              <form method="get" style="display: inline;" action="{% url 'task_create' %}">
-                  <input type="hidden" name="lane" value="{{ lane.id }}">
-                  <!-- <button type="submit" class="btn btn-secondary" style="width: 100%;">New Task</button> -->
-                  <button type="button" class="newtaskbtn btn btn-secondary" data-bs-toggle="collapse" data-bs-target="#create_task" aria-expanded="false" aria-controls="create_task" style="width: 100%;">New Task</button>
-                </form>
-            </div>
+            <!-- <button type="submit" class="btn btn-secondary" style="width: 100%;">New Task</button> -->
+            <button type="button" class="newtaskbtn btn btn-secondary" data-bs-toggle="collapse" data-bs-target="#create_task{{ lane.lane_id }}" aria-expanded="false" aria-controls="create_task {{ lane.lane_id }}" style="width: 100%;">New Task</button>
+          
           </div>
           {% endfor %}
         </div>
@@ -401,11 +397,13 @@
         {% include 'team_info.html' with team=current_team %}
       </article>
     </div>
-    <div class="accordion-collapse collapse" id="create_task" data-bs-parent="#popup" style="width: 100%;">
-      <article id="popup_panel" style="overflow: auto;">
-        {% include 'task_create.html' with form=create_task_form %}
-      </article>
-    </div>
+    {% for lane in lanes %}
+      <div class="accordion-collapse collapse" id="create_task{{ lane.lane_id }}" data-bs-parent="#popup" style="width: 100%;">
+        <article id="popup_panel" style="overflow: auto;">
+          {% include 'task_create.html' with form=create_task_form lane_id=lane.lane_id %}
+        </article>
+      </div>
+    {% endfor %}
     <div class="accordion-collapse collapse" id="create_team" data-bs-parent="#popup">
       <article id="popup_panel" style="overflow: auto;">
         {% include 'create_team.html' with team_form=create_team_form %}

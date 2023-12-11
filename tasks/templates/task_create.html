@@ -143,6 +143,7 @@
         <p class="createtasktext">Create Task</p>
         {% csrf_token %}
         {% include 'partials/bootstrap_form.html' with form=form %}
+        <input type="hidden" name="lane_id" value="{{ lane_id }}">
         <div class="form-btns">
             <button class="submit-btn">Submit</button>
             <a href="{% url 'dashboard' %}" class="cancel-button">Cancel</a>

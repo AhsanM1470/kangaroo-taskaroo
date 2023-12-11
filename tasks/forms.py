@@ -121,9 +121,9 @@ class TaskForm(forms.ModelForm):
         model = Task
         fields = ["name", "description", "lane","dependencies", "priority"]
         widgets = {
-            'name' : forms.TextInput(attrs={'class': 'nameClass', 'placeholder': 'Enter the team name...'}),
-            'description' : forms.Textarea(attrs={'class': 'descriptionClass', 'placeholder': 'Write a team description...'}),
-            'lane': forms.Select(attrs={'class':'lane_select'}),
+            'name' : forms.TextInput(attrs={'class': 'nameClass', 'placeholder': 'Enter the task name...'}),
+            'description' : forms.Textarea(attrs={'class': 'descriptionClass', 'placeholder': 'Write a task description...'}),
+            #'lane': forms.Select(attrs={'class':'lane_select'}),
             'priority': forms.Select(attrs={'class': 'priorityClass'}),
         }
     #
@@ -149,7 +149,6 @@ class TaskForm(forms.ModelForm):
             kwargs.pop("team")
         
         super(TaskForm, self).__init__(*args, **kwargs)
-        self.fields['lane'].queryset = Lane.objects.all()
         
         if instance is None:
             if team is not None:
@@ -177,7 +176,7 @@ class TaskForm(forms.ModelForm):
                 #raise ValidationError('Pick a date-time in the future!')
         return cleaned_data
     
-    def save(self, assigned_team_id=None, commit=True):
+    def save(self, assigned_team_id=None, lane_id=None, commit=True):
         instance = super(TaskForm, self).save(commit=False)
         date = self.cleaned_data.get('date_field')
         time = self.cleaned_data.get('time_field')
@@ -189,6 +188,9 @@ class TaskForm(forms.ModelForm):
             
         if assigned_team_id is not None:
             instance.assigned_team = Team.objects.get(id=assigned_team_id)
+        
+        if lane_id is not None:
+            instance.lane = Lane.objects.get(lane_id=lane_id)
 
         instance.priority = self.cleaned_data.get('priority')
 
@@ -214,8 +216,8 @@ class CreateTeamForm(forms.ModelForm):
         model = Team
         fields = ['team_name', 'description', 'members_to_invite']
         widgets = {
-            'team_name' : forms.TextInput(attrs={'placeholder': 'Enter the task name...'}),
-            'description' : forms.Textarea(attrs={'placeholder': 'Write a task description...'}),
+            'team_name' : forms.TextInput(attrs={'placeholder': 'Enter the team name...'}),
+            'description' : forms.Textarea(attrs={'placeholder': 'Write a team description...'}),
         }
 
     members_to_invite = forms.ModelMultipleChoiceField(User.objects.all(), required=False)
