@@ -119,7 +119,7 @@ class TaskForm(forms.ModelForm):
     class Meta:
         """Form options"""
         model = Task
-        fields = ["name", "description", "priority"]
+        fields = ["name", "description", "lane","dependencies", "priority"]
         widgets = {
             'name' : forms.TextInput(attrs={'class': 'nameClass', 'placeholder': 'Enter the task name...'}),
             'description' : forms.Textarea(attrs={'class': 'descriptionClass', 'placeholder': 'Write a task description...'}),
@@ -131,7 +131,8 @@ class TaskForm(forms.ModelForm):
     #     choices=Task.PRIORITY_CHOICES,
     #     widget=forms.Select(attrs={'class': 'priorityClass'}),
     # )
-     
+    dependencies = forms.ModelMultipleChoiceField(queryset = Task.objects.all(),required=False)
+
     date_field = forms.DateField(
         label='Date',
         widget=forms.SelectDateWidget(),
@@ -142,8 +143,22 @@ class TaskForm(forms.ModelForm):
     )
 
     def __init__(self, *args, **kwargs):
+        instance = kwargs.get("instance")
+        team = kwargs.get("team")
+        if team != None:
+            kwargs.pop("team")
+        
         super(TaskForm, self).__init__(*args, **kwargs)
         
+        if instance is None:
+            if team is not None:
+                self.fields['dependencies'].queryset = Task.objects.filter(assigned_team=kwargs.get("team"))
+        else:
+            self.fields['dependencies'].queryset = Task.objects.filter(assigned_team=instance.assigned_team).exclude(id=instance.id)
+
+        # instance = kwargs.get("instance")
+        # if instance is not None:
+        #     self.fields['dependencies'].queryset = Task.objects.filter(assigned_team=instance.assigned_team).exclude(id=instance.id)
         # self.fields['lane'].initial = Lane.objects.first()
         
     def clean(self):
@@ -180,6 +195,8 @@ class TaskForm(forms.ModelForm):
         instance.priority = self.cleaned_data.get('priority')
 
         if commit:
+            instance.save()
+            instance.set_dependencies(self.cleaned_data.get('dependencies'))
             instance.save()
             
         return instance

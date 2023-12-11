@@ -217,6 +217,7 @@ class Task(models.Model):
     lane = models.ForeignKey(Lane, on_delete=models.CASCADE, default=Lane.objects.first)
     assigned_team = models.ForeignKey(Team, blank=False, on_delete=models.CASCADE, null=True)
     assigned_users = models.ManyToManyField(User, blank=True)
+    dependencies = models.ManyToManyField("Task",blank=True)
     deadline_notif_sent = models.DateField(default=(datetime.today()-timedelta(days=1)).date())
 
     def get_assigned_users(self):
@@ -246,6 +247,15 @@ class Task(models.Model):
                     notif_to_add = TaskNotification.objects.create(task=self,notification_type="DL")
                     user.add_notification(notif_to_add)
         self.save()
+
+    def set_dependencies(self,new_dependencies):
+        self.dependencies.clear()
+        for task in new_dependencies.all():
+            self.dependencies.add(task)
+            self.save()
+
+    def __str__(self):
+        return self.name
 
 
     # Could add a boolean field to indicate if the task has expired?

@@ -144,7 +144,7 @@ def dashboard(request):
     lanes = Lane.objects.filter(team=current_team).order_by('lane_order') if current_team else Lane.objects.none()
     team_tasks = current_team.get_tasks() if current_team else Task.objects.none()
     assign_task_form = AssignTaskForm(team=current_team, user=current_user)
-    create_task_form = TaskForm()
+    create_task_form = TaskForm(team=current_team)
     create_team_form = CreateTeamForm(user=current_user)
 
     detect_keydates()
@@ -510,16 +510,7 @@ class CreateTaskView(LoginRequiredMixin, FormView):
                 messages.success(request, 'Task Created!')
                 # Redirect to the dashboard or another page
                 return redirect('dashboard')
-        else:
-            current_team_id = request.session.get("current_team_id")
-            current_team = Team.objects.get(id=current_team_id)
-            if current_team is None and teams.exists():
-                request.session["current_team_id"] = teams.first().id
-                current_team = teams.first()
-            lanes = Lane.objects.filter(team=current_team).order_by('lane_order') if current_team else Lane.objects.none()
-            #default_lane = Lane.objects.get(name='Backlog')
-            form = TaskForm(initial={'lane': lanes})
-            form.fields['lane'].queryset = lanes
+
         # Fetch all tasks for rendering the form initially
         all_tasks = Task.objects.all()
         return render(request, self.template_name, {'tasks': all_tasks, 'form': form})
@@ -581,7 +572,7 @@ class TaskEditView(LoginRequiredMixin, View):
             'date_field' : date_field,
             'time_field' : time_field
         }
-        form = TaskForm(initial=initial_data)
+        form = TaskForm(initial=initial_data, instance=task)
         # if this doesnt work use domain explicitly
         update_url = reverse('task_edit', kwargs={'pk': pk})
         context = {'form': form, 'update_url': update_url, 'task': task}
