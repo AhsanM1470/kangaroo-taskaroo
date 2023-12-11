@@ -54,9 +54,12 @@ class LaneModelTestCase(TestCase):
         
     # Uniqueness tests
     
-    # def test_lane_order_and_team_must_be_unique(self):
-    #     self.lane.lane_order = 1
-    #     self.lane2.lane_order = 1
+    def test_lane_order_and_team_must_be_unique(self):
+        self.lane.lane_order = 1
+        self.lane2.lane_order = 1
+        self.lane.team = self.team1
+        self.lane2.team = self.team1
+        self._assert_lane_is_invalid
 
     # fix this test
     def test_lane_order_cannot_be_blank(self):
@@ -72,6 +75,11 @@ class LaneModelTestCase(TestCase):
     
     def test_lane_id_cannot_be_blank(self):
         self.lane.lane_id = None
+        self._assert_lane_is_invalid
+
+    # Team
+    def test_team_cannot_be_blank(self):
+        self.lane.team = None
         self._assert_lane_is_invalid
 
     # Assertions:
