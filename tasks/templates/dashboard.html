@@ -238,27 +238,33 @@
     <h6 class="yourteamslabel">Your Teams:</h6>
     <hr>
     {% for team in teams %}
-      <ul>
-        <!--Switch dashboard by pressing team name-->
-        <form method="get" style="display: inline;">
+
+    <ul style="display: flex; justify-content: space-between; align-items: center;">
+      <!--Switch dashboard by pressing team name-->
+      <form method="get" style="display: inline;">
           <button type="submit" name="dashboard_team" value="{{ team.id }}">
-            {{ team.team_name }}
+              {{ team.team_name }}
           </button>
-        </form>
-        
-        <!--Delete team, shown if you are the team's creator-->
+      </form>
+
+      <div style="display: flex; justify-content: end;">
+        <!-- View team info -->
+        <button type="button" name="view_team" class="image" data-bs-toggle="collapse" data-bs-target="#team_info" aria-expanded="false" aria-controls="team_info">
+          <img src="../../static/images/info-icon-blue.png" alt="Info Icon">
+        </button>
+
+        <!-- Delete team, shown if you are the team's creator -->
         {% if user == team.team_creator %}
-        <form method="post" style="display: inline;" action="{% url 'delete_team' team.id %}">
+          <form method="post" style="display: inline;" action="{% url 'delete_team' team.id %}">
           {% csrf_token %}
-          <button type="submit" class="image" title="Delete Team">
-            <img src="../../static/images/bin-icon-grey.png">
-          </button>
-        </form>
+            <button type="submit" class="image" title="Delete Team" style="margin-right: 0.5em;">
+              <img src="../../static/images/bin-icon-blue.png" alt="Delete Icon">
+            </button>
+          </form>
         {% endif %}
-      {% empty %}
-        <p>You currently are not part of any teams 0-0</p>
+        </div>
       </ul>
-    {% endfor %}
+      {% endfor %}
   </nav>
   
   <!--Used to be container board-->
@@ -370,9 +376,6 @@
           {% csrf_token %}
           <button type="submit" name="add_lane" class="btn btn-dark">Add Lane</button>
         </form>
-
-        <!--Simon Stuff -->
-        <button type="button" name="view_team" class="btn btn-dark" data-bs-toggle="collapse" data-bs-target="#team_info" aria-expanded="false" aria-controls="team_info">View Team</button>
       </div>
     </div>
   </div>
@@ -381,7 +384,7 @@
   <div class="accordion" id="popup">
     {% for task in tasks %}
       <div class="accordion-collapse collapse" id="task_pop_up{{ task.id }}" data-bs-parent="#popup">
-        <article id="popup_panel">
+        <article id="popup_panel"  style="overflow: auto;">
           {% include 'assign_task.html' with form=assign_task_form task_name=task.name %}
         </article>
       </div>
@@ -392,12 +395,12 @@
       </article>
     </div>
     <div class="accordion-collapse collapse" id="create_task" data-bs-parent="#popup" style="width: 100%;">
-      <article id="popup_panel">
+      <article id="popup_panel" style="overflow: auto;">
         {% include 'task_create.html' with form=create_task_form %}
       </article>
     </div>
     <div class="accordion-collapse collapse" id="create_team" data-bs-parent="#popup">
-      <article id="popup_panel">
+      <article id="popup_panel" style="overflow: auto;">
         {% include 'create_team.html' with team_form=create_team_form %}
       </article>
     </div>

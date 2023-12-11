@@ -174,11 +174,20 @@ class Invite(models.Model):
             self.delete()
     
 class Lane(models.Model):
-    lane_name = models.CharField(max_length=100)
+    """Model used for lanes and information related to them"""
+    alphanumeric = RegexValidator(
+        regex=r'^[a-zA-Z0-9 ]{1,}$',
+        message='Enter a valid word with at least 1 alphanumeric character (no special characters allowed).',
+        code='invalid_lane_name'
+    )
+
+    lane_name = models.CharField(max_length=50, blank=False, validators=[alphanumeric])
     lane_id = models.AutoField(primary_key=True)
-    lane_order = models.IntegerField(default=0)
+    lane_order = models.IntegerField(default=0, blank=False)
+    team = models.ForeignKey('Team', on_delete=models.CASCADE, related_name='lanes')
 
     class Meta:
+        unique_together = ('lane_order', 'team')
         ordering = ['lane_order']
 
     def __str__(self):
@@ -201,8 +210,7 @@ class Task(models.Model):
         ],
         default='medium',
     )
-    #task_id = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=30, blank=False, unique=True, validators=[alphanumeric], primary_key=False)
+    name = models.CharField(max_length=30, blank=False, validators=[alphanumeric])
     description = models.CharField(max_length=530, blank=True)
     due_date = models.DateTimeField(default=datetime(1, 1, 1))
     created_at = models.DateTimeField(default=timezone.now)
