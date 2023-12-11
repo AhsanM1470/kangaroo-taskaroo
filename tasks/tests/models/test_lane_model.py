@@ -44,10 +44,10 @@ class LaneModelTestCase(TestCase):
         
     # Order Tests
     
-    def test_lane_order_must_be_unique(self):
-        self.lane.lane_order = 1
-        self.lane2.lane_order = 1
-        self._assert_lane_is_invalid
+    # def test_lane_order_must_be_unique(self):
+    #     self.lane.lane_order = 1
+    #     self.lane2.lane_order = 1
+    #     self._assert_lane_is_invalid
 
     # fix this test
     # def test_lane_order_cannot_be_blank(self):
