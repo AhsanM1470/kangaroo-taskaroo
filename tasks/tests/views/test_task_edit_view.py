@@ -102,3 +102,5 @@ class TaskEditViewTestCase(TestCase, LogInTester):
         self.assertTrue(form.is_bound)
 
 
+
+
