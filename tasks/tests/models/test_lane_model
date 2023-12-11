@@ -1,5 +1,0 @@
-from tasks.models import Lane,Team
-from django.test import TestCase
-
-class LaneModelTestCase(TestCase):
-    pass
