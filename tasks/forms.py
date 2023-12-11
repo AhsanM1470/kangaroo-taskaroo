@@ -121,8 +121,8 @@ class TaskForm(forms.ModelForm):
         model = Task
         fields = ["name", "description", "lane", "priority"]
         widgets = {
-            'name' : forms.TextInput(attrs={'class': 'nameClass', 'placeholder': 'Enter the task name...'}),
-            'description' : forms.Textarea(attrs={'class': 'descriptionClass', 'placeholder': 'Write a task description...'}),
+            'name' : forms.TextInput(attrs={'class': 'nameClass', 'placeholder': 'Enter the team name...'}),
+            'description' : forms.Textarea(attrs={'class': 'descriptionClass', 'placeholder': 'Write a team description...'}),
             'lane': forms.Select(attrs={'class':'lane_select'}),
             'priority': forms.Select(attrs={'class': 'priorityClass'}),
         }
@@ -144,6 +144,8 @@ class TaskForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(TaskForm, self).__init__(*args, **kwargs)
         self.fields['lane'].queryset = Lane.objects.all()
+        
+        # self.fields['lane'].initial = Lane.objects.first()
         
     def clean(self):
         cleaned_data = super().clean()
@@ -192,6 +194,10 @@ class CreateTeamForm(forms.ModelForm):
 
         model = Team
         fields = ['team_name', 'description', 'members_to_invite']
+        widgets = {
+            'team_name' : forms.TextInput(attrs={'placeholder': 'Enter the task name...'}),
+            'description' : forms.Textarea(attrs={'placeholder': 'Write a task description...'}),
+        }
 
     members_to_invite = forms.ModelMultipleChoiceField(User.objects.all(), required=False)
 
@@ -204,7 +210,7 @@ class CreateTeamForm(forms.ModelForm):
 
         super().__init__(*args, **kwargs)
 
-        if self.creator != None:  
+        if self.creator != None:
             self.fields["members_to_invite"].queryset = User.objects.exclude(username=self.creator.username)
     
     def create_team(self, creator):

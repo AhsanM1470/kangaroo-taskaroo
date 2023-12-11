@@ -3,37 +3,54 @@
 
 <style>
   body{
-    color: white;
+    color: rgb(50, 198, 218);
     height: 100vh;
-    width: 100%;
-    background: linear-gradient(to bottom right, #0076f4, #209e3e);
+    width: 100vw;
+    background: linear-gradient(to bottom right, #bb4e1b, rgb(32, 143, 158));
+    margin: 0;
   }
+
 
   .row{
     display: flex;
     align-items: center;
+    justify-content: center;
     height: 80vh;
+    padding-right: 0;
   }
 
-  .profile-form{
+  .profilecard {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    border: 1px solid rgb(155, 140, 151);
+    text-align: center;
+    height: 600px;
+    max-width: 700px;
+    background: rgb(13, 84, 94);
+    justify-content: center;
+    align-items: center; 
+    padding-right: 0;
+    padding-left: 0;
+  }
+
+  .profileform{
     padding-bottom: 1em;
     padding-top: 1em;
     border-radius: 10px;
-
-    background: transparent;
-    border: 1px solid white;
-    backdrop-filter: blur(300px);
-    box-shadow: 0 0 10px rgba(0,0,0,0.4);
+    width: 60%;
+    justify-content: center;
+    align-items: center; 
   }
 
-  .profile-form h1{
+  .profileform h1{
     text-align: center;
   }
 
   .update-btn{
     width:80%;
-    margin-top: 2%;
-    border-radius: 50px;
+    margin-top: 5%;
     background: white;
     color: black;
     transition: ease-in 0.3s;
@@ -51,14 +68,16 @@
 
 <div class="container">
   <div class="row">
-    <div class="profile-form col-sm-12 col-md-6 offset-md-3">
-      <h1>Edit Profile</h1>
-      <form action="{% url 'profile' %}" method="post">
-        {% csrf_token %}
-        {% include 'partials/bootstrap_form.html' with form=form %}
-        <input type="submit" value="Update" class="update-btn btn btn-primary">
-      </form>
-    </div>
+    <div class="profilecard">
+        <div class="profileform">
+          <h1>Edit Profile</h1>
+          <form action="{% url 'profile' %}" method="post">
+            {% csrf_token %}
+            {% include 'partials/bootstrap_form.html' with form=form %}
+            <input type="submit" value="Update" class="update-btn btn btn-primary">
+          </form>
+        </div>
+      </div>
   </div>
 </div>
 {% endblock %}
