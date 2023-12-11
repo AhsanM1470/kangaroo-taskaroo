@@ -3,64 +3,73 @@
 <style>
     .task-form {
         font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-        max-width: 50em;
+
+        max-width: 600px;
         margin: auto;
-        margin-top: 1em;
         position: relative;
-        padding: 1em;
-        border-radius: 10px;
-        background: linear-gradient(to bottom right, rgb(54, 107, 171), rgb(207, 222, 220));
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+        padding: 20px;
     }
 
     .task-form label {
         font-weight: bold;
         display: block;
-        margin-bottom: 1em;
     }
 
     .task-form textarea {
-        width: 100%;
         padding: 10px;
         border: 1px solid grey;
         border-radius: 5px;
         box-sizing: border-box;
+        width: 100%; 
+        max-width: 600px;
+        height: 100px; 
+        resize: vertical; 
     }
 
-    .task-form button{
+    .submit-btn{
         display: inline-block;
-        background-color: #dedccf;
-        color: #15257d;
-        padding: 1em;
+        background-color: rgb(32, 143, 158);
+        color: white;
+        padding: 5px;
         border: none;
         border-radius: 5px;
         cursor: pointer;
         transition: background-color 0.2s ease;
-        width: 10em;
+        z-index: 2;
+        width: 5em;
+        height: 2em;
         box-sizing: border-box;
         text-align: center;
         text-decoration: none;
-    }
+        vertical-align: middle;
+        margin-right: auto;
+      }
+    
+      .submit-btn:hover{
+        background: #28242c;
+        color: white;
+      }
 
-    .cancel-button{
+    .cancel-button {
         display: inline-block;
-        background-color: #dedccf;
-        color: #15257d;
-        padding: 0.7em;
+        background-color: rgb(32, 143, 158);
+        color: white;
         border: none;
         border-radius: 5px;
         cursor: pointer;
         transition: background-color 0.2s ease;
-        width: 10em;
+        width: 5em;
         box-sizing: border-box;
         text-align: center;
         text-decoration: none;
-        transform: translateY(0.09em);
+        vertical-align: middle;
+        height: 2em;
+        padding: 5px;
     }
 
-    .task-form button:hover, .cancel-button:hover{
-        background-color: #b5b29a;
-        color: rgb(14, 20, 80);
+    .cancel-button:hover{
+        background: #28242c;
+        color: white;
     }
 
     .nameClass {
@@ -81,17 +90,65 @@
         border: none;
         padding: 0.3%;
     }
+    .clearfix{
+        clear:both
+    }
+
+    .form-btns {
+        display: flex;
+    }
+
+    .taskcontainer {
+        padding-left: 0;
+        padding-right: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 2;
+        border: 1px solid rgba(255, 255, 255, 0.623);
+        background: linear-gradient(to bottom right, #a55a37, rgba(207, 222, 220, 0.438));
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.589);
+        overflow-y: scroll;
+    }
+
+    #id_name,
+    #id_description,
+    #id_lane,
+    #id_priority,
+    #id_date_field_month,
+    #id_date_field_day,
+    #id_date_field_year,
+    #id_time_field {
+        background-color: rgba(0, 0, 0, 0.342); 
+        padding: 10px; 
+        border: 1px solid #ccc; 
+        border-radius: 4px; 
+        box-sizing: border-box; 
+        color: #ffffff; 
+    }
+
+    input#id_name::placeholder,
+    textarea#id_description::placeholder,
+    input#id_time_field::placeholder {
+    color: white; 
+    }
+
+    .createtasktext {
+        font-weight: bolder;
+        font-size: 1.5em;
+    }
 </style>
 
-<div class="container">
-    <title>Create Task</title>
+<div class="taskcontainer">
     <form method="post" action="{% url 'task_create' %}" class="task-form">
+        <p class="createtasktext">Create Task</p>
         {% csrf_token %}
-        {{ form.as_p }}
-        <div>
-            <button type="submit">Submit</button>
+        {% include 'partials/bootstrap_form.html' with form=form %}
+        <input type="hidden" name="lane_id" value="{{ lane_id }}">
+        <div class="form-btns">
+            <button class="submit-btn">Submit</button>
             <a href="{% url 'dashboard' %}" class="cancel-button">Cancel</a>
+        </div>
+        <div class="clearfix"></div>
     </form>
-
 </div>
 {% endblock %}

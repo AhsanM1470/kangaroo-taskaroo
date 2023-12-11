@@ -3,6 +3,12 @@
 {% include 'partials/messages.html' %}
 
 <style>
+  body{
+    background: linear-gradient(to bottom right, #a55a37, rgba(207, 222, 220, 0.438));
+    width: 100vw;
+    height: 100vh;
+  }
+
   form {
       max-width: 600px;
       margin: auto;
@@ -12,6 +18,7 @@
       padding: 20px;
       border-radius: 10px;
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+      background-color: rgb(32, 158, 148);
   }
 
   label {
@@ -20,7 +27,7 @@
 
   button[type="submit"], .cancel-button {
       display: inline-block;
-      background-color: lightsalmon;
+      background-color: rgb(20, 79, 87);
       color: white;
       padding: 10px;
       border: none;
@@ -35,7 +42,7 @@
   }
 
   button[type="submit"]:hover, .cancel-button:hover {
-      background-color: darksalmon;
+    background-color: rgb(8, 49, 59);
       color: white;
   }
 

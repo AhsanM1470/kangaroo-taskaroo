@@ -72,7 +72,7 @@ class User(AbstractUser):
 
     def get_notifications(self):
         """Returns a query set of the user's notifications"""
-        return self.notifications.all()
+        return self.notifications.all().order_by("-id")
 
     
 
@@ -174,11 +174,20 @@ class Invite(models.Model):
             self.delete()
     
 class Lane(models.Model):
-    lane_name = models.CharField(max_length=100)
+    """Model used for lanes and information related to them"""
+    alphanumeric = RegexValidator(
+        regex=r'^[a-zA-Z0-9 ]{1,}$',
+        message='Enter a valid word with at least 1 alphanumeric character (no special characters allowed).',
+        code='invalid_lane_name'
+    )
+
+    lane_name = models.CharField(max_length=50, blank=False, validators=[alphanumeric])
     lane_id = models.AutoField(primary_key=True)
-    lane_order = models.IntegerField(default=0)
+    lane_order = models.IntegerField(default=0, blank=False)
+    team = models.ForeignKey('Team', on_delete=models.CASCADE, related_name='lanes')
 
     class Meta:
+        unique_together = ('lane_order', 'team')
         ordering = ['lane_order']
 
     def __str__(self):
@@ -201,15 +210,15 @@ class Task(models.Model):
         ],
         default='medium',
     )
-    #task_id = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=30, blank=False, unique=True, validators=[alphanumeric], primary_key=False)
+    name = models.CharField(max_length=30, blank=False, validators=[alphanumeric])
     description = models.CharField(max_length=530, blank=True)
     due_date = models.DateTimeField(default=datetime(1, 1, 1))
     created_at = models.DateTimeField(default=timezone.now)
-    lane = models.ForeignKey(Lane, on_delete=models.CASCADE)
+    lane = models.ForeignKey(Lane, on_delete=models.CASCADE, default=Lane.objects.first)
     assigned_team = models.ForeignKey(Team, blank=False, on_delete=models.CASCADE, null=True)
     assigned_users = models.ManyToManyField(User, blank=True)
-    deadline_notif_sent = models.BooleanField(default=False)
+    dependencies = models.ManyToManyField("Task",blank=True)
+    deadline_notif_sent = models.DateField(default=(datetime.today()-timedelta(days=1)).date())
 
     def get_assigned_users(self):
         """Return all users assigned to this task"""
@@ -226,12 +235,27 @@ class Task(models.Model):
             user.add_notification(notif)
 
     def notify_keydates(self):
-        if datetime.today().date() >= (self.due_date-timedelta(days=5)).date() and not self.deadline_notif_sent:
-            self.deadline_notif_sent=True
-            notif = TaskNotification.objects.create(task=self,notification_type="DL")
+        if datetime.today().date() < (self.due_date-timedelta(days=5)).date() and self.deadline_notif_sent == datetime.today().date():
+            self.deadline_notif_sent = (datetime.today()-timedelta(days=1)).date()
+        if self.deadline_notif_sent != datetime.today().date():
             for user in self.assigned_team.team_members.all():
-                user.add_notification(notif)
+                current_notifs = list(filter(lambda notif: notif.as_task_notif() != None and notif.as_task_notif().task == self and notif.as_task_notif().notification_type=="DL",user.get_notifications()))
+                if len(current_notifs)>0:
+                    current_notifs[0].delete()
+                if datetime.today().date() >= (self.due_date-timedelta(days=5)).date():
+                    self.deadline_notif_sent=datetime.today().date()
+                    notif_to_add = TaskNotification.objects.create(task=self,notification_type="DL")
+                    user.add_notification(notif_to_add)
         self.save()
+
+    def set_dependencies(self,new_dependencies):
+        self.dependencies.clear()
+        for task in new_dependencies.all():
+            self.dependencies.add(task)
+            self.save()
+
+    def __str__(self):
+        return self.name
 
 
     # Could add a boolean field to indicate if the task has expired?
@@ -279,9 +303,6 @@ class TaskNotification(Notification):
 
     task = models.ForeignKey(Task,blank=False,on_delete=models.CASCADE)
     notification_type = models.CharField(max_length=2,choices=NotificationType.choices,default=NotificationType.ASSIGNMENT)
-
-    def set_type(new_type):
-        notification_type = new_type
 
     def display(self):
         if self.notification_type== self.NotificationType.ASSIGNMENT:
