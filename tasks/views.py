@@ -144,7 +144,7 @@ def dashboard(request):
     lanes = Lane.objects.filter(team=current_team).order_by('lane_order') if current_team else Lane.objects.none()
     team_tasks = current_team.get_tasks() if current_team else Task.objects.none()
     assign_task_form = AssignTaskForm(team=current_team, user=current_user)
-    create_task_form = TaskForm()
+    create_task_form = TaskForm(team=current_team)
     create_team_form = CreateTeamForm(user=current_user)
 
     detect_keydates()
@@ -484,7 +484,9 @@ class CreateTaskView(LoginRequiredMixin, FormView):
                 return redirect('dashboard')
         else:
             default_lane = Lane.objects.get(name='Backlog')
-            form = TaskForm(initial={'lane': default_lane})
+            assigned_team_id = request.session["current_team_id"]
+            current_team = Teams.objects.get(id=assigned_team_id)
+            form = TaskForm(initial={'lane': default_lane},team=current_team)
         # Fetch all tasks for rendering the form initially
         all_tasks = Task.objects.all()
         return render(request, self.template_name, {'tasks': all_tasks, 'form': form})
@@ -546,7 +548,7 @@ class TaskEditView(LoginRequiredMixin, View):
             'date_field' : date_field,
             'time_field' : time_field
         }
-        form = TaskForm(initial=initial_data)
+        form = TaskForm(initial=initial_data, instance=task)
         # if this doesnt work use domain explicitly
         update_url = reverse('task_edit', kwargs={'pk': pk})
         context = {'form': form, 'update_url': update_url, 'task': task}

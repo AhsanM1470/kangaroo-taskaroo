@@ -249,6 +249,7 @@ class Task(models.Model):
         self.save()
 
     def set_dependencies(self,new_dependencies):
+        self.dependencies.clear()
         for task in new_dependencies.all():
             self.dependencies.add(task)
             self.save()

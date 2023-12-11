@@ -131,7 +131,7 @@ class TaskForm(forms.ModelForm):
     #     choices=Task.PRIORITY_CHOICES,
     #     widget=forms.Select(attrs={'class': 'priorityClass'}),
     # )
-    dependencies = forms.ModelMultipleChoiceField(queryset = Task.objects.all())
+    dependencies = forms.ModelMultipleChoiceField(queryset = Task.objects.all(),required=False)
 
     date_field = forms.DateField(
         label='Date',
@@ -143,8 +143,20 @@ class TaskForm(forms.ModelForm):
     )
 
     def __init__(self, *args, **kwargs):
+        instance = kwargs.get("instance")
+        team = kwargs.get("team")
+        if team != None:
+            kwargs.pop("team")
+        
         super(TaskForm, self).__init__(*args, **kwargs)
         self.fields['lane'].queryset = Lane.objects.all()
+        
+        if instance is None:
+            if team is not None:
+                self.fields['dependencies'].queryset = Task.objects.filter(assigned_team=kwargs.get("team"))
+        else:
+            self.fields['dependencies'].queryset = Task.objects.filter(assigned_team=instance.assigned_team).exclude(id=instance.id)
+
         # instance = kwargs.get("instance")
         # if instance is not None:
         #     self.fields['dependencies'].queryset = Task.objects.filter(assigned_team=instance.assigned_team).exclude(id=instance.id)
