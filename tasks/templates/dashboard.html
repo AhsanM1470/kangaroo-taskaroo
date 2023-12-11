@@ -336,12 +336,6 @@
                 <img src="../../static/images/edit-icon-grey.png" style="background-color: yellow;">
               </button>
 
-              <!--Commented out for now, as we are going to put this into edit tasks
-              <button type="button" class="image" data-bs-toggle="collapse" data-bs-target="#task_pop_up{{ task.id }}" aria-expanded="false" aria-controls="task_pop_up{{ task.id }}" style="width: 100%;"title="Assign Task">
-                <img src="../../static/images/edit-icon-grey.png" style="background-color: yellow;">
-              </button>
-              -->
-
               <!-- View/edit task form -->
               <form method="get" action="{% url 'task_edit' task.id %}">
                 {% csrf_token %}
@@ -366,7 +360,6 @@
             <div>
               <form method="get" style="display: inline;" action="{% url 'task_create' %}">
                   <input type="hidden" name="lane" value="{{ lane.id }}">
-                  <!-- <button type="submit" class="btn btn-secondary" style="width: 100%;">New Task</button> -->
                   <button type="button" class="btn btn-secondary" data-bs-toggle="collapse" data-bs-target="#create_task" aria-expanded="false" aria-controls="create_task" style="width: 100%;">New Task</button>
                 </form>
             </div>
@@ -387,26 +380,17 @@
   
   <!--Here I changed -->
   <div class="accordion" id="popup">
-    <!--Comment out for now, 
-    {% for task in tasks %}
-      <div class="accordion-collapse collapse" id="task_pop_up{{ task.id }}" data-bs-parent="#popup">
-        <article id="popup_panel">
-          {% include 'assign_task.html' with form=assign_task_form task_name=task.name %}
-        </article>
-      </div>
-    {% endfor %}
-    -->
-    <div class="accordion-collapse collapse " id="team_info" data-bs-parent="#popup">
+    <div class="accordion-collapse collapse " id="team_info" data-bs-parent="popup">
       <article id="popup_panel">
         {% include 'team_info.html' with team=current_team user=user %}
       </article>
     </div>
-    <div class="accordion-collapse collapse" id="create_task" data-bs-parent="#popup" style="width: 100%;">
+    <div class="accordion-collapse collapse" id="create_task" data-bs-parent="popup" style="width: 100%;">
       <article id="popup_panel">
         {% include 'task_create.html' with form=create_task_form %}
       </article>
     </div>
-    <div class="accordion-collapse collapse" id="create_team" data-bs-parent="#popup">
+    <div class="accordion-collapse collapse" id="create_team" data-bs-parent="popup">
       <article id="popup_panel">
         {% include 'create_team.html' with team_form=create_team_form %}
       </article>

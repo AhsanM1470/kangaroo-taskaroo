@@ -16,7 +16,7 @@ from django.urls import reverse_lazy
 from django.views.decorators.http import require_POST
 from .forms import TaskForm, TaskDeleteForm, AssignTaskForm
 from .models import Task, Invite, Team, Lane, Notification, User
-from django.http import HttpResponseBadRequest
+from django.http import HttpResponseBadRequest, HttpResponse, HttpResponseRedirect, JsonResponse
 from datetime import datetime
 from django.db.models import Max, Case, Value, When
 
@@ -102,6 +102,20 @@ def dashboard(request):
         "create_team_form": create_team_form,
     })
 
+# Autocomplete Query
+        
+def autocomplete_user(request):
+    print("sidsd")
+    if request.GET.get('q'):
+        q = request.GET['q']
+        data = User.objects.filter(username__startswith=q).values_list('username', flat=True)
+        json = list(data)
+
+        print(json)
+        return JsonResponse(json, safe=False)
+    else:
+        return HttpResponse("No cookies")
+
 def move_task_left(request, pk):
     """" Move the task to the left lane """
     if request.method == 'POST':
@@ -155,6 +169,7 @@ def move_lane_right(request, lane_id):
 @login_required
 def create_team(request):
     """Form that allows user to create a new team"""
+
     if request.method == "POST":
         # Create the team
         current_user = request.user

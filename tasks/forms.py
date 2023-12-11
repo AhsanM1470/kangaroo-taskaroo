@@ -7,7 +7,6 @@ from .models import User, Task, Team, Invite, Lane
 from django.utils import timezone
 from datetime import datetime
 
-
 class LogInForm(forms.Form):
     """Form enabling registered users to log in."""
 
@@ -193,7 +192,13 @@ class CreateTeamForm(forms.ModelForm):
         model = Team
         fields = ['team_name', 'description', 'members_to_invite']
 
-    members_to_invite = forms.ModelMultipleChoiceField(User.objects.all(), required=False)
+    members_to_invite = forms.ModelMultipleChoiceField(queryset=User.objects.all(), required=False,
+                            widget=forms.TextInput(
+                                attrs=
+                                {'class': 'basicAutoComplete',
+                                       'data-url': '/autocomplete_user/',
+                                       'autocomplete': 'off'} 
+                            ))
 
     def __init__(self, *args, **kwargs):
         """Makes sure the creator of team is not shown as option to add"""
