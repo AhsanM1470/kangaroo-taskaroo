@@ -121,8 +121,8 @@ class TaskForm(forms.ModelForm):
         model = Task
         fields = ["name", "description", "priority"]
         widgets = {
-            'name' : forms.TextInput(attrs={'class': 'nameClass', 'placeholder': 'Enter the team name...'}),
-            'description' : forms.Textarea(attrs={'class': 'descriptionClass', 'placeholder': 'Write a team description...'}),
+            'name' : forms.TextInput(attrs={'class': 'nameClass', 'placeholder': 'Enter the task name...'}),
+            'description' : forms.Textarea(attrs={'class': 'descriptionClass', 'placeholder': 'Write a task description...'}),
             #'lane': forms.Select(attrs={'class':'lane_select'}),
             'priority': forms.Select(attrs={'class': 'priorityClass'}),
         }
@@ -199,8 +199,8 @@ class CreateTeamForm(forms.ModelForm):
         model = Team
         fields = ['team_name', 'description', 'members_to_invite']
         widgets = {
-            'team_name' : forms.TextInput(attrs={'placeholder': 'Enter the task name...'}),
-            'description' : forms.Textarea(attrs={'placeholder': 'Write a task description...'}),
+            'team_name' : forms.TextInput(attrs={'placeholder': 'Enter the team name...'}),
+            'description' : forms.Textarea(attrs={'placeholder': 'Write a team description...'}),
         }
 
     members_to_invite = forms.ModelMultipleChoiceField(User.objects.all(), required=False)
