@@ -2,47 +2,47 @@
 
 {% block content %}
 
-<style>
-    body{
-        color: #6b3e3f;
-        height: 100vh;
-        width: 100%;
-        margin: 0;
-        font-family: 'Arial', sans-serif;
-        background: linear-gradient(to bottom right, #bb4e1b, rgb(32, 143, 158));
-      }
+    <style>
+        body {
+            color: #6b3e3f;
+            height: 100vh;
+            width: 100%;
+            margin: 0;
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(to bottom right, #bb4e1b, rgb(32, 143, 158));
+        }
 
-    .styledsearchbtn {
-        color: black;
-        border-color: black;
-    }
+        .styledsearchbtn {
+            color: black;
+            border-color: black;
+        }
 
-    .styledtable {
-        background-color: rgba(255, 255, 255, 0.397);
-    }
-    
-</style>
+        .styledtable {
+            background-color: rgba(255, 255, 255, 0.397);
+        }
 
-<div class="container">
-    <form method="get" action="{% url 'task_search' %}" id="taskForm">
-        {% csrf_token %}
-        <nav class="navbar navbar-expand-lg bg-body-tertiary">
-            <div class="container-fluid">
-                <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                    <input class="form-control me-2" name="q" type="search" placeholder="Search"
-                           aria-label="Search">
-                    <button class="btn btn-outline-success styledsearchbtn" type="submit">Search</button>
+    </style>
+
+    <div class="container">
+        <form method="get" action="{% url 'task_search' %}" id="taskForm">
+            {% csrf_token %}
+            <nav class="navbar navbar-expand-lg bg-body-tertiary">
+                <div class="container-fluid">
+                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                        <input class="form-control me-2" name="q" type="search" placeholder="Search"
+                               aria-label="Search">
+                        <button class="btn btn-outline-success styledsearchbtn" type="submit">Search</button>
+                    </div>
                 </div>
-            </div>
-        </nav>
-    </form>
-    <table class="table table-striped styledtable">
-        <thea
-        <tr>
-            <th scope="col">Task name</th>
-            <th scope="col">Description</th>
-            <th scope="col">Due date
-                {% if request.GET.sort_column == 'due_date' and request.GET.sort_direction == 'desc' %}
+            </nav>
+        </form>
+        <table class="table table-striped styledtable">
+            <thead>
+            <tr>
+                <th scope="col">Task name</th>
+                <th scope="col">Description</th>
+                <th scope="col">Due date
+                    {% if request.GET.sort_column == 'due_date' and request.GET.sort_direction == 'desc' %}
                         <a href="{% url 'task_search' %}?sort_column=due_date&sort_direction=asc">
                             <i class="bi bi-arrow-down"></i>
                         </a>
@@ -50,35 +50,38 @@
                         <a href="{% url 'task_search' %}?sort_column=due_date&sort_direction=desc">
                             <i class="bi bi-arrow-up"></i>
                         </a>
-                     {% endif %}
-            </th>
-            <th scope="col">priority
-                {% if request.GET.sort_column == 'priority' and request.GET.sort_direction == 'desc' %}
-                <a href="{% url 'task_search' %}?sort_column=priority&sort_direction=asc">
-                    <i class="bi bi-arrow-down"></i>
-                </a>
-                {% else %}
-                <a href="{% url 'task_search' %}?sort_column=priority&sort_direction=desc">
-                    <i class="bi bi-arrow-up"></i>
-                </a>
-                {% endif %}
-            </th>
-        </thead>
-        <tbody>
-        {% for task in data %}
-        <tr>
-            <td>{{ task.name }}</td>
-            <td style="max-width:420px;word-wrap:break-word;">{{ task.description }}</td>
-            <td>{{ task.due_date }}</td>
-            <td>{{ task.priority }}</td>
-        </tr>
-        {% endfor %}
-        {% if no_tasks_found %}
-        <tr>
-            <td colspan="3">No tasks found.</td>
-        </tr>
-        {% endif %}
-        </tbody>
-    </table>
-</div>
+                    {% endif %}
+                </th>
+                <th scope="col">priority
+                    {% if request.GET.sort_column == 'priority' and request.GET.sort_direction == 'desc' %}
+                        <a href="{% url 'task_search' %}?sort_column=priority&sort_direction=asc">
+                            <i class="bi bi-arrow-down"></i>
+                        </a>
+                    {% else %}
+                        <a href="{% url 'task_search' %}?sort_column=priority&sort_direction=desc">
+                            <i class="bi bi-arrow-up"></i>
+                        </a>
+                    {% endif %}
+                </th>
+                <th scope="col">Assigned Team</th>
+                </thead>
+                <tbody>
+                {% for task in data %}
+                    <tr>
+                        <td>{{ task.name }}</td>
+                        <td style="max-width:420px;word-wrap:break-word;">{{ task.description }}</td>
+                        <td>{{ task.due_date }}</td>
+                        <td>{{ task.priority }}</td>
+                        <td>{{ task.assigned_team }}</td>
+
+                    </tr>
+                {% endfor %}
+            {% if no_tasks_found %}
+                <tr>
+                    <td colspan="3">No tasks found.</td>
+                </tr>
+            {% endif %}
+            </tbody>
+        </table>
+    </div>
 {% endblock %}
