@@ -21,10 +21,11 @@ from tasks import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.home, name='home'),
-    path("assign_task/", views.assign_task, name="assign_task"),
+    path("autocomplete_user/", views.autocomplete_user, name="autocomplete_user"),
+    path("assign_task<int:task_id>/", views.AssignTaskView.as_view(), name="assign_task"),
     path("create_team/", views.create_team, name="create_team"),
     path("create_invite/", views.InviteView.as_view(), name="create_invite"),
-    path("remove_member/", views.remove_member, name="remove_member"),
+    path("remove_member/<int:member_id>/", views.RemoveMemberView.as_view(), name="remove_member"),
     path('delete_team/<int:team_id>/', views.DeleteTeamView.as_view(), name='delete_team'),
     path("press_invite/", views.press_invite, name="press_invite"),
     path('dashboard/', views.dashboard, name='dashboard'),

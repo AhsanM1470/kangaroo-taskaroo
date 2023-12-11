@@ -1,3 +1,4 @@
+{% load widget_tweaks %}
 {% block content %}
 
 <style>
@@ -102,11 +103,27 @@
 </style>
 
 <div class="teamcontainer">
-    <form action ="{%url 'create_team'%}" method="post" class="team-form">
-        <p class="createteamtext">Create Team</p>
+    <h1>Create Team</h1>
+
+    <form action ="{%url 'create_team'%}" method="post">
         {% csrf_token %}
-        {% include 'partials/bootstrap_form.html' with form=team_form %}
+
+        {{ team_form.as_p }}
+        
     <input type="submit" value="Create Team" class="create-team-btn">
     </form>
 </div>
-{% endblock %}
+
+
+{% block script %}
+<!-- Autocomplete for long forms -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+<script src="../../static/bootstrap-autocomplete.js"></script>
+<script>
+    $('.basicAutoComplete').autoComplete({
+        minLength: 1
+    });
+    $('.dropdown-menu').css({'top': 'auto', 'left': 'auto'})
+
+</script>
+{% endblock %}  
