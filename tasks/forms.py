@@ -119,7 +119,7 @@ class TaskForm(forms.ModelForm):
     class Meta:
         """Form options"""
         model = Task
-        fields = ["name", "description", "lane", "priority"]
+        fields = ["name", "description", "lane","dependencies", "priority"]
         widgets = {
             'name' : forms.TextInput(attrs={'class': 'nameClass', 'placeholder': 'Enter the team name...'}),
             'description' : forms.Textarea(attrs={'class': 'descriptionClass', 'placeholder': 'Write a team description...'}),
@@ -131,7 +131,8 @@ class TaskForm(forms.ModelForm):
     #     choices=Task.PRIORITY_CHOICES,
     #     widget=forms.Select(attrs={'class': 'priorityClass'}),
     # )
-     
+    dependencies = forms.ModelMultipleChoiceField(queryset = Task.objects.all())
+
     date_field = forms.DateField(
         label='Date',
         widget=forms.SelectDateWidget(),
@@ -144,7 +145,9 @@ class TaskForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(TaskForm, self).__init__(*args, **kwargs)
         self.fields['lane'].queryset = Lane.objects.all()
-        
+        # instance = kwargs.get("instance")
+        # if instance is not None:
+        #     self.fields['dependencies'].queryset = Task.objects.filter(assigned_team=instance.assigned_team).exclude(id=instance.id)
         # self.fields['lane'].initial = Lane.objects.first()
         
     def clean(self):
@@ -178,6 +181,8 @@ class TaskForm(forms.ModelForm):
         instance.priority = self.cleaned_data.get('priority')
 
         if commit:
+            instance.save()
+            instance.set_dependencies(self.cleaned_data.get('dependencies'))
             instance.save()
             
         return instance

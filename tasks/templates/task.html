@@ -90,6 +90,13 @@
             <div class="field-label">Current Lane:</div>
             <div class="field-value">{{ task.lane }}</div>
 
+            <div class="field-label">Task Dependencies:</div>
+            {% if task.dependencies.all.count > 0 %}
+            <div class="field-value">{{ task.dependencies.all|join:", " }}</div>
+            {% else %}
+            <div class="field-value">(There are no dependencies)</div>
+            {% endif %}
+
             <div class="field-label">Assigned Team:</div>
             <div class="field-value">{{ task.assigned_team }}</div>
 

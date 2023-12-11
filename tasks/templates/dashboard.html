@@ -324,8 +324,15 @@
                   <img src="../../static/images/move-left-icon-grey.png">
                 </button>
               </form>
+              {% if task.dependencies.all.count > 0 %}
+              <p style="color: #555555;">
+              {% else %}
+              <p>
+              {% endif %}
+                {{ task.name }}
+              </p>
 
-              {{ task.name }}
+              
             
               <!-- Form for moving task to the right lane -->
               <form method="post" action="{% url 'move_task_right' task.id %}">
