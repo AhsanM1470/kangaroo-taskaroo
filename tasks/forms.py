@@ -119,11 +119,11 @@ class TaskForm(forms.ModelForm):
     class Meta:
         """Form options"""
         model = Task
-        fields = ["name", "description", "lane", "priority"]
+        fields = ["name", "description", "priority"]
         widgets = {
             'name' : forms.TextInput(attrs={'class': 'nameClass', 'placeholder': 'Enter the team name...'}),
             'description' : forms.Textarea(attrs={'class': 'descriptionClass', 'placeholder': 'Write a team description...'}),
-            'lane': forms.Select(attrs={'class':'lane_select'}),
+            #'lane': forms.Select(attrs={'class':'lane_select'}),
             'priority': forms.Select(attrs={'class': 'priorityClass'}),
         }
     #
@@ -143,7 +143,6 @@ class TaskForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(TaskForm, self).__init__(*args, **kwargs)
-        self.fields['lane'].queryset = Lane.objects.all()
         
         # self.fields['lane'].initial = Lane.objects.first()
         
@@ -162,7 +161,7 @@ class TaskForm(forms.ModelForm):
                 #raise ValidationError('Pick a date-time in the future!')
         return cleaned_data
     
-    def save(self, assigned_team_id=None, commit=True):
+    def save(self, assigned_team_id=None, lane_id=None, commit=True):
         instance = super(TaskForm, self).save(commit=False)
         date = self.cleaned_data.get('date_field')
         time = self.cleaned_data.get('time_field')
@@ -174,6 +173,9 @@ class TaskForm(forms.ModelForm):
             
         if assigned_team_id is not None:
             instance.assigned_team = Team.objects.get(id=assigned_team_id)
+        
+        if lane_id is not None:
+            instance.lane = Lane.objects.get(lane_id=lane_id)
 
         instance.priority = self.cleaned_data.get('priority')
 
