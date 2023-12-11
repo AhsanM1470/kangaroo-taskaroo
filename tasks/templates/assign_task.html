@@ -52,7 +52,7 @@
   <div class="row">
     <div class="assigntaskcard">
       <h1>Assign Task: {{ task_name }}</h1>
-      <form action ="{%url 'assign_task'%}" method="post">
+      <form action ="{{ assign_task_url }}" method="post">
         {% csrf_token %}
         {{ form.as_p }}
         <input type="submit" value="Assign Task" class="btn assigntasksubmit-btn">

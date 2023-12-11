@@ -143,7 +143,7 @@ def dashboard(request):
 
     lanes = Lane.objects.filter(team=current_team).order_by('lane_order') if current_team else Lane.objects.none()
     team_tasks = current_team.get_tasks() if current_team else Task.objects.none()
-    assign_task_form = AssignTaskForm(team=current_team, user=current_user)
+    assign_task_form = AssignTaskForm(team=current_team)
     create_task_form = TaskForm(team=current_team)
     create_team_form = CreateTeamForm(user=current_user)
 
