@@ -5,7 +5,7 @@ from django.core.validators import RegexValidator
 from django.core.exceptions import ValidationError
 from .models import User, Task, Team, Invite, Lane
 from django.utils import timezone
-from datetime import datetime
+from datetime import datetime,timedelta
 
 
 class LogInForm(forms.Form):
@@ -168,6 +168,8 @@ class TaskForm(forms.ModelForm):
         time = self.cleaned_data.get('time_field')
 
         if date is not None and time is not None:
+            if datetime.combine(date,time) != instance.due_date:
+                instance.deadline_notif_sent = (datetime.today()-timedelta(days=1)).date()
             instance.due_date = datetime.combine(date, time)
             
         if assigned_team_id is not None:
