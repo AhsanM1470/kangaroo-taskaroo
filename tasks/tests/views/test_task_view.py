@@ -1,7 +1,7 @@
 from tasks.tests.helpers import LogInTester
 from django.test import TestCase
 from django.urls import reverse
-from tasks.models import Task
+from tasks.models import Task, Team
 from datetime import datetime
 from tasks.forms import TaskForm
 from django.contrib.auth import get_user_model
@@ -15,6 +15,12 @@ class TaskCreateViewTestCase(TestCase, LogInTester):
         self.user = get_user_model().objects.create_user(username=username_to_find, password='Password123')
         self.url = reverse('task_create')
 
+        self.team1 = Team.objects.create(
+            team_name="Team1",
+            team_creator=self.user,
+            description="team"
+        )
+        
         self.form_input = {
             'name': 'SpecialTask',
             'description': 'Amys special task within task manager!',

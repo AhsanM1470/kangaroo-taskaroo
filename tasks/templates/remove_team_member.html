@@ -3,22 +3,15 @@
 {% include 'partials/messages.html' %}
 
 <style>
-  body{
-    background: linear-gradient(to bottom right, #a55a37, rgba(207, 222, 220, 0.438));
-    width: 100vw;
-    height: 100vh;
-  }
-
   form {
       max-width: 600px;
       margin: auto;
       margin-top: 50px;
       position: relative;
-      background-color: lightgray;
+      background: linear-gradient(to bottom right, rgb(54, 107, 171), rgb(207, 222, 220));
       padding: 20px;
       border-radius: 10px;
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-      background-color: rgb(32, 158, 148);
   }
 
   label {
@@ -27,8 +20,8 @@
 
   button[type="submit"], .cancel-button {
       display: inline-block;
-      background-color: rgb(20, 79, 87);
-      color: white;
+      background-color: #dedccf;
+      color: #15257d;
       padding: 10px;
       border: none;
       border-radius: 5px;
@@ -42,11 +35,11 @@
   }
 
   button[type="submit"]:hover, .cancel-button:hover {
-    background-color: rgb(8, 49, 59);
-      color: white;
+      background-color: #b5b29a;
+      color: rgb(14, 20, 80);
   }
 
-  .delete-form input[type="checkbox"].confirmClass {
+  .deleteForm input[type="checkbox"].confirmClass {
     display: inline;
     margin-right: 10px;
     margin-bottom: 10px;
@@ -55,12 +48,12 @@
 
 </style>
 <div class="container">
-  <title>Delete Lane</title>
+  <title>Remove Team Member</title>
   
-    <form method="post" action="{{ delete_url }}" class="delete-form">
+    <form method="post" action="{{ remove_member_url }}" class="deleteForm">
       {% csrf_token %}
-      <h4>Are you sure you want to delete "{{ lane.lane_name }}"?</h4>
-      {{ delete_form }}
+      <h4>Are you sure you want to remove {{user.username}} from {{ team.team_name }}?</h4>
+      {{ remove_member_form }}
       <div>
         <button type="submit" class="btn btn-primary">Submit</button>
         <a href="{% url 'dashboard' %}" class="cancel-button">Cancel</a>

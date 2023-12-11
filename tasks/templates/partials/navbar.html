@@ -7,18 +7,52 @@
     margin-right: 10px;
   }
 
+  p{
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+
   .team-btn{
     width:auto;
     padding:5px;
   }
+
+  .navbarteam{
+    color: white;
+    margin-bottom: 0;
+    display: flex;
+    justify-content: center;
+    width:40vw;
+    word-wrap: break-word;
+    font-size: 1rem;
+    text-align: center;
+    vertical-align: middle;
+  }
+
+  .navbaruser{
+    color: white;
+    margin-right: 3em;
+  }
+
+  .navbar-name {
+    color: #bb4e1b;
+    font-size: 1.5rem;
+  }
+
+  .navbar-name:hover{
+    color: rgb(32, 143, 158);
+  }
 </style>
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  
   <div class="container">
-    <a class="navbar-brand" href="{% url 'dashboard' %}">
-      Kangaroo Manager
+    <a class="navbar-name" href="{% url 'dashboard' %}">
+      Kangaroo Taskaroo
     </a>
-
+    <div class="navbarteam">
+      <p>{{ current_team.team_name }}</p>
+    </div>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>

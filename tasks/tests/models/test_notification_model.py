@@ -30,8 +30,8 @@ class TaskNotificationModelTestCase(TestCase):
             assigned_team=self.team,
             lane = self.lane
         )
-        self.task.set_assigned_users(User.objects.filter(username="@johndoe"))
         self.task.notify_keydates()
+        self.task.set_assigned_users(User.objects.filter(username="@johndoe"))
         self.notifications = self.user.get_notifications()
         self.task_notifs = [notif.as_task_notif() for notif in self.notifications.select_related("tasknotification")]
         self.assign_notifications = list(filter(lambda notif: notif.notification_type==TaskNotification.NotificationType.ASSIGNMENT,self.task_notifs))
@@ -56,7 +56,35 @@ class TaskNotificationModelTestCase(TestCase):
     def test_notifications_stored_correctly(self):
         self.assertEqual(self.notifications.count(),2)
         self.assertEqual(len(self.task_notifs),2)
+
+    def test_notification_deleted_when_deadline_postponed(self):
+        self.task.due_date = self.task.due_date + timedelta(days=1)
+        self.task.notify_keydates()
+        new_notifs = [notif.as_task_notif() for notif in self.user.notifications.select_related("tasknotification")]
+        new_deadline_notifs = list(filter(lambda notif: notif.notification_type==TaskNotification.NotificationType.DEADLINE,new_notifs))
+        self.assertEqual(len(new_deadline_notifs),0)
         
+    def test_notification_refreshed_with_sooner_deadline(self):
+        self.assertEqual(self.task_notifs[1].notification_type,TaskNotification.NotificationType.DEADLINE)
+        self.assertEqual(self.task_notifs[0].notification_type,TaskNotification.NotificationType.ASSIGNMENT)
+        self.task.due_date = self.task.due_date - timedelta(days=1)
+        self.task.notify_keydates()
+        new_notifs = [notif.as_task_notif() for notif in self.user.notifications.select_related("tasknotification")]
+        new_deadline_notifs = list(filter(lambda notif: notif.notification_type==TaskNotification.NotificationType.DEADLINE,new_notifs))
+        self.assertEqual(len(new_deadline_notifs),1)
+        target = "test-task's deadline is in 4 day(s)."
+        self.assertEqual(new_deadline_notifs[0].display(),target)
+        self.assertEqual(new_notifs[1].notification_type,TaskNotification.NotificationType.ASSIGNMENT)
+        self.assertEqual(new_notifs[0].notification_type,TaskNotification.NotificationType.DEADLINE)
+
+    def test_notification_shows_deadline_passed(self):
+        self.task.due_date = datetime.today()
+        self.task.notify_keydates()
+        new_notifs = [notif.as_task_notif() for notif in self.user.notifications.select_related("tasknotification")]
+        new_deadline_notifs = list(filter(lambda notif: notif.notification_type==TaskNotification.NotificationType.DEADLINE,new_notifs))
+        target = "test-task's deadline has passed."
+        self.assertEqual(new_deadline_notifs[0].display(),target)
+
         
 
 
