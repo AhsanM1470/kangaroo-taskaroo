@@ -1,10 +1,11 @@
 from django.contrib import admin
-from .models import User, Team, Invite, Task
+from .models import User, Team, Invite, Task,Profile
 
 # Register your models here.
 
 """These haven't been fully finished, but seem to work for what is needed so far"""
 
+admin.site.register(Profile)
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
     """Configuration of the adminstrative interface for users"""

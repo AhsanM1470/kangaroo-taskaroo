@@ -74,7 +74,17 @@ class User(AbstractUser):
         """Returns a query set of the user's notifications"""
         return self.notifications.all().order_by("-id")
 
-    
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    avatar = models.ImageField(default='../media/profile_pics/default.jpg', upload_to='profile_pics')
+    def __str__(self):
+        return f'{self.user.username} Profile'
+
+    def get_profile_image(self):
+        if self.avatar and hasattr(self.avatar, 'url'):
+            return self.avatar.url
+        else:
+            return '../media/profile_pics/default.jpg'
 
 class Team(models.Model):
     """Model used to hold teams of different users and their relevant information"""

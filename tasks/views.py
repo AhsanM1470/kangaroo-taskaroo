@@ -10,7 +10,7 @@ from django.views import View
 from django.views.generic import DeleteView
 from django.views.generic.edit import FormView, UpdateView
 from django.urls import reverse
-from tasks.forms import LogInForm, PasswordForm, UserForm, SignUpForm, CreateTeamForm, InviteForm, RemoveMemberForm, LaneDeleteForm, DeleteTeamForm
+from tasks.forms import LogInForm, PasswordForm, UserForm, SignUpForm, CreateTeamForm, InviteForm, RemoveMemberForm, LaneDeleteForm, DeleteTeamForm,ProfileUpdateForm
 from tasks.helpers import login_prohibited
 from django.urls import reverse_lazy
 from django.views.decorators.http import require_POST
@@ -414,6 +414,15 @@ class ProfileUpdateView(LoginRequiredMixin, UpdateView):
     template_name = "profile.html"
     form_class = UserForm
 
+    @login_required
+    def profile(request):
+        u_form = UserForm()
+        p_form = ProfileUpdateForm()
+        context = {
+            'u_form': u_form,
+            'p_form': p_form
+        }
+        return render(request, 'profile.html', context)
     def get_object(self):
         """Return the object (user) to be updated."""
         user = self.request.user
