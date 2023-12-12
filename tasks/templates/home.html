@@ -1,33 +1,104 @@
 {% extends 'base.html' %}
 {% block body %}
-
 <style>
-  body{
-    background: linear-gradient(to bottom right, #0076f4, #209e3e);
-    color: white;
+  body, html {
+    height: 100%;
+    margin: 0;
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(to bottom right, #bb4e1b, rgb(32, 143, 158));
+  }
+
+  .container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    background-color: transparent;
+  }
+
+  .card {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    text-align: center;
+    height: 400px;
+    max-width: 700px;
+    border: 1px solid rgb(155, 140, 151);
+    background-color: transparent;
+  }
+
+  .section1, .section2 {
+    flex: 1; 
+    box-sizing: border-box;
+    margin: 0;
+    padding: 10px;
+  }
+
+  .section1 {
+    color: rgb(13, 84, 94);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center; 
+    background-color: #a26e5a
+  }
+
+  .section2 {
+    display: flex; 
+    flex-direction: column; 
+    justify-content: center; 
+    background-color: #1e292c4b
+  }
+
+  .cover-heading {
+    font-size: 2.2em;
+    margin-bottom: 10px;
+  }
+
+  .cover-text {
+    font-size: 1.2em;
+  }
+
+  .btn-primary {
+    background-color: #a55a37;
+    color: #fff;
+    border: 1px solid #7c494b;
+  }
+
+  .btn-secondary {
+    background-color: #a55a37;
+    color: #532b2c;
+    border: 1px solid #7c494b;
+    width: 200px;
+    transition: ease-in 0.3s;
+  }
+
+  .btn-secondary:hover{
+    background-color: transparent;
+    color: #532b2c;
   }
 </style>
-
 {#    <div id='cover-image'>#}
-      <div class="container vh-100">
-        <div class="row h-100">
-          <div class="col-12 my-auto">
-            <div class="card cover-card offset-sm-2 offset-md-4 offset-lg-7">
-              <h1 class="cover-heading">Task Manager</h1>
-              <p class="cover-text">A task manager application by Team <i>kangaroo</i></p>
-              <p>
-                <a href='{% url 'sign_up' %}' class="btn btn-lg btn-secondary">
-                  Sign up
-                </a>
-              </p>
-              <p>
-                <a href='{% url 'log_in' %}' class="btn btn-lg btn-secondary">
-                  Log in
-                </a>
-              </p>
-            </div>
+      <div class="container">
+            <div class="card">
+              <div class="section1">
+                <h1 class="cover-heading">KangarooTaskaroo</h1>
+                <p class="cover-text">A task manager application by Team <i>kangaroo</i></p>
+              </div>
+              <div class="section2">
+                <p>
+                  <a href='{% url 'sign_up' %}' class="btn btn-lg btn-secondary">
+                    Sign up
+                  </a>
+                </p>
+                <p>
+                  <a href='{% url 'log_in' %}' class="btn btn-lg btn-secondary">
+                    Log in
+                  </a>
+                </p>
+              </div>
           </div>
-        </div>
       </div>
 {#    </div>#}
 {% endblock %}

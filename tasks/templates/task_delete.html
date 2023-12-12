@@ -3,12 +3,23 @@
 {% include 'partials/messages.html' %}
 
 <style>
+  body{
+    background: linear-gradient(to bottom right, #a55a37, rgba(207, 222, 220, 0.438));
+    height:100vh;
+    width: 100%;
+    color: white;
+    margin: 0;
+    font-family: 'Arial', sans-serif;
+  }
+
   form {
       max-width: 600px;
       margin: auto;
       margin-top: 50px;
       position: relative;
-      background: linear-gradient(to bottom right, rgb(54, 107, 171), rgb(207, 222, 220));
+      background-color: rgb(32, 158, 148);
+      border: 1px solid white;
+      box-shadow: 0 0 10px rgba(0,0,0,0.4);
       padding: 20px;
       border-radius: 10px;
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
@@ -20,8 +31,8 @@
 
   button[type="submit"], .cancel-button {
       display: inline-block;
-      background-color: #dedccf;
-      color: #15257d;
+      background-color: rgb(20, 79, 87);
+      color: white;
       padding: 10px;
       border: none;
       border-radius: 5px;
@@ -35,8 +46,8 @@
   }
 
   button[type="submit"]:hover, .cancel-button:hover {
-      background-color: #b5b29a;
-      color: rgb(14, 20, 80);
+    background: #28242c;
+    color: white;
   }
 
   .deleteForm input[type="checkbox"].confirmClass {
@@ -50,7 +61,7 @@
 <div class="container">
   <title>Delete Task</title>
   
-    <form method="post" action="{{ delete_url }}" class="deleteForm">
+    <form method="post" action="{% url 'task_delete' task.id %}" class="deleteForm">
       {% csrf_token %}
       <h4>Are you sure you want to delete "{{ task.name }}"?</h4>
       {{ delete_form }}

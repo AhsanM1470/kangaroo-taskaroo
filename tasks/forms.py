@@ -5,7 +5,7 @@ from django.core.validators import RegexValidator
 from django.core.exceptions import ValidationError
 from .models import User, Task, Team, Invite, Lane
 from django.utils import timezone
-from datetime import datetime
+from datetime import datetime,timedelta
 
 class LogInForm(forms.Form):
     """Form enabling registered users to log in."""
@@ -118,11 +118,11 @@ class TaskForm(forms.ModelForm):
     class Meta:
         """Form options"""
         model = Task
-        fields = ["name", "description", "lane", "priority"]
+        fields = ["name", "description", "lane","dependencies", "priority"]
         widgets = {
             'name' : forms.TextInput(attrs={'class': 'nameClass', 'placeholder': 'Enter the task name...'}),
             'description' : forms.Textarea(attrs={'class': 'descriptionClass', 'placeholder': 'Write a task description...'}),
-            'lane': forms.Select(attrs={'class':'lane_select'}),
+            #'lane': forms.Select(attrs={'class':'lane_select'}),
             'priority': forms.Select(attrs={'class': 'priorityClass'}),
         }
     #
@@ -130,7 +130,8 @@ class TaskForm(forms.ModelForm):
     #     choices=Task.PRIORITY_CHOICES,
     #     widget=forms.Select(attrs={'class': 'priorityClass'}),
     # )
-     
+    dependencies = forms.ModelMultipleChoiceField(queryset = Task.objects.all(),required=False)
+
     date_field = forms.DateField(
         label='Date',
         widget=forms.SelectDateWidget(),
@@ -141,8 +142,23 @@ class TaskForm(forms.ModelForm):
     )
 
     def __init__(self, *args, **kwargs):
+        instance = kwargs.get("instance")
+        team = kwargs.get("team")
+        if team != None:
+            kwargs.pop("team")
+        
         super(TaskForm, self).__init__(*args, **kwargs)
-        self.fields['lane'].queryset = Lane.objects.all()
+        
+        if instance is None:
+            if team is not None:
+                self.fields['dependencies'].queryset = Task.objects.filter(assigned_team=team)
+        else:
+            self.fields['dependencies'].queryset = Task.objects.filter(assigned_team=instance.assigned_team).exclude(id=instance.id)
+
+        # instance = kwargs.get("instance")
+        # if instance is not None:
+        #     self.fields['dependencies'].queryset = Task.objects.filter(assigned_team=instance.assigned_team).exclude(id=instance.id)
+        # self.fields['lane'].initial = Lane.objects.first()
         
     def clean(self):
         cleaned_data = super().clean()
@@ -159,20 +175,27 @@ class TaskForm(forms.ModelForm):
                 #raise ValidationError('Pick a date-time in the future!')
         return cleaned_data
     
-    def save(self, assigned_team_id=None, commit=True):
+    def save(self, assigned_team_id=None, lane_id=None, commit=True):
         instance = super(TaskForm, self).save(commit=False)
         date = self.cleaned_data.get('date_field')
         time = self.cleaned_data.get('time_field')
 
         if date is not None and time is not None:
+            if datetime.combine(date,time) != instance.due_date:
+                instance.deadline_notif_sent = (datetime.today()-timedelta(days=1)).date()
             instance.due_date = datetime.combine(date, time)
             
         if assigned_team_id is not None:
             instance.assigned_team = Team.objects.get(id=assigned_team_id)
+        
+        if lane_id is not None:
+            instance.lane = Lane.objects.get(lane_id=lane_id)
 
         instance.priority = self.cleaned_data.get('priority')
 
         if commit:
+            instance.save()
+            instance.set_dependencies(self.cleaned_data.get('dependencies'))
             instance.save()
             
         return instance
@@ -191,6 +214,10 @@ class CreateTeamForm(forms.ModelForm):
 
         model = Team
         fields = ['team_name', 'description', 'members_to_invite']
+        widgets = {
+            'team_name' : forms.TextInput(attrs={'placeholder': 'Enter the team name...'}),
+            'description' : forms.Textarea(attrs={'placeholder': 'Write a team description...'}),
+        }
 
     members_to_invite = forms.ModelMultipleChoiceField(queryset=User.objects.all(), required=False,
                             widget=forms.TextInput(
@@ -209,7 +236,7 @@ class CreateTeamForm(forms.ModelForm):
 
         super().__init__(*args, **kwargs)
 
-        if self.creator != None:  
+        if self.creator != None:
             self.fields["members_to_invite"].queryset = User.objects.exclude(username=self.creator.username)
     
     def create_team(self, creator):

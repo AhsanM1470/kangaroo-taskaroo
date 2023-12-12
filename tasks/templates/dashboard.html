@@ -23,7 +23,7 @@
   }
 
   body{
-    background: linear-gradient(to bottom right, #0076f4, #209e3e);
+    background: linear-gradient(to bottom right, #bb4e1b, rgb(32, 143, 158));
   }
 
   h3{
@@ -52,23 +52,6 @@
     height: 100vh;
   }
 
-  .header-bar{
-    background-color: #064486cc;
-    border: 1px solid #FFFFFF55;
-    display: flex;
-    color: white;
-    padding: 0.2em;
-  }
-
-  .username{
-    border-right: 1px solid #FFFFFF55;
-    margin-bottom: 0;
-    display: flex;
-    justify-content: center;
-    width:12vw;
-    word-wrap: break-word;
-  }
-
   .board-container{
     overflow: auto;
     height: 100vh;
@@ -87,7 +70,7 @@
     flex-direction: column;
     gap: 0.9em;
 
-    background: rgb(205, 205, 205);
+    background: rgba(45, 125, 139, 0.685);
     box-shadow: 0px 5px 15px rgba(0,0,0,0.25);
 
     padding: 0.8em;
@@ -158,9 +141,7 @@
   #popup_panel{
     height: 100vh;
     width: 20vw;
-    padding: 15px;
-    background-color: rgba(222, 206, 206, 0.8);
-    border: 10px solid #00000055;
+    justify-content: center;
     overflow-wrap: break-word;
     word-wrap: break-word;
   }
@@ -174,7 +155,7 @@
   #sidebar{
     width: 12.4vw;
     height: 100vh;
-    background-color: #064486cc;
+    background-color: rgba(15, 77, 85, 0.541);
     border-right: 1px solid #FFFFFF55;
     border-left: 1px solid #FFFFFF55;
     color: white;
@@ -194,7 +175,7 @@
   }
 
   #sidebar li:hover{
-    background-color: #064486;
+    background-color: #068286;
   }
 
   #task_sidebar{
@@ -205,59 +186,91 @@
     overflow-wrap: break-word;
     word-wrap: break-word;
   }
+
+  .addteamstyle {
+    border-style: solid;
+    border-color: rgba(255, 255, 255, 0.295);
+    border-width: 2px;
+    background-color: #00000055;
+  }
+
   #sidebar button{
+    color: white;
     border: none;
     background-color: inherit;
-    color: white;
     transition: background-color 0.3s;
     padding-left: 5%;
   }
 
   #sidebar button:hover{
-    background-color: #064486;
+    background-color: #067d867c;
   }
 
   .collapsing {
       transition-duration: 0.7s;
   }
 
-</style>
+  .yourteamslabel{
+    font-weight: bold;
+  }
 
-<div class="header-bar">
-  <div class="username">
-    <h5>{{ user.username }}</h5>
-  </div>
-  <h3>Welcome to {{ current_team.team_name }}'s dashboard</h3>
-</div>
+  hr { 
+    display: block;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+    margin-left: auto;
+    margin-right: auto;
+    border-style: inset;
+    border-width: 1px;
+  } 
+
+  .newtaskbtn {
+    background-color: #094d50;
+  }
+
+  .newtaskbtn:hover {
+    background-color: #062425;
+  }
+
+</style>
 
 <div class="flex-container">
   <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block sidebar collapse">
-    <h6>YOUR TEAMS:</h6>
     <ul>
-      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#create_team" aria-expanded="false" aria-controls="create_team">Add Team</button>
+      <div class="addteamstyle">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#create_team" aria-expanded="false" aria-controls="create_team" style="border-color: transparent transparent transparent orange">Add Team</button>
+      </div>
     </ul>
+    <h6 class="yourteamslabel">Your Teams:</h6>
+    <hr>
     {% for team in teams %}
-      <ul>
-        <!--Switch dashboard by pressing team name-->
-        <form method="get" style="display: inline;">
+
+    <ul style="display: flex; justify-content: space-between; align-items: center;">
+      <!--Switch dashboard by pressing team name-->
+      <form method="get" style="display: inline;">
           <button type="submit" name="dashboard_team" value="{{ team.id }}">
-            {{ team.team_name }}
+              {{ team.team_name }}
           </button>
-        </form>
-        
-        <!--Delete team, shown if you are the team's creator-->
+      </form>
+
+      <div style="display: flex; justify-content: end;">
+        <!-- View team info -->
+        <button type="button" name="view_team" class="image" data-bs-toggle="collapse" data-bs-target="#team_info" aria-expanded="false" aria-controls="team_info">
+          <img src="../../static/images/info-icon-blue.png" alt="Info Icon">
+        </button>
+
+        <!-- Delete team, shown if you are the team's creator -->
         {% if user == team.team_creator %}
-        <form method="post" style="display: inline;" action="{% url 'delete_team' team.id %}">
+          <form method="post" style="display: inline;" action="{% url 'delete_team' team.id %}">
           {% csrf_token %}
-          <button type="submit" class="image" title="Delete Team">
-            <img src="../../static/images/bin-icon-grey.png">
-          </button>
-        </form>
+            <button type="submit" class="image" title="Delete Team" style="margin-right: 0.5em;">
+              <img src="../../static/images/bin-icon-blue.png" alt="Delete Icon">
+            </button>
+          </form>
         {% endif %}
-      {% empty %}
-        <p>You currently are not part of any teams 0-0</p>
+        </div>
       </ul>
-    {% endfor %}
+      {% endfor %}
   </nav>
   
   <!--Used to be container board-->
@@ -277,7 +290,6 @@
                     <img src="../../static/images/move-left-icon.png">
                 </button>
               </form>
-
 
             <!-- Lane name form -->
             <form method="post" style="display: inline;">
@@ -318,8 +330,15 @@
                   <img src="../../static/images/move-left-icon-grey.png">
                 </button>
               </form>
+              {% if task.dependencies.all.count > 0 %}
+              <p style="color: #555555;">
+              {% else %}
+              <p>
+              {% endif %}
+                {{ task.name }}
+              </p>
 
-              {{ task.name }}
+              
             
               <!-- Form for moving task to the right lane -->
               <form method="post" action="{% url 'move_task_right' task.id %}">
@@ -332,12 +351,12 @@
               <!-- Assign a Task -->
               <form method="post" action="{% url 'assign_task' task.id %}">
               {% csrf_token %}
-              <button type="submit" class="image" title="Assign Task">
-                <img src="../../static/images/edit-icon-grey.png" style="background-color: yellow;">
+              <button type="button" class="image" data-bs-toggle="collapse" data-bs-target="#task_pop_up{{ task.id }}" aria-expanded="false" aria-controls="task_pop_up{{ task.id }}" title="Assign Task">
+                <img src="../../static/images/person-icon-grey.png">
               </button>
 
               <!-- View/edit task form -->
-              <form method="get" action="{% url 'task_edit' task.id %}">
+              <form method="get" action="{% url 'task' task.id %}">
                 {% csrf_token %}
                 <button type="submit" class="image" title="View and edit task">
                   <img src="../../static/images/edit-icon-grey.png">
@@ -357,12 +376,9 @@
                 <p>No tasks currently in this lane.</p>
             {% endfor %}
     
-            <div>
-              <form method="get" style="display: inline;" action="{% url 'task_create' %}">
-                  <input type="hidden" name="lane" value="{{ lane.id }}">
-                  <button type="button" class="btn btn-secondary" data-bs-toggle="collapse" data-bs-target="#create_task" aria-expanded="false" aria-controls="create_task" style="width: 100%;">New Task</button>
-                </form>
-            </div>
+            <!-- <button type="submit" class="btn btn-secondary" style="width: 100%;">New Task</button> -->
+            <button type="button" class="newtaskbtn btn btn-secondary" data-bs-toggle="collapse" data-bs-target="#create_task{{ lane.lane_id }}" aria-expanded="false" aria-controls="create_task {{ lane.lane_id }}" style="width: 100%;">New Task</button>
+          
           </div>
           {% endfor %}
         </div>
@@ -371,27 +387,26 @@
           {% csrf_token %}
           <button type="submit" name="add_lane" class="btn btn-dark">Add Lane</button>
         </form>
-
-        <!--Simon Stuff -->
-        <button type="button" name="view_team" class="btn btn-dark" data-bs-toggle="collapse" data-bs-target="#team_info" aria-expanded="false" aria-controls="team_info">View Team</button>
       </div>
     </div>
   </div>
   
   <!--Here I changed -->
   <div class="accordion" id="popup">
-    <div class="accordion-collapse collapse " id="team_info" data-bs-parent="popup">
+    <div class="accordion-collapse collapse " id="team_info" data-bs-parent="#popup">
       <article id="popup_panel">
         {% include 'team_info.html' with team=current_team user=user %}
       </article>
     </div>
-    <div class="accordion-collapse collapse" id="create_task" data-bs-parent="popup" style="width: 100%;">
-      <article id="popup_panel">
-        {% include 'task_create.html' with form=create_task_form %}
-      </article>
-    </div>
-    <div class="accordion-collapse collapse" id="create_team" data-bs-parent="popup">
-      <article id="popup_panel">
+    {% for lane in lanes %}
+      <div class="accordion-collapse collapse" id="create_task{{ lane.lane_id }}" data-bs-parent="#popup" style="width: 100%;">
+        <article id="popup_panel" style="overflow: auto;">
+          {% include 'task_create.html' with form=create_task_form lane_id=lane.lane_id %}
+        </article>
+      </div>
+    {% endfor %}
+    <div class="accordion-collapse collapse" id="create_team" data-bs-parent="#popup">
+      <article id="popup_panel" style="overflow: auto;">
         {% include 'create_team.html' with team_form=create_team_form %}
       </article>
     </div>

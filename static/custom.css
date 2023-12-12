@@ -2,7 +2,7 @@
  * Alerts
  */
 
-.alert {
+ .alert {
   border-radius: 0px;
 }
 
@@ -37,11 +37,11 @@
  * Cover page
  */
 h1.cover-heading {
-  font-size: 4rem;
+  font-size: 2.2em;
 }
 
 p.cover-text {
-  font-size: 1.7rem;
+  font-size: 1.2em;
 }
 
 .cover-card {

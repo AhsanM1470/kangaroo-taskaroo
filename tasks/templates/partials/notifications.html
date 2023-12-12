@@ -1,26 +1,86 @@
+
+<style>
+    .notifsdiv {
+        height: 400px; 
+        overflow-y: scroll;
+        justify-content: center;
+        display: flex;
+    }
+    .invitenotifsbubbles {
+        background-color: #91431f;
+        max-width: 350px;
+        width: 90%;
+        max-height: 70px; 
+        overflow: auto; 
+        justify-content: center;
+        align-items: center;
+        display: flex;
+        border-radius: 10px;
+    }
+    .tasknotifsbubbles {
+        background-color: #a55a37;
+        max-width: 350px;
+        width: 90%;
+        max-height: 70px; 
+        overflow: auto; 
+        justify-content: center;
+        align-items: center;
+        display: flex;
+        border-radius: 10px;
+    }
+    .tasknotif {
+        padding: 10px;
+        display: inline-block;
+        color: white;
+    }
+    .invitenotif {
+        display: inline-block;
+        padding: 10px;
+        color: white;
+    }
+    .tasknotifdelete {
+        display: inline-block;
+    }
+
+    .invitenotifbtns {
+        display: inline-block;
+    }
+</style>
+
 <li>
-    <div style="height: 400px; overflow-y: scroll;">
+    <div class="notifsdiv">
         {% for notification in user.get_notifications %}
             {% if notification.as_invite_notif != None %}
-                <p>Team Name: <b> {{ notification.invitenotification.invite.get_inviting_team.team_name }} </b></p>
-                <p>Team Creator: <b> {{ notification.invitenotification.invite.get_inviting_team.team_creator.username }}</b></p>
-                <p>Invite Message: <b> {{ notification.invitenotification.invite.invite_message }} </b></p>
-                <p> {{notification.invitenotification.display}} </p>
-                <form action ="{%url 'press_invite'%}" method="post">
-                {% csrf_token %}
-                <input type="submit" value="Accept" name="status">
-                <input type="submit" value="Reject" name="status">
-                <input type="hidden" name="id" value= {{ notification.invitenotification.invite.id }}>
-                </form> <hr>
+            <div class="invitenotifsbubbles">
+                <div class="invitenotif">
+                    <p>Team Name: <b> {{ notification.invitenotification.invite.get_inviting_team.team_name }} </b></p>
+                    <p>Team Creator: <b> {{ notification.invitenotification.invite.get_inviting_team.team_creator.username }}</b></p>
+                    <p>Invite Message: <b> {{ notification.invitenotification.invite.invite_message }} </b></p>
+                    <p> {{notification.invitenotification.display}} </p>
+                </div>
+                <div class="invitenotifbtns">
+                    <form action ="{%url 'press_invite'%}" method="post">
+                        {% csrf_token %}
+                        <input type="submit" value="Accept" name="status">
+                        <input type="submit" value="Reject" name="status">
+                        <input type="hidden" name="id" value= {{ notification.invitenotification.invite.id }}>
+                        </form> 
+                </div>
+            </div>
             {% elif notification.as_task_notif != None %}
-                {{notification.tasknotification.display}}
-                <form method="post" action="{% url 'notif_delete' notification.id %}" style="display: inline;">
-                {% csrf_token %}
-                <button type="submit" class="btn">
-                    <span class="bi-trash"></span>
-                </button>
-                </form>
-                <hr>
+            <div class="tasknotifsbubbles">
+                <div class="tasknotif">
+                    {{notification.tasknotification.display}}
+                </div>
+                <div class="tasknotifdelete">
+                    <form method="post" action="{% url 'notif_delete' notification.id %}" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn">
+                        <span class="bi-trash"></span>
+                    </button>
+                    </form>
+                </div>
+            </div>
             {% endif %} 
         {% empty %}
             No notifications currently
