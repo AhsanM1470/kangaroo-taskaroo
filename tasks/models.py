@@ -215,7 +215,7 @@ class Task(models.Model):
     due_date = models.DateTimeField(default=timezone.now, validators=[MinValueValidator(limit_value=timezone.now(), message='Datetime must be in the future.')], blank=False)
     created_at = models.DateTimeField(default=timezone.now)
     lane = models.ForeignKey(Lane, on_delete=models.CASCADE, default=Lane.objects.first, blank=False)
-    assigned_team = models.ForeignKey(Team, blank=False, on_delete=models.CASCADE, null=True)
+    assigned_team = models.ForeignKey(Team, blank=False, on_delete=models.CASCADE)
     assigned_users = models.ManyToManyField(User, blank=True)
     dependencies = models.ManyToManyField("Task",blank=True)
     deadline_notif_sent = models.DateField(default=(datetime.today()-timedelta(days=1)).date())

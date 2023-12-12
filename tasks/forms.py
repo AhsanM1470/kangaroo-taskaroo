@@ -118,11 +118,11 @@ class TaskForm(forms.ModelForm):
     class Meta:
         """Form options"""
         model = Task
-        fields = ["name", "description", "lane","dependencies", "priority"]
+        fields = ["name", "description","dependencies", "priority"]
         widgets = {
             'name' : forms.TextInput(attrs={'class': 'nameClass', 'placeholder': 'Enter the task name...'}),
             'description' : forms.Textarea(attrs={'class': 'descriptionClass', 'placeholder': 'Write a task description...'}),
-            #'lane': forms.Select(attrs={'class':'lane_select'}),
+            # 'lane': forms.Select(attrs={'class':'lane_select'}),
             'priority': forms.Select(attrs={'class': 'priorityClass'}),
         }
     #
@@ -181,7 +181,12 @@ class TaskForm(forms.ModelForm):
         if date is not None and time is not None:
             if datetime.combine(date,time) != instance.due_date:
                 instance.deadline_notif_sent = (datetime.today()-timedelta(days=1)).date()
-            instance.due_date = datetime.combine(date, time)
+                
+            instance.due_date = timezone.make_aware(
+                timezone.datetime.combine(date, time),
+                timezone.get_current_timezone()
+            )
+            # instance.due_date = datetime.combine(date, time)
             
         if assigned_team_id is not None:
             instance.assigned_team = Team.objects.get(id=assigned_team_id)

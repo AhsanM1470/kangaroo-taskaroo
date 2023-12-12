@@ -10,7 +10,11 @@ class TaskModelTestCase(TestCase):
     
     fixtures = [
         'tasks/tests/fixtures/default_user.json',
-        'tasks/tests/fixtures/other_users.json'
+        'tasks/tests/fixtures/other_users.json',
+        'tasks/tests/fixtures/default_team.json',
+        'tasks/tests/fixtures/default_lane.json',
+        'tasks/tests/fixtures/default_task.json',
+        'tasks/tests/fixtures/other_tasks.json'
     ]
     
     def setUp(self):
@@ -20,35 +24,11 @@ class TaskModelTestCase(TestCase):
         self.user3 = User.objects.get(username='@petrapickles')
         self.user4 = User.objects.get(username='@peterpickles')
         
-        self.team = Team.objects.create(
-            team_name = 'Team1',
-            team_creator = self.user
-        )
-        
-        self.lane = Lane.objects.create(
-            lane_name = 'TestLane',
-            lane_id = 1,
-            lane_order = 1,
-            team = self.team
-        )
-        
-        self.task = Task.objects.create(
-            name = 'Task1',
-            description = 'Amys first task within task manager!',
-            due_date = timezone.datetime(2024, 11, 28, 10, 0, tzinfo=timezone.utc),
-            lane = self.lane,
-            assigned_team = self.team,
-        )
-        
+        self.task = Task.objects.get(pk=1) 
         self.task.assigned_users.add(self.user3)
-        
-        self.task2 = Task.objects.create(
-            name = 'Task2',
-            description = 'Amys second task within task manager!',
-            due_date = timezone.datetime(2024, 12, 28, 10, 0, tzinfo=timezone.utc),
-            lane = self.lane,
-            assigned_team = self.team
-        )
+        self.task2 = Task.objects.get(pk=2) 
+        self.lane = Lane.objects.get(pk=1)
+        self.team = Team.objects.get(pk=1)
         
     def test_valid_task(self):
         self._assert_task_is_valid(self.task)
