@@ -118,7 +118,7 @@ class TaskForm(forms.ModelForm):
     class Meta:
         """Form options"""
         model = Task
-        fields = ["name", "description", "lane","dependencies", "priority"]
+        fields = ["name", "description","dependencies", "priority"]
         widgets = {
             'name' : forms.TextInput(attrs={'class': 'nameClass', 'placeholder': 'Enter the task name...'}),
             'description' : forms.Textarea(attrs={'class': 'descriptionClass', 'placeholder': 'Write a task description...'}),
@@ -144,6 +144,7 @@ class TaskForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         instance = kwargs.get("instance")
         team = kwargs.get("team")
+        
         if team != None:
             kwargs.pop("team")
         
