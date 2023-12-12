@@ -2,23 +2,42 @@
 from django import forms
 from django.test import TestCase
 from tasks.forms import TaskForm
-from tasks.models import Task, Lane
+from tasks.models import Task, Lane, User, Team
 from datetime import date, time, timezone, datetime
+from django.utils import timezone
 
 class TaskFormTestCase(TestCase):
     """Unit tests of the task form."""
 
+    fixtures = [
+        'tasks/tests/fixtures/default_user.json',
+        'tasks/tests/fixtures/other_users.json'
+    ]
+
     def setUp(self):
-        self.lane = Lane.objects.create(
-            lane_id = 1
+        
+        self.user = User.objects.get(username='@johndoe')
+        
+        self.team = Team.objects.create(
+            team_name = 'Team1',
+            team_creator = self.user
         )
+        
+        self.lane = Lane.objects.create(
+            lane_name = 'TestLane',
+            lane_id = 1,
+            lane_order = 1,
+            team = self.team
+        )
+        
         self.form_input = {
             'name': 'Task5',
             'description': 'Amys fifth task within task manager!',
-            'date_field': date(2023, 12, 19),
+            'date_field': timezone.datetime(2024, 12, 28, 10, 0, tzinfo=timezone.utc),
             'priority':'medium',
             'time_field': '10:05:00',
-            'lane': 1,
+            'lane': self.lane,
+            'assigned_team' : self.team
         }
 
     def test_valid_sign_up_form(self):
@@ -57,8 +76,6 @@ class TaskFormTestCase(TestCase):
         cleaned_data = form.cleaned_data
         self.assertEqual(cleaned_data['date_field'], self.form_input['date_field'])
         
-        #print(form.date_field)
-        #print(form.time_field)
         after_count = Task.objects.count()
         self.assertEqual(after_count, before_count+1)
         task = Task.objects.get(name='Task5')
