@@ -1,19 +1,3 @@
-"""
-URL configuration for task_manager project.
-
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/4.2/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
-"""
 from django.contrib import admin
 from django.urls import path
 from tasks import views
@@ -27,7 +11,9 @@ urlpatterns = [
     path("remove_member/", views.remove_member, name="remove_member"),
     path('delete_team/<int:team_id>/', views.DeleteTeamView.as_view(), name='delete_team'),
     path("press_invite/", views.press_invite, name="press_invite"),
-    path('dashboard/', views.dashboard, name='dashboard'),
+
+    path('dashboard/', views.DashboardView.as_view(), name='dashboard'),
+
     path('log_in/', views.LogInView.as_view(), name='log_in'),
     path('log_out/', views.log_out, name='log_out'),
     path('password/', views.PasswordView.as_view(), name='password'),
@@ -39,10 +25,6 @@ urlpatterns = [
     path('task_edit/<int:pk>/', views.TaskEditView.as_view(), name = 'task_edit'),
     path('task/<int:pk>/', views.TaskView.as_view(), name='task'),
     path('lane_delete/<int:lane_id>/', views.DeleteLaneView.as_view(), name='lane_delete'),
-    path('move_lane_left/<int:lane_id>/', views.move_lane_left, name='move_lane_left'),
-    path('move_lane_right/<int:lane_id>/', views.move_lane_right, name='move_lane_right'),
     path('my_teams/', views.my_teams, name="my_teams"),
-    path('task/<int:pk>/move-left/', views.move_task_left, name='move_task_left'),
-    path('task/<int:pk>/move-right/', views.move_task_right, name='move_task_right'),
     path('notif_delete/<int:notif_id>/',views.notif_delete,name='notif_delete')
 ]
