@@ -212,7 +212,7 @@ class Task(models.Model):
     )
     name = models.CharField(max_length=30, blank=False, validators=[alphanumeric])
     description = models.CharField(max_length=530, blank=True)
-    due_date = models.DateTimeField(default=timezone.now, validators=[MinValueValidator(limit_value=timezone.now(), message='Datetime must be in the future.')])
+    due_date = models.DateTimeField(default=timezone.now, validators=[MinValueValidator(limit_value=timezone.now(), message='Datetime must be in the future.')], blank=False)
     created_at = models.DateTimeField(default=timezone.now)
     lane = models.ForeignKey(Lane, on_delete=models.CASCADE, default=Lane.objects.first, blank=False)
     assigned_team = models.ForeignKey(Team, blank=False, on_delete=models.CASCADE, null=True)
