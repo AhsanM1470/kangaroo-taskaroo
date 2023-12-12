@@ -505,7 +505,7 @@ class CreateTaskView(LoginRequiredMixin, FormView):
         lanes = Lane.objects.filter(team=current_team).order_by('lane_order') if current_team else Lane.objects.none()
         #default_lane = Lane.objects.get(name='Backlog')
         form = TaskForm(initial={'lane': lanes},team=current_team)
-        form.fields['lane'].queryset = lanes
+        # form.fields['lane'].queryset = lanes
         all_tasks = Task.objects.all()
         return render(request, self.template_name, {'tasks': all_tasks, 'form': form})
     
@@ -523,7 +523,6 @@ class CreateTaskView(LoginRequiredMixin, FormView):
                 current_team = teams.first()
             #lanes = Lane.objects.filter(team=current_team).order_by('lane_order') if current_team else Lane.objects.none()
             lane_id = request.POST.get("lane_id")
-            print(lane_id)
             #default_lane = Lane.objects.get(name='Backlog')
 
             # Check if the form is valid

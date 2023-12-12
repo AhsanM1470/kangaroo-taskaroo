@@ -31,7 +31,6 @@ class TaskCreateViewTestCase(TestCase, LogInTester):
             'date_field': date(2024, 12, 28),
             'priority':'medium',
             'time_field': '10:05:00',
-            'lane': self.lane,
             'assigned_team' : self.team
         }
         
@@ -50,7 +49,9 @@ class TaskCreateViewTestCase(TestCase, LogInTester):
 
 
     def test_get_task(self):
-        self.client.session["current_team_id"] = self.team.pk
+        session = self.client.session
+        session["current_team_id"] = self.team.pk
+        session.save()
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'task_create.html')
@@ -68,6 +69,9 @@ class TaskCreateViewTestCase(TestCase, LogInTester):
     #     self.assertTemplateUsed(response, 'dashboard.html')
 
     def test_successful_task_create(self):
+        session = self.client.session
+        session["current_team_id"] = self.team.pk
+        session.save()
         before_count = Task.objects.count()
         response = self.client.post(self.url, data=self.form_input, follow=True)
         after_count = Task.objects.count()
@@ -80,6 +84,9 @@ class TaskCreateViewTestCase(TestCase, LogInTester):
         self.assertEqual(created_task.description, 'Amys special task within task manager!')
         
     def test_unsuccesful_task_create(self):
+        session = self.client.session
+        session["current_team_id"] = self.team.pk
+        session.save()
         self.task_data_bad = {
             'name': 'Ta',
             'description': 'Amys fifth task within task manager!',
