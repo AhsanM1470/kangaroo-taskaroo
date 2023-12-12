@@ -111,11 +111,9 @@ class TaskFormTestCase(TestCase):
         expected_queryset = Task.objects.filter(assigned_team=self.team)
         self.assertGreater(len(expected_queryset), 0)
         self.assertQuerySetEqual(form.fields['dependencies'].queryset, Task.objects.filter(assigned_team=self.team))
-        
-    # This test doesnt work :< -Amy
     
     def test_task_with_dependencies(self):
-        self.form_input['dependencies'] = self.task
+        self.form_input['dependencies'] = Task.objects.filter(pk=1)
         form = TaskForm(data=self.form_input)
         self.assertTrue(form.is_valid)
         task2 = form.save()
