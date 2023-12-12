@@ -3,9 +3,40 @@
     <h1>Create Team</h1>
 
     <form action ="{%url 'create_team'%}" method="post">
-        {% csrf_token %}
+      {% csrf_token %}
 
-        {{ team_form.as_p }}
+      {% for field in team_form %}
+      <div class="mb-3">
+        {{ field.label_tag }}
+        {% if form.is_bound %}
+          {% if field.errors %}
+            {% if field.name == "members_to_invite" %}
+              {% render_field field class="basicAutoComplete form-control is-invalid" %}
+            {% else %}
+              {% render_field field class="form-control is-invalid" %}
+            {% endif %}
+          {% else %}
+            {% if field.name == "members_to_invite" %}
+                {% render_field field class="basicAutoComplete form-control is-valid" %}
+            {% else %}
+                {% render_field field class="form-control is-valid" %}
+            {% endif %}
+          {% endif %}
+        {% else %}
+          {% if field.name == "members_to_invite" %}
+              {% render_field field class="basicAutoComplete form-control" %}
+          {% else %}
+              {% render_field field class="form-control" %}
+          {% endif %}
+        {% endif %}
+        <div class="valid-feedback">
+          Looks good!
+        </div>
+        <div class="invalid-feedback">
+          {{ field.errors }}
+        </div>
+      </div>
+      {% endfor %}
         
     <input type="submit" value="Create Team" class="btn btn-primary">
     </form>
@@ -18,7 +49,8 @@
 <script src="../../static/bootstrap-autocomplete.js"></script>
 <script>
     $('.basicAutoComplete').autoComplete({
-        minLength: 1
+        minLength: 1,
+        bootstrapVersion: 5,
     });
     $('.dropdown-menu').css({'top': 'auto', 'left': 'auto'})
 

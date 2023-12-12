@@ -170,6 +170,7 @@ def move_lane_right(request, lane_id):
 def create_team(request):
     """Form that allows user to create a new team"""
 
+    team = CreateTeamForm()
     if request.method == "POST":
         # Create the team
         current_user = request.user
@@ -177,9 +178,11 @@ def create_team(request):
         if team.is_valid():
             team.create_team(current_user)
             messages.add_message(request, messages.SUCCESS, "Created Team!")
+            return redirect("dashboard")
         else:
             messages.add_message(request, messages.ERROR, "That team name has already been taken!")
-    return redirect("dashboard")
+    
+    return render(request, "create_team.html", {"team_form": team})
 
 @login_required
 def my_teams(request):
