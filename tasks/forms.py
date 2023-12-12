@@ -170,9 +170,7 @@ class TaskForm(forms.ModelForm):
             if combined_datetime > datetime.now():
                 cleaned_data['due_date'] = datetime.combine(date, time)
             else:
-                # Simon Stuff!
                 self.add_error("date_field", 'Pick a date-time in the future!')
-                #raise ValidationError('Pick a date-time in the future!')
         return cleaned_data
     
     def save(self, assigned_team_id=None, lane_id=None, commit=True):
