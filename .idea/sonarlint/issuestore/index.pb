@@ -66,3 +66,5 @@ D
 tasks/apps.py,0/c/0c75e21fe2c6896b1ae8834882c5b00fbbc7e0ff
 @
 requirements.txt,1/9/19359a61ae2446b51b549167b014da2fcf265768
+R
+"tasks/templates/invite_remove.html,b/3/b3ccc462050836f6bd18b1819eeb9c325507a960

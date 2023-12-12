@@ -414,15 +414,23 @@ class ProfileUpdateView(LoginRequiredMixin, UpdateView):
     template_name = "profile.html"
     form_class = UserForm
 
-    @login_required
-    def profile(request):
-        u_form = UserForm()
-        p_form = ProfileUpdateForm()
-        context = {
-            'u_form': u_form,
-            'p_form': p_form
-        }
-        return render(request, 'profile.html', context)
+    def get_object(self):
+        """Return the object (user) to be updated."""
+        user = self.request.user
+        return user
+
+    def get_success_url(self):
+        """Return redirect URL after successful update."""
+        messages.add_message(self.request, messages.SUCCESS, "Profile updated!")
+        return reverse(settings.REDIRECT_URL_WHEN_LOGGED_IN)
+
+class ProfilePicUpdateView(LoginRequiredMixin, UpdateView):
+    """Display user profile editing screen, and handle profile modifications."""
+
+    model = ProfileUpdateForm
+    template_name = "profile.html"
+    form_class = ProfileUpdateForm
+
     def get_object(self):
         """Return the object (user) to be updated."""
         user = self.request.user

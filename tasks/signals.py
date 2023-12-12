@@ -4,10 +4,11 @@ from django.dispatch import receiver
 from tasks.models import Profile
 
 @receiver(post_save, sender=User)
-def create_or_save_profile(sender, instance, created, **kwargs):
+def create_profile(sender, instance, created, **kwargs):
     if created:
         Profile.objects.create(user=instance)
-    else:
-        # Ensure that the profile exists to avoid recursive save
-        profile, created = Profile.objects.get_or_create(user=instance)
-        profile.save()
+
+
+@receiver(post_save, sender=User)
+def save_profile(sender, instance, **kwargs):
+    instance.profile.save()

@@ -110,27 +110,33 @@
         }
     </style>
 
-    <div class="container">
-        <div class="row">
-            <div class="profilecard">
-                <h1 class="profile-title">Edit Profile</h1> <!-- Moved and class changed -->
-                <div class="media">
-                    <img class="profile-avatar" src="{{ user.profile.avatar.url}}">
-                    <div class="media-body">
-                        <h2 class="account-heading">Username: {{ user.username }}</h2>
-                        <p class="text-secondary">Email: {{ user.email }}</p>
-                    </div>
+   <div class="container">
+    <div class="row">
+        <div class="profilecard">
+            <h1 class="profile-title">Edit Profile</h1>
+            <div class="media">
+                <!-- Check if user has an avatar -->
+                {% if user.profile.avatar %}
+                    <img class="profile-avatar" src="{{ user.profile.avatar.url }}">
+                {% else %}
+                    <!-- Display default image if no avatar -->
+                    <img class="profile-avatar" src="../media/profile_pics/default.jpg">
+                {% endif %}
+                <div class="media-body">
+                    <h2 class="account-heading">Username: {{ user.username }}</h2>
+                    <p class="text-secondary">Email: {{ user.email }}</p>
                 </div>
-                <div class="profileform">
-                    <form action="{% url 'profile' %}" method="post">
-                        {% csrf_token %}
-                        {% include 'partials/bootstrap_form.html' with form=form %}
-                        <input type="submit" value="Update" class="update-btn btn btn-primary">
-                    </form>
-                </div>
+            </div>
+            <div class="profileform">
+                <form action="{% url 'profile' %}" method="post">
+                    {% csrf_token %}
+                    {% include 'partials/bootstrap_form.html' with form=form %}
+                    <input type="submit" value="Update" class="update-btn btn btn-primary">
+                </form>
             </div>
         </div>
     </div>
+</div>
 
 
 {% endblock %}

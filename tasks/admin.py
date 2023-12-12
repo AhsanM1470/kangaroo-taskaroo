@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import User, Team, Invite, Task,Profile
+from .models import User, Team, Invite, Task, Profile
 
 # Register your models here.
 
