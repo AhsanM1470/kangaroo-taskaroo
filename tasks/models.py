@@ -76,7 +76,7 @@ class User(AbstractUser):
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    avatar = models.ImageField(default='../media/profile_pics/default.jpg', upload_to='profile_pics')
+    avatar = models.ImageField(default='templates/profile_pics/person-icon-grey.png', upload_to='profile_pics')
     def __str__(self):
         return f'{self.user.username} Profile'
 
@@ -84,7 +84,7 @@ class Profile(models.Model):
         if self.avatar and hasattr(self.avatar, 'url'):
             return self.avatar.url
         else:
-            return '../media/profile_pics/default.jpg'
+            return '../tasks/templates/profile_pics/person-icon-grey.png'
 
 class Team(models.Model):
     """Model used to hold teams of different users and their relevant information"""
