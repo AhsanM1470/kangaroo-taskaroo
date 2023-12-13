@@ -38,30 +38,32 @@ class DashboardView(LoginRequiredMixin, View):
     success_url = reverse_lazy('dashboard')
 
     def get(self, request, *args, **kwargs):
+        print("Hi")
         current_user = request.user
         teams = current_user.get_teams()
-
-        if 'dashboard_team' in request.GET:
-            team_id = request.GET.get("dashboard_team")
-            request.session["current_team_id"] = team_id
 
         # Get the current team
         current_team_id = request.session.get("current_team_id", None)
         current_team = Team.objects.filter(id=current_team_id).first() if current_team_id else None
 
-        # Create 3 default lanes for the current team if they do not exist
-        if current_team and not Lane.objects.filter(team=current_team).exists():
-            default_lane_names = [("Backlog", 1), ("In Progress", 2), ("Complete", 3)]
-            for lane_name, lane_order in default_lane_names:
-                Lane.objects.get_or_create(
-                    lane_name=lane_name,
-                    lane_order=lane_order,
-                    team=current_team
-                )
-
         if current_team is None and teams.exists():
             request.session["current_team_id"] = teams.first().id
             current_team = teams.first()
+
+        if 'dashboard_team' in request.GET:
+            team_id = request.GET.get("dashboard_team")
+            request.session["current_team_id"] = team_id
+
+        # Create 3 default lanes for the current team if they do not exist
+        if current_team:
+            default_lane_names = [("Backlog", 1), ("In Progress", 2), ("Complete", 3)]
+            if not Lane.objects.filter(team=current_team).exists():
+                for lane_name, lane_order in default_lane_names:
+                    Lane.objects.get_or_create(
+                        lane_name=lane_name,
+                        lane_order=lane_order,
+                        team=current_team
+                    )
 
         return render(request, self.template_name, self.get_context_data(current_user, current_team))
 
