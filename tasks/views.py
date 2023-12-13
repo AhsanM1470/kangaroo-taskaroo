@@ -15,7 +15,7 @@ from tasks.helpers import login_prohibited
 from django.urls import reverse_lazy
 from django.views.decorators.http import require_POST
 from .forms import TaskForm, TaskDeleteForm, AssignTaskForm
-from .models import Task, Invite, Team, Lane, Notification
+from .models import Task, Invite, Team, Lane, Notification, Profile
 from django.http import HttpResponseBadRequest
 from datetime import datetime
 from django.db.models import Max, Case, Value, When
@@ -430,6 +430,29 @@ class ProfilePicUpdateView(LoginRequiredMixin, UpdateView):
     model = ProfileUpdateForm
     template_name = "profile.html"
     form_class = ProfileUpdateForm
+    
+    def get(self, request, *args, **kwargs):
+        current_user = request.user
+        user_profile = Profile.objects.get(user=current_user)
+        form = ProfileUpdateForm()
+        return render(request, self.template_name, {'form': form, 'profile': user_profile})
+    
+    def post(self, request, *args, **kwargs):
+        # current_user = request.user
+        # user_profile = Profile.objects.get(user=current_user)
+        
+        user_id = request.GET.get('user_id')
+        print(user_id)
+        profile = get_object_or_404(Profile, user=user_id)
+        
+        form = ProfileUpdateForm(request.POST, instance=profile )
+        print(profile)
+        if form.is_valid():
+            form.save()
+            return redirect('profile')
+        else :
+            form = ProfileUpdateForm(request.POST, instance=profile)
+        return render(request, 'profile.html', {'form': form, 'profile': profile})
 
     def get_object(self):
         """Return the object (user) to be updated."""
@@ -460,7 +483,15 @@ class SignUpView(LoginProhibitedMixin, FormView):
             team_creator=self.request.user,
             description="A default team for you to start managing your tasks!"
         )
+        team = Team.objects.create(
+            team_name="My Team",
+            team_creator=self.request.user,
+            description="A default team for you to start managing your tasks!"
+        )
         team.add_invited_member(self.request.user)
+        profile = Profile.objects.create(
+            user = self.request.user
+        )
         return super().form_valid(form)
 
     def get_success_url(self):

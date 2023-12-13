@@ -116,8 +116,8 @@
             <h1 class="profile-title">Edit Profile</h1>
             <div class="media">
                 <!-- Check if user has an avatar -->
-                {% if user.profile.avatar %}
-                    <img class="profile-avatar" src="{{ user.profile.avatar.url }}">
+                {% if profile.avatar %}
+                    <img class="profile-avatar" src="{{ profile.avatar.url }}">
                 {% else %}
                     <!-- Display default image if no avatar -->
                     <img class="profile-avatar" src="../media/profile_pics/default.jpg">
