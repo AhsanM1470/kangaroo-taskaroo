@@ -176,6 +176,12 @@ class TaskModelTestCase(TestCase):
         expected_default_value = (datetime.today() - timedelta(days=1)).date()
         actual_default_value = self.task.deadline_notif_sent
         self.assertEqual(actual_default_value, expected_default_value)
+
+    def test_changed_deadline_notif_sent(self):
+        self.task.assigned_team.add_invited_member(self.user)
+        self.task.due_date = (datetime.today()+timedelta(days=5))
+        self.task.notify_keydates()
+        self.assertEqual(self.task.deadline_notif_sent,datetime.today().date())
         
     # Assertions:
     
