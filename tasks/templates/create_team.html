@@ -147,8 +147,6 @@
 </div>
 {% endblock %}
 
-{% endblock %}
-
 {% block script %}
 <!-- Autocomplete for long forms -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
@@ -185,14 +183,14 @@
         {
           new_string = search_box_value + " " + item
         }
-        console.log(new_string)
-        if (item == null)
+        if (typeof item === 'string')
         {
-          search_box_value = ""
+          $('.basicAutoComplete').autoComplete('set', { value: new_string, text: new_string});
         }
         else
         {
-          $('.basicAutoComplete').autoComplete('set', { value: new_string, text: new_string});
+          $('.basicAutoComplete').autoComplete('clear');
+          search_box_value = ""
         }
       });
       //$('.basicAutoComplete').autoComplete('set', { value: item, text: item});

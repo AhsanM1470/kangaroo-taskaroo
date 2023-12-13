@@ -79,7 +79,6 @@ class User(AbstractUser):
 class Team(models.Model):
     """Model used to hold teams of different users and their relevant information"""
     
-    
     team_name = models.CharField(max_length=50, blank=False)
     team_creator = models.ForeignKey(User, on_delete=models.CASCADE, blank=False, related_name="created_teams")
     team_members = models.ManyToManyField(User, blank=True)
@@ -173,7 +172,7 @@ class Invite(models.Model):
                 notif = list(filter(lambda notif: notif.as_invite_notif() != None and notif.as_invite_notif().invite == self,notifs))[0]
                 notif.delete()
                 self.save()
-        if self.invited_users.count()==0:
+        if self.invited_users.count() == 0:
             self.delete()
     
 class Lane(models.Model):

@@ -143,11 +143,6 @@ def dashboard(request):
 
     lanes = Lane.objects.filter(team=current_team).order_by('lane_order') if current_team else Lane.objects.none()
     team_tasks = current_team.get_tasks() if current_team else Task.objects.none()
-<<<<<<< HEAD
-    #assign_task_form = AssignTaskForm(team=current_team, user=current_user)
-=======
-    #assign_task_form = AssignTaskForm(team=current_team)
->>>>>>> main
     create_task_form = TaskForm(team=current_team)
     create_team_form = CreateTeamForm(user=current_user)
 
@@ -166,18 +161,25 @@ def dashboard(request):
 # Autocomplete Query
         
 def autocomplete_user(request):
+    """Given a query string q, give suggestions for which user it could be"""
     if request.GET.get('q'):
         q = request.GET['q']
-        # Exclude all users already part of string
-        queried_users = q.split(" ") 
+        queried_users = q.split(" ")
         new_query = queried_users[-1]
-        data = User.objects.exclude(username__in=queried_users).filter(username__startswith=new_query).values_list('username', flat=True)
-        json = list(data)
 
-        print(json)
+        # Exclude the current user from query
+        queried_users.append(request.user.username) 
+        
+        # Exclude all users already part of string
+        if len(queried_users) > 1:
+            data = User.objects.exclude(username__in=queried_users).filter(username__icontains=new_query).values_list('username', flat=True)
+        else:
+            data = User.objects.filter(username__icontains=new_query).values_list('username', flat=True)
+        
+        json = list(data)
         return JsonResponse(json, safe=False)
     else:
-        return HttpResponse("No cookies")
+        return HttpResponse("Wrong Query")
 
 # Move tasks to the left lane
 def move_task_left(request, pk):
@@ -525,10 +527,8 @@ class CreateTaskView(LoginRequiredMixin, FormView):
 
             lane_id = request.POST.get("lane_id")
             if lane_id != "":
-                print("f in the chat")
                 request.session["lane_id"] = request.POST.get("lane_id")
 
-            print(request.session["lane_id"])
             form = TaskForm(request.POST or None)
             current_team_id = request.session.get("current_team_id")
             current_team = Team.objects.get(id=current_team_id)
