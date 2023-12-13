@@ -278,8 +278,9 @@
             <div class="lane-header" style="display: flex; justify-content: space-between; align-items: center;">
               
               <!-- Move lane left form -->
-              <form method="post" action="{% url 'move_lane_left' lane.lane_id %}" style="display: inline;">
+              <form method="post" style="display: inline;">
                 {% csrf_token %}
+                <input type="hidden" name="move_lane_left" value="{{ lane.lane_id }}">
                 <button type="submit" class="image" title="Move lane left">
                     <img src="../../static/images/move-left-icon.png">
                 </button>
@@ -297,8 +298,9 @@
             </form>
 
             <!-- Move lane right form -->
-            <form method="post" action="{% url 'move_lane_right' lane.lane_id %}" style="display: inline;">
+            <form method="post" style="display: inline;">
               {% csrf_token %}
+              <input type="hidden" name="move_lane_right" value="{{ lane.lane_id }}">
               <button type="submit" class="image" title="Move lane right">
                   <img src="../../static/images/move-right-icon.png">
               </button>
@@ -318,8 +320,9 @@
             {% if task.lane_id == lane.lane_id %}
             <div class="task">
               <!-- Form for moving tasks to the left lane -->
-              <form method="post" action="{% url 'move_task_left' task.id %}">
+              <form method="post">
                 {% csrf_token %}
+                <input type="hidden" name="move_task_left" value="{{ task.id }}">
                 <button type="submit" class="image" title="Move task left">
                   <img src="../../static/images/move-left-icon-grey.png">
                 </button>
@@ -328,8 +331,9 @@
               {{ task.name }}
             
               <!-- Form for moving task to the right lane -->
-              <form method="post" action="{% url 'move_task_right' task.id %}">
+              <form method="post">
                 {% csrf_token %}
+                <input type="hidden" name="move_task_right" value="{{ task.id }}">
                 <button type="submit" class="image" title="Move task right">
                   <img src="../../static/images/move-right-icon-grey.png">
                 </button>
