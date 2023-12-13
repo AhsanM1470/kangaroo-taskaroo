@@ -284,11 +284,11 @@ def my_teams(request):
                       {'teams': user_teams, 'invites': user_invites, 
                        'team_form': team_form})
 
-@login_required
-def remove_member(request):
-    if request.method == "POST":
-        messages.add_message(request, messages.SUCCESS, "Tried to remove team member, but there ain't no functionality hehe")
-    return redirect("my_teams")
+# @login_required
+# def remove_member(request):
+#     if request.method == "POST":
+#         messages.add_message(request, messages.SUCCESS, "Tried to remove team member, but there ain't no functionality hehe")
+#     return redirect("my_teams")
 
 @login_required
 def assign_task(request, task_id):

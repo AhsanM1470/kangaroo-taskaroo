@@ -14,46 +14,39 @@ class InviteFormTestCase(TestCase):
     ]
 
     def setUp(self):
-        self.user = User.objects.get(username="@janedoe")
+        self.team = Team.objects.get(id=1)
+        self.user = User.objects.get(username="@johndoe")
+        self.other_user = User.objects.get(username="@janedoe")
+
         self.form_input = {
-            "team_name": "Kangaroo",
-            "description": "The team we all wanted to be part of. Oh wait.",
-            "members_to_invite": "@janedoe"
+            "users_to_invite": [self.user, self.other_user],
+            "invite_message": "Please join my team!",
         }
 
     def test_form_has_necessary_fields(self):
         form = InviteForm()
-        ['team_name', 'description', 'members_to_invite']
-        self.assertIn('team_name', form.fields)
-        self.assertIn('description', form.fields)
-        self.assertIn('members_to_invite', form.fields)
-        members_to_invite_field = form.fields['members_to_invite']
-        self.assertTrue(isinstance(members_to_invite_field, forms.CharField))
-        self.assertTrue(isinstance(members_to_invite_field.widget, forms.Select))
+        self.assertIn('users_to_invite', form.fields)
+        self.assertIn('invite_message', form.fields)
+        users_to_invite_field = form.fields['users_to_invite']
+        self.assertTrue(isinstance(users_to_invite_field, forms.ModelMultipleChoiceField))
+
+        # If I add autocomplete to invite form
+        # self.assertTrue(isinstance(members_to_invite_field, forms.CharField))
+        # self.assertTrue(isinstance(members_to_invite_field.widget, forms.Select))
 
     def test_valid_invite_form(self):
         form = InviteForm(data=self.form_input)
         self.assertTrue(form.is_valid())
 
-    def test_form_uses_model_validation(self):
-        self.form_input['team_name'] = ""
-        form = CreateTeamForm(data=self.form_input)
-        self.assertFalse(form.is_valid())
-
-    def test_form_must_save_correctly(self):
-        user = User.objects.get(username='@johndoe')
-        form = CreateTeamForm(data=self.form_input)
+    def test_form_must_invite_correctly(self):
+        form = InviteForm(data=self.form_input)
         self.assertTrue(form.is_valid())
-        before_count = Team.objects.count()
-        team = form.create_team(user)
-        after_count = Team.objects.count()
+        before_count = Invite.objects.count()
+        invite = form.send_invite(inviting_team=self.team)
+        after_count = Invite.objects.count()
         self.assertNotEqual(after_count, before_count)
-        self.assertEqual(team.team_name, 'Kangaroo')
-        self.assertEqual(team.description, 'The team we all wanted to be part of. Oh wait.')
-        self.assertEqual(team.team_creator, user)
-        self.assertTrue(user in team.get_team_members())
-
-        # Check if invite has been created to the user we specified to invite
-        invite = Invite.objects.all().first()
-        self.assertTrue(isinstance(invite, Invite))
+        self.assertEqual(invite.inviting_team, self.team)
+        self.assertEqual(invite.status, 'Reject')
+        self.assertEqual(invite.invite_message, 'Please join my team!')
         self.assertTrue(self.user in invite.invited_users.all())
+        self.assertTrue(self.other_user in invite.invited_users.all())
