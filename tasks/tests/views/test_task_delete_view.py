@@ -1,7 +1,7 @@
 from tasks.tests.helpers import LogInTester
 from django.test import TestCase
 from django.urls import reverse
-from tasks.models import Task
+from tasks.models import Task, Team, Lane, User
 from datetime import datetime
 from tasks.forms import TaskDeleteForm
 from django.contrib.auth import get_user_model
@@ -9,16 +9,31 @@ from urllib.parse import unquote
 
 class TaskDeleteViewTestCase(TestCase, LogInTester):
     """Tests of the task delete view."""
+    fixtures = [
+        'tasks/tests/fixtures/default_user.json',
+        'tasks/tests/fixtures/other_users.json'
+    ]
+    
     def setUp(self):
-       
-        username_to_find = '@johndoe'
+        self.user = User.objects.get(username='@johndoe')
+        self.team = Team.objects.create(
+            team_name = 'test-team',
+            team_creator= self.user,
+            description = "A random test team"
+        )
+        self.team.add_invited_member(self.user)
+        self.lane = Lane.objects.create(
+            lane_id = 1,
+            team=self.team
+        )
         self.task = Task.objects.create(
             name='Test Task',
-            description = 'Some random task, idk anymore',
-            due_date = datetime(2024,1,19,10,5)
+            description = 'A random test task',
+            due_date = datetime(2024,1,19,10,5),
+            assigned_team=self.team,
+            lane = self.lane
         )
-        self.user = get_user_model().objects.create_user(username=username_to_find, password='Password123')
-        self.url = reverse('task_delete', kwargs={'task_name': self.task.name})
+        self.url = reverse('task_delete', kwargs={'pk': self.task.pk})
 
         self.form_input = {
             'confirm_deletion': True
@@ -34,7 +49,7 @@ class TaskDeleteViewTestCase(TestCase, LogInTester):
         self.assertTrue(logged_in)
 
     def test_task_create_url(self):
-        self.assertEqual(unquote(self.url),'/task_delete/Test Task/')
+        self.assertEqual(unquote(self.url),f'/task_delete/1/')
 
     def test_get_delete_task(self):
         response = self.client.get(self.url)
@@ -48,7 +63,7 @@ class TaskDeleteViewTestCase(TestCase, LogInTester):
         before_count = Task.objects.count()
         response = self.client.post(self.url, data=self.form_input, follow=True)
         after_count = Task.objects.count()
-        self.assertEqual(after_count, before_count)
+        self.assertEqual(after_count, before_count-1)
         redirect_url = reverse('dashboard')
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
         self.assertTemplateUsed(response, 'dashboard.html')

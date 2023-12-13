@@ -563,7 +563,7 @@ class DeleteTaskView(LoginRequiredMixin, View):
         task = get_object_or_404(Task, pk=pk)
         delete_form = TaskDeleteForm()
         # if this doesnt work use domain explicitly
-        delete_url = '/task_delete/'+pk+'/'
+        delete_url = '/task_delete/'+str(pk)+'/'
         context = {'task': task, 'delete_form': delete_form, 'delete_url': delete_url, 'name': task.name}
         return render(request, self.template_name, context)
     
