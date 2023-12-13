@@ -35,14 +35,15 @@
 <div class="teaminfocontainer">
   <div class="row">
     <div class="teaminfoitems">
-      
-      <div class="field-value"><h2> {{ team.team_name }} </h2></div>
+      <div class="flex">
+        <h2>Make an invite</h2>
+        <form action ="{%url 'create_invite'%}" method="post">
+          {% csrf_token %}
+          {% include 'partials/bootstrap_form.html' with form=invite_form %}
+        <input type="submit" value="Create Invite" class="btn btn-primary">
+        </form>
 
-      <div class="field-label">Description:</div>
-      <div class="field-value">{{ team.description }}</div>
-
-      <div class="field-label">List of Team Members:</div>
-      <div class="field-value">{{ team.get_team_members_list }}</div>
+      </div>
     </div>
 </div>
 {% endblock %}

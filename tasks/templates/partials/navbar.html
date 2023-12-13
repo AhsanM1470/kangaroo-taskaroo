@@ -53,6 +53,13 @@
     <div class="navbarteam">
       <p>{{ current_team.team_name }}</p>
     </div>
+
+    {% if user == current_team.team_creator %}
+    <button type="button" name="view_team" class="image" data-bs-toggle="collapse" data-bs-target="#invite_member" aria-expanded="false" aria-controls="invite_member">
+      <img src="../../static/images/add-icon-grey.png" alt="Invite Members" title="Invite Members">
+    </button>
+    {% endif %}
+
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>

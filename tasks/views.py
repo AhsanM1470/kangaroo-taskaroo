@@ -38,9 +38,12 @@ class DashboardView(LoginRequiredMixin, View):
     success_url = reverse_lazy('dashboard')
 
     def get(self, request, *args, **kwargs):
-        print("Hi")
         current_user = request.user
         teams = current_user.get_teams()
+
+        if 'dashboard_team' in request.GET:
+            team_id = request.GET.get("dashboard_team")
+            request.session["current_team_id"] = team_id
 
         # Get the current team
         current_team_id = request.session.get("current_team_id", None)
@@ -49,10 +52,6 @@ class DashboardView(LoginRequiredMixin, View):
         if current_team is None and teams.exists():
             request.session["current_team_id"] = teams.first().id
             current_team = teams.first()
-
-        if 'dashboard_team' in request.GET:
-            team_id = request.GET.get("dashboard_team")
-            request.session["current_team_id"] = team_id
 
         # Create 3 default lanes for the current team if they do not exist
         if current_team:
