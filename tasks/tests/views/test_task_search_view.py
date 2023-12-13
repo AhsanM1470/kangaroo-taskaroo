@@ -1,12 +1,23 @@
 from django.test import TestCase
 from django.urls import reverse
-from tasks.models import Task, Lane
+from tasks.models import Task, Lane, Team, User
 from tasks.tests.helpers import LogInTester
 
 class TaskSearchViewTests(TestCase, LogInTester):
+    fixtures = [
+        'tasks/tests/fixtures/default_user.json',
+        'tasks/tests/fixtures/other_users.json'
+    ]
     def setUp(self):
+        self.user = User.objects.get(username="@johndoe")
+        self.team = Team.objects.create(
+            team_name = 'test-team',
+            team_creator= self.user,
+            description = "A random test team"
+        )
         self.lane = Lane.objects.create(
-            lane_id = 1
+            lane_id = 1,
+            team=self.team
         )
         Task.objects.create(name="Task 1", description="Description 1", due_date="2023-12-01", priority='low', lane=self.lane)
         Task.objects.create(name="Task 2", description="Description 2", due_date="2023-12-02", priority='medium', lane=self.lane)
