@@ -55,6 +55,7 @@
     margin-left: auto;
     margin-right: auto;
     display: block;
+    box-shadow: 0 0 5px rgba(0,0,0,0.5);
   }
 
   a{
@@ -83,8 +84,8 @@
         {% csrf_token %}
         {% include 'partials/bootstrap_form.html' with form=form %}
         <div class="buttons" style="display: flex; gap: 10px;">
-          <input type="submit" value="Sign up" class="signup-btn">
-          <a href="/" class="back-btn btn signup-btn">Back</a>
+          <input type="submit" value="Sign up" class="btn signup-btn">
+          <a href="/" class="btn signup-btn">Back</a>
         </div>
       </form>
       <a href="{% url 'log_in' %}">Already have an account? Log in.</a>
