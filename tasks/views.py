@@ -143,7 +143,7 @@ def dashboard(request):
 
     lanes = Lane.objects.filter(team=current_team).order_by('lane_order') if current_team else Lane.objects.none()
     team_tasks = current_team.get_tasks() if current_team else Task.objects.none()
-    assign_task_form = AssignTaskForm(team=current_team, user=current_user)
+    #assign_task_form = AssignTaskForm(team=current_team, user=current_user)
     create_task_form = TaskForm(team=current_team)
     create_team_form = CreateTeamForm(user=current_user)
 
@@ -162,10 +162,12 @@ def dashboard(request):
 # Autocomplete Query
         
 def autocomplete_user(request):
-    print("sidsd")
     if request.GET.get('q'):
         q = request.GET['q']
-        data = User.objects.filter(username__startswith=q).values_list('username', flat=True)
+        # Exclude all users already part of string
+        queried_users = q.split(" ") 
+        new_query = queried_users[-1]
+        data = User.objects.exclude(username__in=queried_users).filter(username__startswith=new_query).values_list('username', flat=True)
         json = list(data)
 
         print(json)

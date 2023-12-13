@@ -139,7 +139,10 @@ class Invite(models.Model):
     def set_invited_users(self, users):
         """Set the invited users of the invite"""
 
-        for user in users.all():
+        users_list = users.split(" ")
+
+        for username in users_list:
+            user = User.objects.get(username=username)
             self.invited_users.add(user)
             self.save()
             notif = InviteNotification.objects.create(invite=self)

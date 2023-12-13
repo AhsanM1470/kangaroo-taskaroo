@@ -39,9 +39,10 @@
 
       <div class="field-label">Description:</div>
       <div class="field-value">{{ team.description }}</div>
+      <div class="field-label">Team Creator</div>
+      <div class="field-value">{{ team.team_creator }}</div>
 
       <div class="field-label">List of Team Members:</div>
-      <div class="field-value">{{ team.get_team_members_list }}</div>
       
       {% for member in team.get_team_members %}
       <ul>
