@@ -34,19 +34,23 @@ def formatDateTime(input_date):
     # Format the datetime object into 'yyyy-mm-dd hh:mm:ss'
     formatted_datetime = parsed_datetime.strftime('%Y-%m-%d %H:%M:%S')
 
+
 class DashboardView(LoginRequiredMixin, View):
     template_name = 'dashboard.html'
     success_url = reverse_lazy('dashboard')
 
-    def get(self, request):
+    def get(self, request, *args, **kwargs):
         current_user = request.user
         teams = current_user.get_teams()
+
         if 'dashboard_team' in request.GET:
             team_id = request.GET.get("dashboard_team")
             request.session["current_team_id"] = team_id
+
         # Get the current team
         current_team_id = request.session.get("current_team_id", None)
         current_team = Team.objects.filter(id=current_team_id).first() if current_team_id else None
+
         # Create 3 default lanes for the current team if they do not exist
         if current_team and not Lane.objects.filter(team=current_team).exists():
             default_lane_names = [("Backlog", 1), ("In Progress", 2), ("Complete", 3)]
@@ -63,82 +67,16 @@ class DashboardView(LoginRequiredMixin, View):
 
         return render(request, self.template_name, self.get_context_data(current_user, current_team))
 
-    def post(self, request, *args, **kwargs):
-        current_team_id = request.session.get("current_team_id")
-        current_team = Team.objects.get(id=current_team_id)
-
-        if 'add_lane' in request.POST:
-            max_order = Lane.objects.filter(team=current_team).aggregate(Max('lane_order'))['lane_order__max'] or 0
-            Lane.objects.create(lane_name="New Lane", lane_order=max_order + 1, team=current_team)
-
-        elif 'rename_lane' in request.POST:
-            lane_id = request.POST.get('rename_lane')
-            new_lane_name = request.POST.get('new_lane_name')
-            lane = Lane.objects.filter(lane_id=lane_id, team=current_team).first()
-            if lane:
-                lane.lane_name = new_lane_name
-                lane.save()
-
-        elif 'move_task_left' in request.POST:
-            task_id = request.POST.get('move_task_left')
-            task = get_object_or_404(Task, pk=task_id)
-            current_lane = task.lane
-            # Filter left lanes within the same team
-            left_lane = Lane.objects.filter(lane_order__lt=current_lane.lane_order, team=current_lane.team).order_by('-lane_order').first()
-            if left_lane:
-                task.lane = left_lane
-                task.save()
-
-        elif 'move_task_right' in request.POST:
-            """" Move the task to the right lane """
-            task_id = request.POST.get('move_task_right')
-            task = get_object_or_404(Task, pk=task_id)
-            current_lane = task.lane
-            # Filter right lanes within the same team
-            right_lane = Lane.objects.filter(lane_order__gt=current_lane.lane_order, team=current_lane.team).order_by('lane_order').first()
-            if right_lane:
-                task.lane = right_lane
-                task.save()
-
-        elif 'move_lane_left' in request.POST:
-            """" Move the lane 1 space left """
-            lane_id = request.POST.get('move_lane_left')
-            #with transaction.atomic():
-            lane = get_object_or_404(Lane, pk=lane_id)
-            previous_lane = Lane.objects.filter(lane_order__lt=lane.lane_order, team=lane.team).order_by('-lane_order').first()
-
-            if previous_lane:
-                # temp value to avoid unique value constraint
-                temp_order = -1
-                lane.lane_order, previous_lane.lane_order = temp_order, lane.lane_order
-                lane.save()
-                previous_lane.save()
-                lane.lane_order = previous_lane.lane_order - 1
-                lane.save()
-
-        elif 'move_lane_right' in request.POST:
-            """" Move the lane 1 space right """
-            lane_id = request.POST.get('move_lane_right')
-            #with transaction.atomic():
-            lane = get_object_or_404(Lane, pk=lane_id)
-            next_lane = Lane.objects.filter(lane_order__gt=lane.lane_order, team=lane.team).order_by('lane_order').first()
-            if next_lane:
-                    # Use a temporary value to avoid unique constraint violation
-                temp_order = -1
-                lane.lane_order, next_lane.lane_order = temp_order, lane.lane_order
-                lane.save()
-                next_lane.save()
-                lane.lane_order = next_lane.lane_order + 1
-                lane.save()
-        
-        return redirect('dashboard')
-
     def get_context_data(self, current_user, current_team):
-        lanes = Lane.objects.filter(current_team=current_team).order_by('lane_order') if current_team else Lane.objects.none()
-        team_tasks = current_team.get_tasks() if current_team else Task.objects.none()
-        assign_task_form = AssignTaskForm(current_team=current_team, current_user=current_user)
+        if current_team:
+            lanes = Lane.objects.filter(team=current_team).order_by('lane_order')
+            team_tasks = current_team.get_tasks()
+        else:    
+            Lane.objects.none()
+            Task.objects.none()
+        assign_task_form = AssignTaskForm(team=current_team, user=current_user)
         create_task_form = TaskForm()
-        create_team_form = CreateTeamForm(current_user=current_user)
+        create_team_form = CreateTeamForm(user=current_user)
 
         detect_keydates()
 
@@ -152,189 +90,96 @@ class DashboardView(LoginRequiredMixin, View):
             "create_task_form": create_task_form,
             "create_team_form": create_team_form,
         }
-
-# @login_required
-# def dashboard(request):
-#     """Display and modify the current user's dashboard."""
-#     current_user = request.user
-#     teams = current_user.get_teams()  # Ensure this method exists and returns a QuerySet
-
-#     if request.method == 'GET':
-#         if 'dashboard_team' in request.GET:
-#             team_id = request.GET.get("dashboard_team")
-#             request.session["current_team_id"] = team_id
-
-#         # Get the current team
-#         current_team_id = request.session.get("current_team_id", None)
-#         current_team = Team.objects.filter(id=current_team_id).first() if current_team_id else None
-
-#         # Create 3 default lanes for the current team if they do not exist
-#         if current_team and not Lane.objects.filter(team=current_team).exists():
-#             default_lane_names = [("Backlog", 1), ("In Progress", 2), ("Complete", 3)]
-#             for lane_name, lane_order in default_lane_names:
-#                 Lane.objects.get_or_create(
-#                     lane_name=lane_name,
-#                     lane_order=lane_order,
-#                     team=current_team
-#                 )
     
-#     if request.method == 'POST':
-#         current_team_id = request.session.get("current_team_id")
+    def post(self, request, *args, **kwargs):
+        current_team_id = request.session.get("current_team_id")
+        current_team = Team.objects.get(id=current_team_id)
 
-#         current_team = Team.objects.get(id=current_team_id)
+        if 'add_lane' in request.POST:
+            self.add_lane(current_team)
 
-#         if 'add_lane' in request.POST:
-#             max_order = Lane.objects.filter(team=current_team).aggregate(Max('lane_order'))['lane_order__max'] or 0
-#             Lane.objects.create(lane_name="New Lane", lane_order=max_order + 1, team=current_team)
+        elif 'rename_lane' in request.POST:
+            self.rename_lane(request, current_team)
 
-#         elif 'rename_lane' in request.POST:
-#             lane_id = request.POST.get('rename_lane')
-#             new_lane_name = request.POST.get('new_lane_name')
-#             lane = Lane.objects.filter(lane_id=lane_id, team=current_team).first()
-#             if lane:
-#                 lane.lane_name = new_lane_name
-#                 lane.save()
-
-#         elif 'move_task_left' in request.POST:
-#             task_id = request.POST.get('move_task_left')
-#             task = get_object_or_404(Task, pk=task_id)
-#             current_lane = task.lane
-#             # Filter left lanes within the same team
-#             left_lane = Lane.objects.filter(lane_order__lt=current_lane.lane_order, team=current_lane.team).order_by('-lane_order').first()
-            
-#             if left_lane:
-#                 task.lane = left_lane
-#                 task.save()
-
-#         # Move tasks to the right lane
-#         elif 'move_task_right' in request.POST:
-#             task_id = request.POST.get('move_task_right')
-#             task = get_object_or_404(Task, pk=task_id)
-#             current_lane = task.lane
-#             # Filter right lanes within the same team
-#             right_lane = Lane.objects.filter(lane_order__gt=current_lane.lane_order, team=current_lane.team).order_by('lane_order').first()
-            
-#             if right_lane:
-#                 task.lane = right_lane
-#                 task.save()
-    
-#         # move a lane to the left
-#         elif 'move_lane_left' in request.POST:
-#             #with transaction.atomic():
-#             lane_id = request.POST.get('move_lane_left')
-#             lane = get_object_or_404(Lane, pk=lane_id)
-#             previous_lane = Lane.objects.filter(lane_order__lt=lane.lane_order, team=lane.team).order_by('-lane_order').first()
-#             if previous_lane:
-#                 # temp value to avoid unique value constraint
-#                 temp_order = -1
-#                 lane.lane_order, previous_lane.lane_order = temp_order, lane.lane_order
-#                 lane.save()
-#                 previous_lane.save()
-#                 lane.lane_order = previous_lane.lane_order - 1
-#                 lane.save()
-
-#         # move a lane to the right
-#         elif 'move_lane_right' in request.POST:
-#             #with transaction.atomic():
-#             lane_id = request.POST.get('move_lane_right')
-#             lane = get_object_or_404(Lane, pk=lane_id)
-#             next_lane = Lane.objects.filter(lane_order__gt=lane.lane_order, team=lane.team).order_by('lane_order').first()
-#             if next_lane:
-#                     # Use a temporary value to avoid unique constraint violation
-#                 temp_order = -1
-#                 lane.lane_order, next_lane.lane_order = temp_order, lane.lane_order
-#                 lane.save()
-#                 next_lane.save()
-#                 lane.lane_order = next_lane.lane_order + 1
-#                 lane.save()
-
-#     # Ensure a current team is selected
-#     if current_team is None and teams.exists():
-#         request.session["current_team_id"] = teams.first().id
-#         current_team = teams.first()
-
-#     lanes = Lane.objects.filter(team=current_team).order_by('lane_order') if current_team else Lane.objects.none()
-#     team_tasks = current_team.get_tasks() if current_team else Task.objects.none()
-#     assign_task_form = AssignTaskForm(team=current_team, user=current_user)
-#     create_task_form = TaskForm()
-#     create_team_form = CreateTeamForm(user=current_user)
-
-#     detect_keydates()
-
-#     return render(request, 'dashboard.html', {
-#         'user': current_user,
-#         'lanes': lanes,
-#         'tasks': team_tasks,
-#         'teams': teams,
-#         "current_team": current_team,
-#         "assign_task_form" : assign_task_form,
-#         "create_task_form": create_task_form,
-#         "create_team_form": create_team_form,
-#     })
-
-# # Move tasks to the left lane
-# def move_task_left(request, pk):
-#     """" Move the task to the left lane """
-#     if request.method == 'POST':
-#         task = get_object_or_404(Task, pk=pk)
-#         current_lane = task.lane
-#         # Filter left lanes within the same team
-#         left_lane = Lane.objects.filter(lane_order__lt=current_lane.lane_order, team=current_lane.team).order_by('-lane_order').first()
+        elif 'move_task_left' in request.POST:
+            self.move_task_left(request)
         
-#         if left_lane:
-#             task.lane = left_lane
-#             task.save()
-
-#         return redirect('dashboard')
-
-# # Move tasks to the right lane
-# def move_task_right(request, pk):
-#     """" Move the task to the right lane """
-#     if request.method == 'POST':
-#         task = get_object_or_404(Task, pk=pk)
-#         current_lane = task.lane
-#         # Filter right lanes within the same team
-#         right_lane = Lane.objects.filter(lane_order__gt=current_lane.lane_order, team=current_lane.team).order_by('lane_order').first()
+        elif 'move_task_right' in request.POST:
+            self.move_task_right(request)
         
-#         if right_lane:
-#             task.lane = right_lane
-#             task.save()
+        elif 'move_lane_left' in request.POST:
+            self.move_lane_left(request)
+        
+        elif 'move_lane_right' in request.POST:
+            self.move_lane_right(request)
 
-#         return redirect('dashboard')
+        return redirect('dashboard')
     
-# # move a lane to the left
-# def move_lane_left(request, lane_id):
-#     """" Move the lane 1 space left """
-#     if request.method == 'POST':
-#         #with transaction.atomic():
-#         lane = get_object_or_404(Lane, pk=lane_id)
-#         previous_lane = Lane.objects.filter(lane_order__lt=lane.lane_order, team=lane.team).order_by('-lane_order').first()
-#         if previous_lane:
-#             # temp value to avoid unique value constraint
-#             temp_order = -1
-#             lane.lane_order, previous_lane.lane_order = temp_order, lane.lane_order
-#             lane.save()
-#             previous_lane.save()
-#             lane.lane_order = previous_lane.lane_order - 1
-#             lane.save()
-#     return redirect('dashboard')
+    # adding a lane to the dashboard
+    def add_lane(self, current_team):
+        max_order = Lane.objects.filter(team=current_team).aggregate(Max('lane_order'))['lane_order__max'] or 0
+        Lane.objects.create(lane_name="New Lane", lane_order=max_order + 1, team=current_team)
+    
+    # renaming a lane
+    def rename_lane(self, request, current_team):
+        lane_id = request.POST.get('rename_lane')
+        new_lane_name = request.POST.get('new_lane_name')
+        lane = Lane.objects.filter(lane_id=lane_id, team=current_team).first()
+        if lane:
+            lane.lane_name = new_lane_name
+            lane.save()
+    
+    # moving a task to the lane on the left
+    def move_task_left(self, request):
+        task_id = request.POST.get('move_task_left')
+        task = get_object_or_404(Task, pk=task_id)
+        current_lane = task.lane
+        # Filter left lanes within the same team
+        left_lane = Lane.objects.filter(lane_order__lt=current_lane.lane_order, team=current_lane.team).order_by('-lane_order').first()
+        if left_lane:
+            task.lane = left_lane
+            task.save()
+    
+    # moving a task to the lane on the right
+    def move_task_right(self, request):
+        task_id = request.POST.get('move_task_right')
+        task = get_object_or_404(Task, pk=task_id)
+        current_lane = task.lane
+        # Filter right lanes within the same team
+        right_lane = Lane.objects.filter(lane_order__gt=current_lane.lane_order, team=current_lane.team).order_by('lane_order').first()
+        if right_lane:
+            task.lane = right_lane
+            task.save()
+    
+    # moving the lane to the left i.e. putting it 1 lane before in the order
+    def move_lane_left(self, request):
+        lane_id = request.POST.get('move_lane_left')
+        lane = get_object_or_404(Lane, pk=lane_id)
+        previous_lane = Lane.objects.filter(lane_order__lt=lane.lane_order, team=lane.team).order_by('-lane_order').first()
 
-# # move a lane to the right
-# def move_lane_right(request, lane_id):
-#     """" Move the lane 1 space right """
-#     if request.method == 'POST':
-#         #with transaction.atomic():
-#         lane = get_object_or_404(Lane, pk=lane_id)
-#         next_lane = Lane.objects.filter(lane_order__gt=lane.lane_order, team=lane.team).order_by('lane_order').first()
-#         if next_lane:
-#                 # Use a temporary value to avoid unique constraint violation
-#             temp_order = -1
-#             lane.lane_order, next_lane.lane_order = temp_order, lane.lane_order
-#             lane.save()
-#             next_lane.save()
-#             lane.lane_order = next_lane.lane_order + 1
-#             lane.save()
-#     return redirect('dashboard')
+        if previous_lane:
+            # temp value to avoid unique value constraint
+            temp_order = -1
+            lane.lane_order, previous_lane.lane_order = temp_order, lane.lane_order
+            lane.save()
+            previous_lane.save()
+            lane.lane_order = previous_lane.lane_order - 1
+            lane.save()
+    
+    # moving the lane to the left i.e. putting it 1 lane after in the order
+    def move_lane_right(self, request):
+        lane_id = request.POST.get('move_lane_right')
+        lane = get_object_or_404(Lane, pk=lane_id)
+        next_lane = Lane.objects.filter(lane_order__gt=lane.lane_order, team=lane.team).order_by('lane_order').first()
+        if next_lane:
+            # temp value to avoid unique value constraint
+            temp_order = -1
+            lane.lane_order, next_lane.lane_order = temp_order, lane.lane_order
+            lane.save()
+            next_lane.save()
+            lane.lane_order = next_lane.lane_order + 1
+            lane.save()
+
 
 @login_required
 def create_team(request):

@@ -278,7 +278,7 @@
             <div class="lane-header" style="display: flex; justify-content: space-between; align-items: center;">
               
               <!-- Move lane left form -->
-              <form method="post" style="display: inline;">
+              <form method="post" action="{% url 'dashboard' %}" style="display: inline;">
                 {% csrf_token %}
                 <input type="hidden" name="move_lane_left" value="{{ lane.lane_id }}">
                 <button type="submit" class="image" title="Move lane left">
@@ -287,7 +287,7 @@
               </form>
 
             <!-- Lane name form -->
-            <form method="post" style="display: inline;">
+            <form method="post" action="{% url 'dashboard' %}" style="display: inline;">
               {% csrf_token %}
               <input type="hidden" name="rename_lane" value="{{ lane.lane_id }}">
 
@@ -298,7 +298,7 @@
             </form>
 
             <!-- Move lane right form -->
-            <form method="post" style="display: inline;">
+            <form method="post" action="{% url 'dashboard' %}" style="display: inline;">
               {% csrf_token %}
               <input type="hidden" name="move_lane_right" value="{{ lane.lane_id }}">
               <button type="submit" class="image" title="Move lane right">
@@ -320,7 +320,7 @@
             {% if task.lane_id == lane.lane_id %}
             <div class="task">
               <!-- Form for moving tasks to the left lane -->
-              <form method="post">
+              <form method="post" action="{% url 'dashboard' %}">
                 {% csrf_token %}
                 <input type="hidden" name="move_task_left" value="{{ task.id }}">
                 <button type="submit" class="image" title="Move task left">
@@ -331,7 +331,7 @@
               {{ task.name }}
             
               <!-- Form for moving task to the right lane -->
-              <form method="post">
+              <form method="post" action="{% url 'dashboard' %}">
                 {% csrf_token %}
                 <input type="hidden" name="move_task_right" value="{{ task.id }}">
                 <button type="submit" class="image" title="Move task right">
@@ -372,7 +372,7 @@
           {% endfor %}
         </div>
   
-        <form method="post" class="ms-2">
+        <form method="post" action="{% url 'dashboard' %}" class="ms-2">
           {% csrf_token %}
           <button type="submit" name="add_lane" class="btn btn-dark">Add Lane</button>
         </form>
