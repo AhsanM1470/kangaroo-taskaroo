@@ -1,0 +1,10 @@
+[
+    {
+        "model": "tasks.team",
+        "pk": 1,
+        "fields": {
+          "team_name": "Team A",
+          "team_creator": 5
+        }
+    }
+]

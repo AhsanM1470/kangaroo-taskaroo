@@ -122,7 +122,7 @@ class TaskForm(forms.ModelForm):
         widgets = {
             'name' : forms.TextInput(attrs={'class': 'nameClass', 'placeholder': 'Enter the task name...'}),
             'description' : forms.Textarea(attrs={'class': 'descriptionClass', 'placeholder': 'Write a task description...'}),
-            #'lane': forms.Select(attrs={'class':'lane_select'}),
+            # 'lane': forms.Select(attrs={'class':'lane_select'}),
             'priority': forms.Select(attrs={'class': 'priorityClass'}),
         }
     #
@@ -171,9 +171,7 @@ class TaskForm(forms.ModelForm):
             if combined_datetime > datetime.now():
                 cleaned_data['due_date'] = datetime.combine(date, time)
             else:
-                # Simon Stuff!
                 self.add_error("date_field", 'Pick a date-time in the future!')
-                #raise ValidationError('Pick a date-time in the future!')
         return cleaned_data
     
     def save(self, assigned_team_id=None, lane_id=None, commit=True):
@@ -184,7 +182,12 @@ class TaskForm(forms.ModelForm):
         if date is not None and time is not None:
             if datetime.combine(date,time) != instance.due_date:
                 instance.deadline_notif_sent = (datetime.today()-timedelta(days=1)).date()
-            instance.due_date = datetime.combine(date, time)
+                
+            instance.due_date = timezone.make_aware(
+                timezone.datetime.combine(date, time),
+                timezone.get_current_timezone()
+            )
+            # instance.due_date = datetime.combine(date, time)
             
         if assigned_team_id is not None:
             instance.assigned_team = Team.objects.get(id=assigned_team_id)

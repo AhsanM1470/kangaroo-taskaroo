@@ -1,5 +1,5 @@
 from collections.abc import Collection
-from django.core.validators import RegexValidator, MaxLengthValidator
+from django.core.validators import RegexValidator, MaxLengthValidator, MinValueValidator
 from django.core.exceptions import ValidationError 
 from django.contrib.auth.models import AbstractUser
 from django.db import models
@@ -212,10 +212,10 @@ class Task(models.Model):
     )
     name = models.CharField(max_length=30, blank=False, validators=[alphanumeric])
     description = models.CharField(max_length=530, blank=True)
-    due_date = models.DateTimeField(default=datetime(1, 1, 1))
+    due_date = models.DateTimeField(default=timezone.now, validators=[MinValueValidator(limit_value=timezone.now(), message='Datetime must be in the future.')], blank=False)
     created_at = models.DateTimeField(default=timezone.now)
-    lane = models.ForeignKey(Lane, on_delete=models.CASCADE, default=Lane.objects.first)
-    assigned_team = models.ForeignKey(Team, blank=False, on_delete=models.CASCADE, null=True)
+    lane = models.ForeignKey(Lane, on_delete=models.CASCADE, default=Lane.objects.first, blank=False)
+    assigned_team = models.ForeignKey(Team, blank=False, on_delete=models.CASCADE)
     assigned_users = models.ManyToManyField(User, blank=True)
     dependencies = models.ManyToManyField("Task",blank=True)
     deadline_notif_sent = models.DateField(default=(datetime.today()-timedelta(days=1)).date())

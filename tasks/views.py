@@ -492,8 +492,7 @@ class CreateTaskView(LoginRequiredMixin, FormView):
         """Return redirect URL after successful update."""
         messages.add_message(self.request, messages.SUCCESS, "Task created!")
         return reverse_lazy('dashboard')
-    
-    
+  
     # def get(self, request):
     #     current_user = request.user
     #     teams = current_user.get_teams()
@@ -528,6 +527,7 @@ class CreateTaskView(LoginRequiredMixin, FormView):
                 request.session["current_team_id"] = teams.first().id
                 current_team = teams.first()
             #lanes = Lane.objects.filter(team=current_team).order_by('lane_order') if current_team else Lane.objects.none()
+
             #default_lane = Lane.objects.get(name='Backlog')
 
             # Check if the form is valid
