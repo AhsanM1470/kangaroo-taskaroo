@@ -424,45 +424,45 @@ class ProfileUpdateView(LoginRequiredMixin, UpdateView):
         messages.add_message(self.request, messages.SUCCESS, "Profile updated!")
         return reverse(settings.REDIRECT_URL_WHEN_LOGGED_IN)
 
-class ProfilePicUpdateView(LoginRequiredMixin, UpdateView):
-    """Display user profile editing screen, and handle profile modifications."""
+# class ProfilePicUpdateView(LoginRequiredMixin, UpdateView):
+#     """Display user profile editing screen, and handle profile modifications."""
 
-    model = ProfileUpdateForm
-    template_name = "profile.html"
-    form_class = ProfileUpdateForm
+#     model = ProfileUpdateForm
+#     template_name = "profile.html"
+#     form_class = ProfileUpdateForm
     
-    def get(self, request, *args, **kwargs):
-        current_user = request.user
-        user_profile = Profile.objects.get(user=current_user)
-        form = ProfileUpdateForm()
-        return render(request, self.template_name, {'form': form, 'profile': user_profile})
+#     def get(self, request, *args, **kwargs):
+#         current_user = request.user
+#         user_profile = Profile.objects.get(user=current_user)
+#         form = ProfileUpdateForm()
+#         return render(request, self.template_name, {'form': form, 'profile': user_profile})
     
-    def post(self, request, *args, **kwargs):
-        # current_user = request.user
-        # user_profile = Profile.objects.get(user=current_user)
+#     def post(self, request, *args, **kwargs):
+#         # current_user = request.user
+#         # user_profile = Profile.objects.get(user=current_user)
         
-        user_id = request.GET.get('user_id')
-        print(user_id)
-        profile = get_object_or_404(Profile, user=user_id)
+#         user_id = request.GET.get('user_id')
+#         print(user_id)
+#         profile = get_object_or_404(Profile, user=user_id)
         
-        form = ProfileUpdateForm(request.POST, instance=profile )
-        print(profile)
-        if form.is_valid():
-            form.save()
-            return redirect('profile')
-        else :
-            form = ProfileUpdateForm(request.POST, instance=profile)
-        return render(request, 'profile.html', {'form': form, 'profile': profile})
+#         form = ProfileUpdateForm(request.POST, instance=profile )
+#         print(profile)
+#         if form.is_valid():
+#             form.save()
+#             return redirect('profile')
+#         else :
+#             form = ProfileUpdateForm(request.POST, instance=profile)
+#         return render(request, 'profile.html', {'form': form, 'profile': profile})
 
-    def get_object(self):
-        """Return the object (user) to be updated."""
-        user = self.request.user
-        return user
+#     def get_object(self):
+#         """Return the object (user) to be updated."""
+#         user = self.request.user
+#         return user
 
-    def get_success_url(self):
-        """Return redirect URL after successful update."""
-        messages.add_message(self.request, messages.SUCCESS, "Profile updated!")
-        return reverse(settings.REDIRECT_URL_WHEN_LOGGED_IN)
+#     def get_success_url(self):
+#         """Return redirect URL after successful update."""
+#         messages.add_message(self.request, messages.SUCCESS, "Profile updated!")
+#         return reverse(settings.REDIRECT_URL_WHEN_LOGGED_IN)
 
 
 class SignUpView(LoginProhibitedMixin, FormView):
