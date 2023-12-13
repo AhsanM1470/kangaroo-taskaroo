@@ -1,83 +1,140 @@
 {% extends 'base_content.html' %}
 {% block content %}
 
-<style>
-  body{
-    color: rgb(50, 198, 218);
-    height: 100vh;
-    width: 100vw;
-    background: linear-gradient(to bottom right, #bb4e1b, rgb(32, 143, 158));
-    margin: 0;
-  }
+    <style>
+        body {
+            color: rgb(50, 198, 218);
+            height: 100vh;
+            width: 100vw;
+            background: linear-gradient(to bottom right, #bb4e1b, rgb(32, 143, 158));
+            margin: 0;
+        }
+
+        .row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 80vh;
+            padding-right: 0;
+        }
+
+        .profilecard {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgb(155, 140, 151);
+            text-align: center;
+            height: 700px;
+            max-width: 700px;
+            background: rgb(13, 84, 94);
+            justify-content: flex-start;
+            align-items: center;
+            padding: 20px;
+            align-items: flex-start;
+        }
 
 
-  .row{
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 80vh;
-    padding-right: 0;
-  }
+        .profileform {
+            padding-bottom: 1em;
+            padding-top: 0.1em;
+            border-radius: 10px;
+            width: 60%;
+            justify-content: center;
+            align-items: center;
+        }
 
-  .profilecard {
-    display: flex;
-    flex-direction: row;
-    width: 100%;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-    border: 1px solid rgb(155, 140, 151);
-    text-align: center;
-    height: 600px;
-    max-width: 700px;
-    background: rgb(13, 84, 94);
-    justify-content: center;
-    align-items: center; 
-    padding-right: 0;
-    padding-left: 0;
-  }
+        .profileform h1 {
+            text-align: left;
+            font-size: 1.5rem;
+            margin-top: 0;
+            padding-top: 0;
+        }
 
-  .profileform{
-    padding-bottom: 1em;
-    padding-top: 1em;
-    border-radius: 10px;
-    width: 60%;
-    justify-content: center;
-    align-items: center; 
-  }
+        .profile-title {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            align-self: flex-start;
+        }
 
-  .profileform h1{
-    text-align: center;
-  }
+        .update-btn {
+            width: 80%;
+            margin-top: 5%;
+            background: white;
+            color: black;
+            transition: ease-in 0.3s;
 
-  .update-btn{
-    width:80%;
-    margin-top: 5%;
-    background: white;
-    color: black;
-    transition: ease-in 0.3s;
+            margin-left: auto;
+            margin-right: auto;
+            display: block;
+        }
 
-    margin-left: auto;
-    margin-right: auto;
-    display: block;
-  }
+        .update-btn:hover {
+            background: #28242c;
+            color: white;
 
-  .update-btn:hover{
-    background: #28242c;
-    color: white;
-  }
-</style>
+        }
 
-<div class="container">
-  <div class="row">
-    <div class="profilecard">
-        <div class="profileform">
-          <h1>Edit Profile</h1>
-          <form action="{% url 'profile' %}" method="post">
-            {% csrf_token %}
-            {% include 'partials/bootstrap_form.html' with form=form %}
-            <input type="submit" value="Update" class="update-btn btn btn-primary">
-          </form>
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+        }
+
+        .media-body {
+            padding: 0rem; /
+            font-size: 0.85rem;
+        }
+
+        .media-body .account-heading {
+            font-size: 1.15rem;
+            margin-top: 0.5rem;
+            margin-bottom: 0.1rem;
+            word-break: break-word;
+        }
+
+        .media {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 0.5em;
+
+        }
+
+        .profileform {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+    </style>
+
+    <div class="container">
+        <div class="row">
+            <div class="profilecard">
+                <h1 class="profile-title">Edit Profile</h1> <!-- Moved and class changed -->
+                <div class="media">
+                    {% if profile.profile_picture %}
+                        <img src="{{ profile.avatar.url }}" alt="{{ profile.user.username }}'s Profile Picture">
+                    {% else %}
+                        <p>No profile picture available</p>
+                    {% endif %}
+                    <div class="media-body">
+                        <h2 class="account-heading">Username: {{ user.username }}</h2>
+                        <p class="text-secondary">Email: {{ user.email }}</p>
+                    </div>
+                </div>
+                <div class="profileform">
+                    <form action="{% url 'profile' %}" method="post">
+                        {% csrf_token %}
+                        {% include 'partials/bootstrap_form.html' with form=form %}
+                        <input type="submit" value="Update" class="update-btn btn btn-primary">
+                    </form>
+                </div>
+            </div>
         </div>
-      </div>
-  </div>
-</div>
+    </div>
+
+
 {% endblock %}
