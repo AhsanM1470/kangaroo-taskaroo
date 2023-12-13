@@ -20,8 +20,6 @@ from django.http import HttpResponseBadRequest
 from datetime import datetime
 from django.db.models import Max, Case, Value, When
 
-from django.db import transaction
-
 def detect_keydates():
     tasks = Task.objects.all()
     for task in tasks:
@@ -598,8 +596,6 @@ class TaskView(LoginRequiredMixin, View):
         context = {'task': task}
         return render(request, self.template_name, context)
     
-
-
 priority_order = Case(
     When(priority='high', then=Value(3)),
     When(priority='medium', then=Value(2)),
