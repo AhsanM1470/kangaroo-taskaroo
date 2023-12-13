@@ -1,5 +1,7 @@
 {% load widget_tweaks %}
 
+
+{% block content %}
 <style>
     .team-form {
         font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
@@ -40,6 +42,7 @@
         text-decoration: none;
         vertical-align: middle;
         height: 2em;
+        margin-top: 1em;
         padding: 5px;
     }
 
@@ -73,6 +76,8 @@
         width: 100%;
         height: 100%;
         z-index: 2;
+        display: flex;
+        justify-content: center;
         border: 1px solid rgba(255, 255, 255, 0.623);
         background: linear-gradient(to bottom right, #a55a37, rgba(207, 222, 220, 0.438));
         box-shadow: 0 0 20px rgba(0, 0, 0, 0.589);
@@ -87,6 +92,7 @@
         border-radius: 4px; 
         box-sizing: border-box; 
         color: #ffffff; 
+        width: 100%;
     }
 
     input#id_team_name::placeholder,
@@ -99,20 +105,24 @@
         font-weight: bolder;
         font-size: 1.5em;
     }
-</style>
 
-{% block content %}
+    .teamcreatecard {
+        width: 90%;
+    }
+</style> 
 
 <div class="teamcontainer">
-    <h1>Create Team</h1>
+    <div class="teamcreatecard">
+        <h1>Create Team</h1>
 
-    <form action ="{%url 'create_team'%}" method="post">
-        {% csrf_token %}
-
-        {{ team_form.as_p }}
-        
-    <input type="submit" value="Create Team" class="create-team-btn">
-    </form>
+        <form action ="{%url 'create_team'%}" method="post">
+            {% csrf_token %}
+    
+            {{ team_form.as_p }}
+            
+        <input type="submit" value="Create Team" class="create-team-btn">
+        </form>
+    </div>
 </div>
 {% endblock %}
 
