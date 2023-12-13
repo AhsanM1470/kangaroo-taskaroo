@@ -246,28 +246,37 @@ class InviteForm(forms.ModelForm):
         """Form options."""
 
         model = Invite
-        fields = ['invited_users', 'invite_message', "team_to_join"]
+        fields = ['users_to_invite', 'invite_message']
     
-    team_to_join = forms.ModelChoiceField(queryset=Team.objects.all(), required=True)
-    
-    def __init__(self, user=None, **kwargs):
+    users_to_invite = forms.ModelMultipleChoiceField(queryset=User.objects.all(), required=True)
+
+    def __init__(self, **kwargs):
         """Makes sure only teams that the current user belongs to are given as options"""
         """Makes sure only users who are not already part of the team are shown"""
 
-        self.user = user
+        self.user = kwargs.get("user")
+        self.team = kwargs.get("team")
+        if self.user != None:
+            kwargs.pop("user") 
+        if self.team != None:
+            kwargs.pop("team") 
+
         super().__init__(**kwargs)
 
         if self.user != None:
-            self.fields['team_to_join'].queryset = Team.objects.filter(team_members=self.user)
+            self.fields['users_to_invite'].queryset = User.objects.exclude(id=self.user.id)
+        if self.team != None:
+            self.fields['users_to_invite'].queryset.exclude(id__in=self.team.get_team_members())
     
-    def send_invite(self):
+    def send_invite(self, inviting_team=None):
         """Create a new invite and send it to each user"""
 
-        users = self.cleaned_data.get("invited_users")
+        users = self.cleaned_data.get("users_to_invite")
+        print(users)
 
         invite = Invite.objects.create(
             invite_message=self.cleaned_data.get("invite_message"),
-            inviting_team=self.cleaned_data.get("team_to_join")
+            inviting_team=inviting_team,
         )
         invite.set_invited_users(users)
 

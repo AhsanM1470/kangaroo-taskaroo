@@ -15,6 +15,7 @@
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.589);
     height: 100%;
     width: 100%;
+    overflow-y: scroll
   }
 
   .teaminfocontainer h2 {
@@ -42,6 +43,18 @@
 
       <div class="field-label">List of Team Members:</div>
       <div class="field-value">{{ team.get_team_members_list }}</div>
+
+      <div class="flex">
+        {% if user == team.team_creator %}
+        <h2>Make an invite</h2>
+        <form action ="{%url 'create_invite'%}" method="post">
+          {% csrf_token %}
+          {% include 'partials/bootstrap_form.html' with form=invite_form %}
+        <input type="submit" value="Create Invite" class="btn btn-primary">
+        </form>
+        {% endif %}
+        
+      </div>
     </div>
 </div>
 {% endblock %}

@@ -74,6 +74,7 @@ class DashboardView(LoginRequiredMixin, View):
             Task.objects.none()
         assign_task_form = AssignTaskForm(team=current_team, user=current_user)
         create_task_form = TaskForm()
+        invite_form = InviteForm(user=current_user, team=current_team)
         create_team_form = CreateTeamForm(user=current_user)
 
         detect_keydates()
@@ -85,6 +86,7 @@ class DashboardView(LoginRequiredMixin, View):
             'teams': current_user.get_teams(),
             "current_team": current_team,
             "assign_task_form" : assign_task_form,
+            "invite_form" : invite_form,
             "create_task_form": create_task_form,
             "create_team_form": create_team_form,
         }
@@ -649,15 +651,16 @@ class InviteView(LoginRequiredMixin, FormView):
         return kwargs
 
     def form_valid(self, form):
-
-        form.send_invite()
+        
+        inviting_team = Team.objects.get(id=self.request.session["current_team_id"])
+        form.send_invite(inviting_team=inviting_team)
         return super().form_valid(form)
 
     def get_success_url(self):
         """Redirect the user after successful password change."""
 
         messages.add_message(self.request, messages.SUCCESS, "Invite Sent!")
-        return reverse('my_teams')
+        return reverse('dashboard')
 
 class DeleteTeamView(LoginRequiredMixin, View):
     model = Team

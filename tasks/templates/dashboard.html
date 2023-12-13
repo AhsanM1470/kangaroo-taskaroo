@@ -249,7 +249,7 @@
 
       <div style="display: flex; justify-content: end;">
         <!-- View team info -->
-        <button type="button" name="view_team" class="image" data-bs-toggle="collapse" data-bs-target="#team_info" aria-expanded="false" aria-controls="team_info">
+        <button type="button" name="view_team" class="image" data-bs-toggle="collapse" data-bs-target="#team_info{{ team.id }}" aria-expanded="false" aria-controls="team_info{{ team.id }}">
           <img src="../../static/images/info-icon-blue.png" alt="Info Icon">
         </button>
 
@@ -389,11 +389,13 @@
         </article>
       </div>
     {% endfor %}
-    <div class="accordion-collapse collapse " id="team_info" data-bs-parent="#popup">
+    {% for team in teams %}
+    <div class="accordion-collapse collapse " id="team_info{{ team.id }}" data-bs-parent="#popup">
       <article id="popup_panel">
-        {% include 'team_info.html' with team=current_team %}
+        {% include 'team_info.html' with team=team user=user invite_form=invite_form %}
       </article>
     </div>
+    {% endfor %}
     {% for lane in lanes %}
       <div class="accordion-collapse collapse" id="create_task{{ lane.lane_id }}" data-bs-parent="#popup" style="width: 100%;">
         <article id="popup_panel" style="overflow: auto;">
