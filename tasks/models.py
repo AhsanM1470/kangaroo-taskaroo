@@ -74,17 +74,17 @@ class User(AbstractUser):
         """Returns a query set of the user's notifications"""
         return self.notifications.all().order_by("-id")
 
-class Profile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    avatar = models.ImageField(default='templates/profile_pics/person-icon-grey.png', upload_to='profile_pics')
-    def __str__(self):
-        return f'{self.user.username} Profile'
+# class Profile(models.Model):
+#     user = models.OneToOneField(User, on_delete=models.CASCADE)
+#     avatar = models.ImageField(default='templates/profile_pics/person-icon-grey.png', upload_to='profile_pics')
+#     def __str__(self):
+#         return f'{self.user.username} Profile'
 
-    def get_profile_image(self):
-        if self.avatar and hasattr(self.avatar, 'url'):
-            return self.avatar.url
-        else:
-            return '../tasks/templates/profile_pics/person-icon-grey.png'
+#     def get_profile_image(self):
+#         if self.avatar and hasattr(self.avatar, 'url'):
+#             return self.avatar.url
+#         else:
+#             return '../tasks/templates/profile_pics/person-icon-grey.png'
 
 class Team(models.Model):
     """Model used to hold teams of different users and their relevant information"""
