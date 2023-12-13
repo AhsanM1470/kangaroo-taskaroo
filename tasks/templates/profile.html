@@ -25,7 +25,7 @@
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
             border: 1px solid rgb(155, 140, 151);
             text-align: center;
-            height: 700px;
+            height: 650px;
             max-width: 700px;
             background: rgb(13, 84, 94);
             justify-content: flex-start;
@@ -36,7 +36,7 @@
 
 
         .profileform {
-            padding-bottom: 1em;
+            padding-bottom: 0.1em;
             padding-top: 0.1em;
             border-radius: 10px;
             width: 60%;
@@ -47,7 +47,7 @@
         .profileform h1 {
             text-align: left;
             font-size: 1.5rem;
-            margin-top: 0;
+            margin-top: 1;
             padding-top: 0;
         }
 
@@ -58,12 +58,12 @@
         }
 
         .update-btn {
-            width: 80%;
+            width: 30%;
             margin-top: 5%;
             background: white;
             color: black;
             transition: ease-in 0.3s;
-
+            text-align: center;
             margin-left: auto;
             margin-right: auto;
             display: block;
@@ -75,17 +75,18 @@
 
         }
 
-        .profile-avatar {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-        }
-
         .media-body {
             padding: 0rem; 
             font-size: 0.85rem;
         }
 
+        .my-image {
+        border-radius: 50%; /* Makes the image circular */
+        border: 3px solid white; /* Optional: Adds a white border */
+        width: 120px; /* Adjust the size as needed */
+        height: 120px; /* Adjust the size as needed */
+        object-fit: cover; /* Ensures the image covers the area without distortion */
+    }
         .media-body .account-heading {
             font-size: 1.15rem;
             margin-top: 0.5rem;
@@ -116,14 +117,14 @@
             <h1 class="profile-title">Edit Profile</h1>
             <div class="media">
                 <!-- Check if user has an avatar -->
-                <img src="{{ user.mini_gravatar }}" alt="Mini Gravatar Image">
+                <img src="{{ user.gravatar }}" class="my-image"alt="Gravatar Image">
                 <div class="media-body">
                     <h2 class="account-heading">Username: {{ user.username }}</h2>
                     <p class="text-secondary">Email: {{ user.email }}</p>
                 </div>
             </div>
             <div class="profileform">
-                <form action="{% url 'profile' %}" method="post">
+                <form action="{% url 'profile' %}" method="post"style="width: 70%;>
                     {% csrf_token %}
                     {% include 'partials/bootstrap_form.html' with form=form %}
                     <input type="submit" value="Update" class="update-btn btn btn-primary">

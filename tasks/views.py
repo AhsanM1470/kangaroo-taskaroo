@@ -489,9 +489,6 @@ class SignUpView(LoginProhibitedMixin, FormView):
             description="A default team for you to start managing your tasks!"
         )
         team.add_invited_member(self.request.user)
-        profile = Profile.objects.create(
-            user = self.request.user
-        )
         return super().form_valid(form)
 
     def get_success_url(self):
