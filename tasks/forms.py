@@ -232,18 +232,6 @@ class CreateTeamForm(forms.ModelForm):
                             'data-noresults-text': "No users matching query",
                             'autocomplete': 'off'} 
                     ))
-
-    def __init__(self, *args, **kwargs):
-        """Makes sure the creator of team is not shown as option to add"""
-
-        self.creator = kwargs.get("user")
-        if self.creator != None:
-            kwargs.pop("user") 
-
-        super().__init__(*args, **kwargs)
-
-        #if self.creator != None:
-         #   self.fields["members_to_invite"].queryset = User.objects.exclude(username=self.creator.username)
     
     def create_team(self, creator):
         """Create a new team, sending the requested members invites to join team"""
@@ -369,7 +357,7 @@ class AssignTaskForm(forms.Form):
     class Meta:
         """Form options."""
 
-        fields = ['team_members', 'task']
+        fields = ['team_members']
 
     team_members = forms.ModelMultipleChoiceField(queryset=User.objects.all(), required=True, widget=forms.CheckboxSelectMultiple)
 

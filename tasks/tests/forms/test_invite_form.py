@@ -1,11 +1,11 @@
-"""Unit tests of the create team form."""
+"""Unit tests of the invite form."""
 from django import forms
 from django.test import TestCase
-from tasks.forms import CreateTeamForm
+from tasks.forms import InviteForm
 from tasks.models import User, Team, Invite
 
-class CreateTeamFormTestCase(TestCase):
-    """Unit tests of the create team form."""
+class InviteFormTestCase(TestCase):
+    """Unit tests of the invite form."""
 
     fixtures = [
         'tasks/tests/fixtures/default_user.json',
@@ -22,7 +22,8 @@ class CreateTeamFormTestCase(TestCase):
         }
 
     def test_form_has_necessary_fields(self):
-        form = CreateTeamForm()
+        form = InviteForm()
+        ['team_name', 'description', 'members_to_invite']
         self.assertIn('team_name', form.fields)
         self.assertIn('description', form.fields)
         self.assertIn('members_to_invite', form.fields)
@@ -30,8 +31,8 @@ class CreateTeamFormTestCase(TestCase):
         self.assertTrue(isinstance(members_to_invite_field, forms.CharField))
         self.assertTrue(isinstance(members_to_invite_field.widget, forms.Select))
 
-    def test_valid_create_team_form(self):
-        form = CreateTeamForm(data=self.form_input)
+    def test_valid_invite_form(self):
+        form = InviteForm(data=self.form_input)
         self.assertTrue(form.is_valid())
 
     def test_form_uses_model_validation(self):

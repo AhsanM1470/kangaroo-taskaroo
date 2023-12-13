@@ -144,7 +144,7 @@ def dashboard(request):
     lanes = Lane.objects.filter(team=current_team).order_by('lane_order') if current_team else Lane.objects.none()
     team_tasks = current_team.get_tasks() if current_team else Task.objects.none()
     create_task_form = TaskForm(team=current_team)
-    create_team_form = CreateTeamForm(user=current_user)
+    create_team_form = CreateTeamForm()
 
     detect_keydates()
 
@@ -270,7 +270,7 @@ def my_teams(request):
     current_user = request.user
     user_teams = current_user.get_teams()
     user_invites = current_user.get_invites()
-    team_form = CreateTeamForm(user=current_user)
+    team_form = CreateTeamForm()
 
     """Only show the invite and remove form for creators of teams"""
     if len(current_user.get_created_teams()) > 0:
@@ -292,7 +292,7 @@ def remove_member(request):
 
 @login_required
 def assign_task(request, task_id):
-    """Assigns a task to a user using the AssignedTask Model"""
+    """Assigns a task to a user using the task model"""
 
     task = Task.objects.get(id=task_id)
     current_team = Team.objects.filter(id=request.session["current_team_id"]).first()
