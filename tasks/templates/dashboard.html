@@ -240,9 +240,9 @@
     <hr>
     {% for team in teams %}
 
-    <ul style="display: flex; justify-content: space-between; align-items: center;">
+    <ul style="display: flex; align-items: center;">
       <!--Switch dashboard by pressing team name-->
-      <form method="get" style="display: inline;">
+      <form method="get" style="display: inline; flex-grow: 1;">
           <button type="submit" name="dashboard_team" value="{{ team.id }}">
               {{ team.team_name }}
           </button>
@@ -256,14 +256,14 @@
 
         <!-- Delete team, shown if you are the team's creator -->
         {% if user == team.team_creator %}
-          <form method="post" style="display: inline;" action="{% url 'delete_team' team.id %}">
-          {% csrf_token %}
-            <button type="submit" class="image" title="Delete Team" style="margin-right: 0.5em;">
-              <img src="../../static/images/bin-icon-blue.png" alt="Delete Icon">
-            </button>
-          </form>
+        <form method="post" style="display: inline;" action="{% url 'delete_team' team.id %}">
+        {% csrf_token %}
+          <button type="submit" class="image" title="Delete Team">
+            <img src="../../static/images/bin-icon-blue.png" alt="Delete Icon">
+          </button>
+        </form>
         {% endif %}
-        </div>
+      </div>
       </ul>
       {% endfor %}
   </nav>
