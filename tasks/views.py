@@ -180,7 +180,6 @@ class DashboardView(LoginRequiredMixin, View):
             lane.lane_order = next_lane.lane_order + 1
             lane.save()
 
-
 @login_required
 def create_team(request):
     """Form that allows user to create a new team"""
@@ -483,7 +482,6 @@ class CreateTaskView(LoginRequiredMixin, FormView):
                 current_team = teams.first()
             #lanes = Lane.objects.filter(team=current_team).order_by('lane_order') if current_team else Lane.objects.none()
             lane_id = request.POST.get("lane_id")
-            print(lane_id)
             #default_lane = Lane.objects.get(name='Backlog')
 
             # Check if the form is valid
@@ -651,7 +649,6 @@ class InviteView(LoginRequiredMixin, FormView):
         """Pass the current user to the invite form."""
 
         kwargs = super().get_form_kwargs(**kwargs)
-        print(f"User : {self.request.user}")
         kwargs.update({'user': self.request.user})
         return kwargs
 
