@@ -34,22 +34,19 @@ def formatDateTime(input_date):
     # Format the datetime object into 'yyyy-mm-dd hh:mm:ss'
     formatted_datetime = parsed_datetime.strftime('%Y-%m-%d %H:%M:%S')
 
-@login_required
+class DashboardView(LoginRequiredMixin, View):
+    template_name = 'dashboard.html'
+    success_url = reverse_lazy('dashboard')
 
-def dashboard(request):
-    """Display and modify the current user's dashboard."""
-    current_user = request.user
-    teams = current_user.get_teams()  # Ensure this method exists and returns a QuerySet
-
-    if request.method == 'GET':
+    def get(self, request):
+        current_user = request.user
+        teams = current_user.get_teams()
         if 'dashboard_team' in request.GET:
             team_id = request.GET.get("dashboard_team")
             request.session["current_team_id"] = team_id
-
         # Get the current team
         current_team_id = request.session.get("current_team_id", None)
         current_team = Team.objects.filter(id=current_team_id).first() if current_team_id else None
-
         # Create 3 default lanes for the current team if they do not exist
         if current_team and not Lane.objects.filter(team=current_team).exists():
             default_lane_names = [("Backlog", 1), ("In Progress", 2), ("Complete", 3)]
@@ -59,13 +56,15 @@ def dashboard(request):
                     lane_order=lane_order,
                     team=current_team
                 )
-    
-    if request.method == 'POST':
-        current_team_id = request.session.get("current_team_id")
-        # if not current_team_id:
-        #     # Handle error or redirect if there is no current team
-        #     pass
 
+        if current_team is None and teams.exists():
+            request.session["current_team_id"] = teams.first().id
+            current_team = teams.first()
+
+        return render(request, self.template_name, self.get_context_data(current_user, current_team))
+
+    def post(self, request, *args, **kwargs):
+        current_team_id = request.session.get("current_team_id")
         current_team = Team.objects.get(id=current_team_id)
 
         if 'add_lane' in request.POST:
@@ -86,29 +85,28 @@ def dashboard(request):
             current_lane = task.lane
             # Filter left lanes within the same team
             left_lane = Lane.objects.filter(lane_order__lt=current_lane.lane_order, team=current_lane.team).order_by('-lane_order').first()
-            
             if left_lane:
                 task.lane = left_lane
                 task.save()
 
-        # Move tasks to the right lane
         elif 'move_task_right' in request.POST:
+            """" Move the task to the right lane """
             task_id = request.POST.get('move_task_right')
             task = get_object_or_404(Task, pk=task_id)
             current_lane = task.lane
             # Filter right lanes within the same team
             right_lane = Lane.objects.filter(lane_order__gt=current_lane.lane_order, team=current_lane.team).order_by('lane_order').first()
-            
             if right_lane:
                 task.lane = right_lane
                 task.save()
-    
-        # move a lane to the left
+
         elif 'move_lane_left' in request.POST:
-            #with transaction.atomic():
+            """" Move the lane 1 space left """
             lane_id = request.POST.get('move_lane_left')
+            #with transaction.atomic():
             lane = get_object_or_404(Lane, pk=lane_id)
             previous_lane = Lane.objects.filter(lane_order__lt=lane.lane_order, team=lane.team).order_by('-lane_order').first()
+
             if previous_lane:
                 # temp value to avoid unique value constraint
                 temp_order = -1
@@ -118,10 +116,10 @@ def dashboard(request):
                 lane.lane_order = previous_lane.lane_order - 1
                 lane.save()
 
-        # move a lane to the right
         elif 'move_lane_right' in request.POST:
-            #with transaction.atomic():
+            """" Move the lane 1 space right """
             lane_id = request.POST.get('move_lane_right')
+            #with transaction.atomic():
             lane = get_object_or_404(Lane, pk=lane_id)
             next_lane = Lane.objects.filter(lane_order__gt=lane.lane_order, team=lane.team).order_by('lane_order').first()
             if next_lane:
@@ -132,35 +130,147 @@ def dashboard(request):
                 next_lane.save()
                 lane.lane_order = next_lane.lane_order + 1
                 lane.save()
+        
+        return redirect('dashboard')
 
-    # Redirect or show an error if the user has no teams
-    # if not teams.exists():
-    #     # Handle the case where the user has no teams
-    #     pass
+    def get_context_data(self, current_user, current_team):
+        lanes = Lane.objects.filter(current_team=current_team).order_by('lane_order') if current_team else Lane.objects.none()
+        team_tasks = current_team.get_tasks() if current_team else Task.objects.none()
+        assign_task_form = AssignTaskForm(current_team=current_team, current_user=current_user)
+        create_task_form = TaskForm()
+        create_team_form = CreateTeamForm(current_user=current_user)
 
-    # Ensure a current team is selected
-    if current_team is None and teams.exists():
-        request.session["current_team_id"] = teams.first().id
-        current_team = teams.first()
+        detect_keydates()
 
-    lanes = Lane.objects.filter(team=current_team).order_by('lane_order') if current_team else Lane.objects.none()
-    team_tasks = current_team.get_tasks() if current_team else Task.objects.none()
-    assign_task_form = AssignTaskForm(team=current_team, user=current_user)
-    create_task_form = TaskForm()
-    create_team_form = CreateTeamForm(user=current_user)
+        return {
+            'user': current_user,
+            'lanes': lanes,
+            'tasks': team_tasks,
+            'teams': current_user.get_teams(),
+            "current_team": current_team,
+            "assign_task_form" : assign_task_form,
+            "create_task_form": create_task_form,
+            "create_team_form": create_team_form,
+        }
 
-    detect_keydates()
+# @login_required
+# def dashboard(request):
+#     """Display and modify the current user's dashboard."""
+#     current_user = request.user
+#     teams = current_user.get_teams()  # Ensure this method exists and returns a QuerySet
 
-    return render(request, 'dashboard.html', {
-        'user': current_user,
-        'lanes': lanes,
-        'tasks': team_tasks,
-        'teams': teams,
-        "current_team": current_team,
-        "assign_task_form" : assign_task_form,
-        "create_task_form": create_task_form,
-        "create_team_form": create_team_form,
-    })
+#     if request.method == 'GET':
+#         if 'dashboard_team' in request.GET:
+#             team_id = request.GET.get("dashboard_team")
+#             request.session["current_team_id"] = team_id
+
+#         # Get the current team
+#         current_team_id = request.session.get("current_team_id", None)
+#         current_team = Team.objects.filter(id=current_team_id).first() if current_team_id else None
+
+#         # Create 3 default lanes for the current team if they do not exist
+#         if current_team and not Lane.objects.filter(team=current_team).exists():
+#             default_lane_names = [("Backlog", 1), ("In Progress", 2), ("Complete", 3)]
+#             for lane_name, lane_order in default_lane_names:
+#                 Lane.objects.get_or_create(
+#                     lane_name=lane_name,
+#                     lane_order=lane_order,
+#                     team=current_team
+#                 )
+    
+#     if request.method == 'POST':
+#         current_team_id = request.session.get("current_team_id")
+
+#         current_team = Team.objects.get(id=current_team_id)
+
+#         if 'add_lane' in request.POST:
+#             max_order = Lane.objects.filter(team=current_team).aggregate(Max('lane_order'))['lane_order__max'] or 0
+#             Lane.objects.create(lane_name="New Lane", lane_order=max_order + 1, team=current_team)
+
+#         elif 'rename_lane' in request.POST:
+#             lane_id = request.POST.get('rename_lane')
+#             new_lane_name = request.POST.get('new_lane_name')
+#             lane = Lane.objects.filter(lane_id=lane_id, team=current_team).first()
+#             if lane:
+#                 lane.lane_name = new_lane_name
+#                 lane.save()
+
+#         elif 'move_task_left' in request.POST:
+#             task_id = request.POST.get('move_task_left')
+#             task = get_object_or_404(Task, pk=task_id)
+#             current_lane = task.lane
+#             # Filter left lanes within the same team
+#             left_lane = Lane.objects.filter(lane_order__lt=current_lane.lane_order, team=current_lane.team).order_by('-lane_order').first()
+            
+#             if left_lane:
+#                 task.lane = left_lane
+#                 task.save()
+
+#         # Move tasks to the right lane
+#         elif 'move_task_right' in request.POST:
+#             task_id = request.POST.get('move_task_right')
+#             task = get_object_or_404(Task, pk=task_id)
+#             current_lane = task.lane
+#             # Filter right lanes within the same team
+#             right_lane = Lane.objects.filter(lane_order__gt=current_lane.lane_order, team=current_lane.team).order_by('lane_order').first()
+            
+#             if right_lane:
+#                 task.lane = right_lane
+#                 task.save()
+    
+#         # move a lane to the left
+#         elif 'move_lane_left' in request.POST:
+#             #with transaction.atomic():
+#             lane_id = request.POST.get('move_lane_left')
+#             lane = get_object_or_404(Lane, pk=lane_id)
+#             previous_lane = Lane.objects.filter(lane_order__lt=lane.lane_order, team=lane.team).order_by('-lane_order').first()
+#             if previous_lane:
+#                 # temp value to avoid unique value constraint
+#                 temp_order = -1
+#                 lane.lane_order, previous_lane.lane_order = temp_order, lane.lane_order
+#                 lane.save()
+#                 previous_lane.save()
+#                 lane.lane_order = previous_lane.lane_order - 1
+#                 lane.save()
+
+#         # move a lane to the right
+#         elif 'move_lane_right' in request.POST:
+#             #with transaction.atomic():
+#             lane_id = request.POST.get('move_lane_right')
+#             lane = get_object_or_404(Lane, pk=lane_id)
+#             next_lane = Lane.objects.filter(lane_order__gt=lane.lane_order, team=lane.team).order_by('lane_order').first()
+#             if next_lane:
+#                     # Use a temporary value to avoid unique constraint violation
+#                 temp_order = -1
+#                 lane.lane_order, next_lane.lane_order = temp_order, lane.lane_order
+#                 lane.save()
+#                 next_lane.save()
+#                 lane.lane_order = next_lane.lane_order + 1
+#                 lane.save()
+
+#     # Ensure a current team is selected
+#     if current_team is None and teams.exists():
+#         request.session["current_team_id"] = teams.first().id
+#         current_team = teams.first()
+
+#     lanes = Lane.objects.filter(team=current_team).order_by('lane_order') if current_team else Lane.objects.none()
+#     team_tasks = current_team.get_tasks() if current_team else Task.objects.none()
+#     assign_task_form = AssignTaskForm(team=current_team, user=current_user)
+#     create_task_form = TaskForm()
+#     create_team_form = CreateTeamForm(user=current_user)
+
+#     detect_keydates()
+
+#     return render(request, 'dashboard.html', {
+#         'user': current_user,
+#         'lanes': lanes,
+#         'tasks': team_tasks,
+#         'teams': teams,
+#         "current_team": current_team,
+#         "assign_task_form" : assign_task_form,
+#         "create_task_form": create_task_form,
+#         "create_team_form": create_team_form,
+#     })
 
 # # Move tasks to the left lane
 # def move_task_left(request, pk):
@@ -451,24 +561,53 @@ class SignUpView(LoginProhibitedMixin, FormView):
     def get_success_url(self):
         return reverse(settings.REDIRECT_URL_WHEN_LOGGED_IN)
 
+class DeleteLaneView(LoginRequiredMixin, View):
+    """Display form to confirm the deletion of a lane"""
+    model = Lane
+    form_class = LaneDeleteForm
+    template_name = 'lane_delete.html'
+    success_url = reverse_lazy('dashboard') 
+    form_title = 'Delete Lane'
+    context_object_name = 'lane'
+    
+    def get_success_url(self):
+        """Return redirect URL after successful update."""
+        messages.add_message(self.request, messages.SUCCESS, "Lane deleted!")
+        return reverse_lazy('dashboard')
+    
+    def get(self, request, lane_id, *args, **kwargs):
+        """Return the delete lane URL."""
+        lane = get_object_or_404(Lane, lane_id=lane_id)
+        delete_form = LaneDeleteForm()
+        # if this doesnt work use domain explicitly
+        delete_url = '/lane_delete/'+str(lane_id)+'/'
+        context = {'lane': lane, 'delete_form': delete_form, 'delete_url': delete_url, 'lane_id': lane_id}
+        return render(request, self.template_name, context)
+    
+    def post(self, request, lane_id, *args, **kwargs):
+        """Delete the lane after confirmation."""
+        lane = get_object_or_404(Lane, pk=lane_id)
+        if request.method == 'POST':
+            delete_form = LaneDeleteForm(request.POST)
+            if delete_form.is_valid():
+                if delete_form.cleaned_data['confirm_deletion']:
+                    lane.delete()
+                    messages.success(request, 'Lane Deleted!')
+                    return redirect('dashboard')
+        else:
+            delete_form = LaneDeleteForm()
+        return render(request, 'lane_delete.html', {'lane':lane, 'delete_form': delete_form})
+
 class CreateTaskView(LoginRequiredMixin, FormView):
     form_class = TaskForm
     template_name = 'task_create.html'  # Create a template for your task form
     success_url = reverse_lazy('dashboard')  # Redirect to the dashboard after successful form submission
     form_title = 'Create Task'
-    
-    """ Simon
-    def form_valid(self, form):
-        self.object = form.save()
-        #login(self.request, self.object)
-        return super().form_valid(form)
-    """
 
     def get_success_url(self):
         """Return redirect URL after successful update."""
         messages.add_message(self.request, messages.SUCCESS, "Task created!")
         return reverse_lazy('dashboard')
-    
     
     def get(self, request):
         current_user = request.user
@@ -656,43 +795,6 @@ def notif_delete(request,notif_id):
     notification = Notification.objects.get(pk=notif_id)
     notification.delete()
     return redirect('dashboard')
-
-class DeleteLaneView(LoginRequiredMixin, View):
-    """Display form to confirm the deletion of a lane"""
-    model = Lane
-    form_class = LaneDeleteForm
-    template_name = 'lane_delete.html'
-    success_url = reverse_lazy('dashboard') 
-    form_title = 'Delete Lane'
-    context_object_name = 'lane'
-    
-    def get_success_url(self):
-        """Return redirect URL after successful update."""
-        messages.add_message(self.request, messages.SUCCESS, "Lane deleted!")
-        return reverse_lazy('dashboard')
-    
-    def get(self, request, lane_id, *args, **kwargs):
-        """Return the delete lane URL."""
-        lane = get_object_or_404(Lane, lane_id=lane_id)
-        delete_form = LaneDeleteForm()
-        # if this doesnt work use domain explicitly
-        delete_url = '/lane_delete/'+str(lane_id)+'/'
-        context = {'lane': lane, 'delete_form': delete_form, 'delete_url': delete_url, 'lane_id': lane_id}
-        return render(request, self.template_name, context)
-    
-    def post(self, request, lane_id, *args, **kwargs):
-        """Delete the lane after confirmation."""
-        lane = get_object_or_404(Lane, pk=lane_id)
-        if request.method == 'POST':
-            delete_form = LaneDeleteForm(request.POST)
-            if delete_form.is_valid():
-                if delete_form.cleaned_data['confirm_deletion']:
-                    lane.delete()
-                    messages.success(request, 'Lane Deleted!')
-                    return redirect('dashboard')
-        else:
-            delete_form = LaneDeleteForm()
-        return render(request, 'lane_delete.html', {'lane':lane, 'delete_form': delete_form})
 
 class InviteView(LoginRequiredMixin, FormView):
     """Functionality for using the invite form"""
