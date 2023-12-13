@@ -13,7 +13,7 @@ class DashboardViewTestCase(TestCase, LogInTester):
         self.user = User.objects.create_user(username='@johndoe', password='Password123')
         self.url = reverse('dashboard')
                            
-        self.team = Team.objects.create(
+        self.team1 = Team.objects.create(
             team_name="Team1",
             team_creator=self.user,
             description="team"
@@ -25,7 +25,7 @@ class DashboardViewTestCase(TestCase, LogInTester):
             description="team"
         )
         
-        self.lane = Lane.objects.create(
+        self.lane1 = Lane.objects.create(
             lane_name = "New Lane",
             lane_order = 1,
             team = self.team1
@@ -37,24 +37,26 @@ class DashboardViewTestCase(TestCase, LogInTester):
             team = self.team1
         )
 
-        self.task = Task.objects.create(
+        self.task1 = Task.objects.create(
             name='Task1',
             description='task',
             due_date=datetime(2025, 1, 19, 10, 5),
-            lane = self.lane,
+            lane = self.lane1,
             assigned_team = self.team
         )
+
         self.task2 = Task.objects.create(
-            name='Task 2',
+            name='Task2',
             description='task',
             due_date=datetime(2025, 1, 19, 10, 5),
-            lane = self.lane,
+            lane = self.lane2,
             assigned_team = self.team
         )
         
         self.client.login(username='@johndoe', password='Password123')
-        self.client.session['current_team_id'] = self.team.id
-        self.session.save()
+        session = self.client.session
+        session['current_team_id'] = self.team.id
+        session.save()
 
     def test_login_user(self):
         # Log in the user using the test client
@@ -69,53 +71,22 @@ class DashboardViewTestCase(TestCase, LogInTester):
         self.assertEqual(self.url, '/dashboard/')
         # url = reverse('dashboard')
         # self.assertEqual(resolve(url).func, views.dashboard)
-
-    # def test_move_lane_left_url(self):
-    #     self.assertEqual(self.url, f'/move_lane_left/{self.lane.lane_id}/')
     
-    # def test_move_lane_right_url(self):
-    #     self.assertEqual(self.url, f'/move_lane_left/{self.lane.lane_id}/')
+    def test_dashboard_with_no_lanes(self):
+        session = self.client.session
+        session['current_team_id'] = self.team.id
+        session.save()
 
-    # def test_move_task_left_url(self):
-    #     self.assertEqual(self.url, f'/move_lane_left/{self.task.pk}/')
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
 
-    # def test_move_task_right_url(self):
-    #     self.assertEqual(self.url, f'/move_lane_left/{self.task.pk}/')
+        lanes = Lane.objects.filter(team=self.team)
+        self.assertEqual(lanes.count(), 3)
 
-    # def test_add_lane(self):
-    #     before_count = Lane.objects.count()
-    #     response = self.client.post(self.url, {'add_lane': True})
-    #     self.assertEqual(response.status_code, 200)
-
-
-    # def test_successful_task_create(self):
-    #     before_count = Task.objects.count()
-    #     response = self.client.post(self.url, data=self.form_input, follow=True)
-    #     after_count = Task.objects.count()
-    #     self.assertEqual(after_count, before_count + 1)
-    #     redirect_url = reverse('dashboard')
-    #     self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
-    #     self.assertTemplateUsed(response, 'dashboard.html')
-    #     created_task = Task.objects.filter(name='SpecialTask').first()
-    #     self.assertIsNotNone(created_task, "SpecialTask should be created")
-    #     self.assertEqual(created_task.description, 'Amys special task within task manager!')
-        
-    # def test_unsuccesful_task_create(self):
-    #     self.task_data_bad = {
-    #         'name': 'Ta',
-    #         'description': 'Amys fifth task within task manager!',
-    #         'due_date': '2023-12-19 15:30',
-    #     }
-    #     before_count = Task.objects.count()
-    #     response = self.client.post(self.url, self.task_data_bad)
-    #     after_count = Task.objects.count()
-    #     self.assertEqual(after_count, before_count)
-    #     self.assertEqual(response.status_code, 200)
-    #     self.assertTemplateUsed(response, 'task_create.html')
-    #     form = response.context['form']
-    #     self.assertTrue(isinstance(form, TaskForm))
-    #     self.assertTrue(form.is_bound)
-    #     self.assertFalse(Task.objects.filter(name='Ta').exists())
+        default_lanes = [("Backlog", 1), ("In Progress", 2), ("Complete", 3)]
+        for lane_name, lane_order in default_lanes:
+            lane = lanes.get(lane_name = lane_name)
+            self.assertEqual(lane.lane_order, lane_order)
     
     def test_add_lane(self):
         before_count = Lane.objects.count()
@@ -124,10 +95,78 @@ class DashboardViewTestCase(TestCase, LogInTester):
         self.assertTrue(Lane.objects.count() == before_count + 1)  # Check if lane was created
 
     def test_rename_lane(self):
-        response = self.client.post(reverse('dashboard'), {
-            'rename_lane': self.lane.lane_id,
+        response = self.client.post(self.url, {
+            'rename_lane': self.lane1.lane_id,
             'new_lane_name': 'New Name'
         })
-        self.assertEqual(response.status_code, 302)  # Redirect status
-        self.lane.refresh_from_db()
-        self.assertEqual(self.lane.lane_name, 'New Name')
+        self.assertEqual(response.status_code, 302)
+        self.lane1.refresh_from_db()
+        self.assertEqual(self.lane1.lane_name, 'New Name')
+
+    # move a task to the left lane (lane2 to lane 1)
+    def test_move_task_left(self):
+        response = self.client.post(self.url, {'move_task_left': self.task2.pk})
+        self.assertEqual(response.status_code, 302)
+        self.task2.refresh_from_db()
+        self.assertEqual(self.task2.lane, self.lane1)
+    
+    #! attempting to move a task to the left lane when there are no left lanes left
+    # keeps the task in the current lane
+    def test_move_task_left_out_of_bounds(self):
+        response = self.client.post(self.url, {'move_task_left': self.task1.pk})
+        self.assertEqual(response.status_code, 302)
+        self.task1.refresh_from_db()
+        self.assertEqual(self.task1.lane, self.lane1)
+
+    # move a task to the right lane (lane1 to lane2)
+    def test_move_task_right(self):
+        response = self.client.post(self.url, {'move_task_right': self.task1.pk})
+        self.assertEqual(response.status_code, 302)
+        self.task1.refresh_from_db()
+        self.assertEqual(self.task1.lane, self.lane2)
+
+    #! attempting to move a task to the right lane when there are no right lanes left
+    # keeps the task in the current lane
+    def test_move_task_right_out_of_bounds(self):
+        response = self.client.post(self.url, {'move_task_right': self.task2.pk})
+        self.assertEqual(response.status_code, 302)
+        self.task2.refresh_from_db()
+        self.assertEqual(self.task2.lane, self.lane2)
+
+    # move a lane to the left, so that it is before the lane to the left of it
+    def test_move_lane_left(self):
+        response = self.client.post(self.url, {'move_lane_left': self.lane2.lane_id})
+        self.assertEqual(response.status_code, 302) 
+        self.lane1.refresh_from_db()
+        self.lane2.refresh_from_db()
+        self.assertEqual(self.lane2.lane_order, 1) # lane2 should now be at position 1
+        self.assertEqual(self.lane1.lane_order, 2) # lane1 should now be at position 2
+
+    #! move a lane to the left when there is no lane to the left of it
+    # keeps the lane in its current position
+    def test_move_lane_left_out_of_bounds(self):
+        response = self.client.post(self.url, {'move_lane_left': self.lane1.lane_id})
+        self.assertEqual(response.status_code, 302) 
+        self.lane1.refresh_from_db()
+        self.lane2.refresh_from_db()
+        self.assertEqual(self.lane1.lane_order, 1)
+        self.assertEqual(self.lane2.lane_order, 2)
+    
+    # move a lane to the right, so that it is after the lane to the right of it
+    def test_move_lane_right(self):
+        response = self.client.post(self.url, {'move_lane_right': self.lane1.lane_id})
+        self.assertEqual(response.status_code, 302) 
+        self.lane1.refresh_from_db()
+        self.lane2.refresh_from_db()
+        self.assertEqual(self.lane1.lane_order, 2) # lane1 should now be at position 2
+        self.assertEqual(self.lane2.lane_order, 1) # lane2 should now be at position 1
+
+    #! move a lane to the right when there is no lane to the right of it
+    # keeps the lane in its current position
+    def test_move_lane_left_out_of_bounds(self):
+        response = self.client.post(self.url, {'move_lane_right': self.lane2.lane_id})
+        self.assertEqual(response.status_code, 302) 
+        self.lane1.refresh_from_db()
+        self.lane2.refresh_from_db()
+        self.assertEqual(self.lane1.lane_order, 1)
+        self.assertEqual(self.lane2.lane_order, 2)
