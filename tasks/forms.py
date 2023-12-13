@@ -65,7 +65,6 @@ class UserProfileForm(forms.ModelForm):
 
 class UserForm(forms.ModelForm):
     """Form to update user profiles."""
-    avatar = forms.ImageField(required=False)
 
     class Meta:
         """Form options."""

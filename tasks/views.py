@@ -15,7 +15,7 @@ from tasks.helpers import login_prohibited
 from django.urls import reverse_lazy
 from django.views.decorators.http import require_POST
 from .forms import TaskForm, TaskDeleteForm, AssignTaskForm
-from .models import Task, Invite, Team, Lane, Notification, Profile
+from .models import Task, Invite, Team, Lane, Notification, Profile, User
 from django.http import HttpResponseBadRequest
 from datetime import datetime
 from django.db.models import Max, Case, Value, When
@@ -410,7 +410,7 @@ class PasswordView(LoginRequiredMixin, FormView):
 class ProfileUpdateView(LoginRequiredMixin, UpdateView):
     """Display user profile editing screen, and handle profile modifications."""
 
-    model = UserForm
+    model = User
     template_name = "profile.html"
     form_class = UserForm
 

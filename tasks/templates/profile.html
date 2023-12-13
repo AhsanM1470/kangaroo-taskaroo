@@ -82,7 +82,7 @@
         }
 
         .media-body {
-            padding: 0rem; /
+            padding: 0rem; 
             font-size: 0.85rem;
         }
 
@@ -116,12 +116,7 @@
             <h1 class="profile-title">Edit Profile</h1>
             <div class="media">
                 <!-- Check if user has an avatar -->
-                {% if profile.avatar %}
-                    <img class="profile-avatar" src="{{ profile.avatar.url }}">
-                {% else %}
-                    <!-- Display default image if no avatar -->
-                    <img class="profile-avatar" src="../media/profile_pics/default.jpg">
-                {% endif %}
+                <img src="{{ user.mini_gravatar }}" alt="Mini Gravatar Image">
                 <div class="media-body">
                     <h2 class="account-heading">Username: {{ user.username }}</h2>
                     <p class="text-secondary">Email: {{ user.email }}</p>
