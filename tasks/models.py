@@ -279,29 +279,30 @@ class AssignedTask(models.Model):
 
 class Notification(models.Model): 
     """Generic template model for notifications"""
-    
+
     def as_task_notif(self):
-        """Returns the task notification, otherwise returns none."""
+        """Return notification as instance of TaskNotification"""
         try:
             return self.tasknotification
         except TaskNotification.DoesNotExist:
             return None
 
     def as_invite_notif(self):
-        """Returns the invite notification, otherwise returns none."""
-        
+        """Return notification as instance of InviteNotification"""
         try:
             return self.invitenotification
         except InviteNotification.DoesNotExist:
             return None
 
     def display(self):
+        """Return string representing notification"""
         return "This is a notification"
 
 class TaskNotification(Notification): 
     """Model used to represent a notification relating to a specific task"""
 
     class NotificationType(models.TextChoices):
+        """Acts as an enum within the model"""
         ASSIGNMENT = "AS"
         DEADLINE = "DL"
 
@@ -309,7 +310,7 @@ class TaskNotification(Notification):
     notification_type = models.CharField(max_length=2,choices=NotificationType.choices,default=NotificationType.ASSIGNMENT)
 
     def display(self):
-        """Returns a string containing information about the notification for the user."""
+        """Overrides function from Notification"""
         if self.notification_type== self.NotificationType.ASSIGNMENT:
             return f'{self.task.name} has been assigned to you.'
         elif self.notification_type == self.NotificationType.DEADLINE:
@@ -323,5 +324,5 @@ class InviteNotification(Notification):
     invite = models.ForeignKey(Invite,blank=False,on_delete=models.CASCADE)
 
     def display(self):
-       """Returns a string querying the user on a notification"""
-       return f"Do you wish to join {self.invite.get_inviting_team().team_name}?"
+        """Overrides function from Notification"""
+        return f"Do you wish to join {self.invite.get_inviting_team().team_name}?"
