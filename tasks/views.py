@@ -80,7 +80,7 @@ class DashboardView(LoginRequiredMixin, View):
             Task.objects.none()
         assign_task_form = AssignTaskForm(team=current_team)
         create_task_form = TaskForm(team=current_team)
-        invite_form = InviteForm(user=current_user, team=current_team)
+        invite_form = InviteForm()
         create_team_form = CreateTeamForm()
 
         detect_keydates()
@@ -708,15 +708,15 @@ def notif_delete(request,notif_id):
 class InviteView(LoginRequiredMixin, FormView):
     """Functionality for using the invite form"""
 
-    template_name = 'my_teams.html'
+    template_name = 'invite.html'
     form_class = InviteForm
 
-    def get_form_kwargs(self, **kwargs):
-        """Pass the current user to the invite form."""
+    # def get_form_kwargs(self, **kwargs):
+    #     """Pass the current user to the invite form."""
 
-        kwargs = super().get_form_kwargs(**kwargs)
-        kwargs.update({'user': self.request.user})
-        return kwargs
+    #     kwargs = super().get_form_kwargs(**kwargs)
+    #     kwargs.update({'user': self.request.user})
+    #     return kwargs
 
     def form_valid(self, form):
         
