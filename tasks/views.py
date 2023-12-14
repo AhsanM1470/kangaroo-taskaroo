@@ -32,20 +32,22 @@ def formatDateTime(input_date):
     # Format the datetime object into 'yyyy-mm-dd hh:mm:ss'
     formatted_datetime = parsed_datetime.strftime('%Y-%m-%d %H:%M:%S')
 
-
 class DashboardView(LoginRequiredMixin, View):
+    """Display dashboard and changes made by the user."""
+
     template_name = 'dashboard.html'
     success_url = reverse_lazy('dashboard')
 
     def get(self, request, *args, **kwargs):
+        """"Display dashboard data"""
         current_user = request.user
         teams = current_user.get_teams()
 
+        # Get the current team
         if 'dashboard_team' in request.GET:
             team_id = request.GET.get("dashboard_team")
             request.session["current_team_id"] = team_id
 
-        # Get the current team
         current_team_id = request.session.get("current_team_id", None)
         current_team = Team.objects.filter(id=current_team_id).first() if current_team_id else None
 
@@ -53,19 +55,22 @@ class DashboardView(LoginRequiredMixin, View):
             request.session["current_team_id"] = teams.first().id
             current_team = teams.first()
 
-        # Create 3 default lanes for the current team if they do not exist
-        if current_team:
-            default_lane_names = [("Backlog", 1), ("In Progress", 2), ("Complete", 3)]
-            if not Lane.objects.filter(team=current_team).exists():
-                for lane_name, lane_order in default_lane_names:
-                    Lane.objects.get_or_create(
-                        lane_name=lane_name,
-                        lane_order=lane_order,
-                        team=current_team
-                    )
+        self.create_default_lanes(current_team)
 
         return render(request, self.template_name, self.get_context_data(current_user, current_team))
+    
+    # Create 3 default lanes when a new team is made or if all lanes are deleted
+    def create_default_lanes(self, current_team):
+        default_lane_names = [("Backlog", 1), ("In Progress", 2), ("Complete", 3)]
+        if not Lane.objects.filter(team=current_team).exists():
+            for lane_name, lane_order in default_lane_names:
+                Lane.objects.get_or_create(
+                    lane_name=lane_name,
+                    lane_order=lane_order,
+                    team=current_team
+                )
 
+    # Return dashboard data to render
     def get_context_data(self, current_user, current_team):
         if current_team:
             lanes = Lane.objects.filter(team=current_team).order_by('lane_order')
@@ -93,6 +98,8 @@ class DashboardView(LoginRequiredMixin, View):
         }
     
     def post(self, request, *args, **kwargs):
+        """"Handle user interactions on the dashboard"""
+
         current_team_id = request.session.get("current_team_id")
         current_team = Team.objects.get(id=current_team_id)
 
@@ -116,12 +123,12 @@ class DashboardView(LoginRequiredMixin, View):
 
         return redirect('dashboard')
     
-    # adding a lane to the dashboard
+    # Adding a lane to the dashboard
     def add_lane(self, current_team):
         max_order = Lane.objects.filter(team=current_team).aggregate(Max('lane_order'))['lane_order__max'] or 0
         Lane.objects.create(lane_name="New Lane", lane_order=max_order + 1, team=current_team)
     
-    # renaming a lane
+    # Renaming a lane
     def rename_lane(self, request, current_team):
         lane_id = request.POST.get('rename_lane')
         new_lane_name = request.POST.get('new_lane_name')
@@ -130,7 +137,7 @@ class DashboardView(LoginRequiredMixin, View):
             lane.lane_name = new_lane_name
             lane.save()
     
-    # moving a task to the lane on the left
+    # Moving a task to the lane on the left
     def move_task_left(self, request):
         task_id = request.POST.get('move_task_left')
         task = get_object_or_404(Task, pk=task_id)
@@ -141,7 +148,7 @@ class DashboardView(LoginRequiredMixin, View):
             task.lane = left_lane
             task.save()
     
-    # moving a task to the lane on the right
+    # Moving a task to the lane on the right
     def move_task_right(self, request):
         task_id = request.POST.get('move_task_right')
         task = get_object_or_404(Task, pk=task_id)
@@ -152,7 +159,7 @@ class DashboardView(LoginRequiredMixin, View):
             task.lane = right_lane
             task.save()
     
-    # moving the lane to the left i.e. putting it 1 lane before in the order
+    # Moving the lane to the left i.e. putting it 1 lane before in the lane ordering
     def move_lane_left(self, request):
         lane_id = request.POST.get('move_lane_left')
         lane = get_object_or_404(Lane, pk=lane_id)
@@ -167,7 +174,7 @@ class DashboardView(LoginRequiredMixin, View):
             lane.lane_order = previous_lane.lane_order - 1
             lane.save()
     
-    # moving the lane to the left i.e. putting it 1 lane after in the order
+    # Moving the lane to the left i.e. putting it 1 lane after in the lane ordering
     def move_lane_right(self, request):
         lane_id = request.POST.get('move_lane_right')
         lane = get_object_or_404(Lane, pk=lane_id)
@@ -408,6 +415,7 @@ class SignUpView(LoginProhibitedMixin, FormView):
 
 class DeleteLaneView(LoginRequiredMixin, View):
     """Display form to confirm the deletion of a lane"""
+
     model = Lane
     form_class = LaneDeleteForm
     template_name = 'lane_delete.html'
@@ -423,8 +431,8 @@ class DeleteLaneView(LoginRequiredMixin, View):
     def get(self, request, lane_id, *args, **kwargs):
         """Return the delete lane URL."""
         lane = get_object_or_404(Lane, lane_id=lane_id)
+        #! NOT NECESSARY??
         delete_form = LaneDeleteForm()
-        # if this doesnt work use domain explicitly
         delete_url = '/lane_delete/'+str(lane_id)+'/'
         context = {'lane': lane, 'delete_form': delete_form, 'delete_url': delete_url, 'lane_id': lane_id}
         return render(request, self.template_name, context)

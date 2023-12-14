@@ -49,16 +49,16 @@ class DashboardViewTestCase(TestCase, LogInTester):
         session['current_team_id'] = self.team1.id
         session.save()
 
-    # test if user is successfuly logged in
+    # Test if user is successfuly logged in
     def test_login_user(self):
         logged_in = self.client.login(username='@johndoe', password='Password123')
         self.assertTrue(logged_in)
 
-    # test if the url is at the dashboard
+    # Test if the url is at the dashboard
     def test_dashboard_url(self):
         self.assertEqual(self.url, '/dashboard/')
     
-    # test if 3 default lanes are made when a new team is created and there are no lanes
+    # Test if 3 default lanes are made when a new team is created and there are no lanes
     def test_dashboard_with_no_lanes(self):
         self.team = Team.objects.create(team_name="Test Team", team_creator=self.user) # team with no lanes
         session = self.client.session
@@ -77,14 +77,14 @@ class DashboardViewTestCase(TestCase, LogInTester):
             lane = lanes.get(lane_name = lane_name)
             self.assertEqual(lane.lane_order, lane_order)
     
-    # test adding a lane to the dashboard
+    # Test adding a lane to the dashboard
     def test_add_lane(self):
         before_count = Lane.objects.count()
         response = self.client.post(reverse('dashboard'), {'add_lane': ''})
         self.assertEqual(response.status_code, 302)  
         self.assertTrue(Lane.objects.count() == before_count + 1)  # Check if lane was created
 
-    # test renaming a lane
+    # Test renaming a lane
     def test_rename_lane(self):
         response = self.client.post(self.url, {
             'rename_lane': self.lane1.lane_id,
@@ -94,37 +94,37 @@ class DashboardViewTestCase(TestCase, LogInTester):
         self.lane1.refresh_from_db()
         self.assertEqual(self.lane1.lane_name, 'New Name')
 
-    # test moving a task to the left lane (lane2 to lane 1)
+    # Test moving a task to the left lane (lane2 to lane 1)
     def test_move_task_left(self):
         response = self.client.post(self.url, {'move_task_left': self.task2.pk})
         self.assertEqual(response.status_code, 302)
         self.task2.refresh_from_db()
         self.assertEqual(self.task2.lane, self.lane1)
     
-    # attempting to move a task to the left lane when there are no left lanes left
-    # keeps the task in the current lane
+    # Attempting to move a task to the left lane when there are no left lanes left
+    # Keeps the task in the current lane
     def test_move_task_left_out_of_bounds(self):
         response = self.client.post(self.url, {'move_task_left': self.task1.pk})
         self.assertEqual(response.status_code, 302)
         self.task1.refresh_from_db()
         self.assertEqual(self.task1.lane, self.lane1)
 
-    # test moving a task to the right lane (lane1 to lane2)
+    # Test moving a task to the right lane (lane1 to lane2)
     def test_move_task_right(self):
         response = self.client.post(self.url, {'move_task_right': self.task1.pk})
         self.assertEqual(response.status_code, 302)
         self.task1.refresh_from_db()
         self.assertEqual(self.task1.lane, self.lane2)
 
-    # attempting to move a task to the right lane when there are no right lanes left
-    # keeps the task in the current lane
+    # Attempting to move a task to the right lane when there are no right lanes left
+    # Keeps the task in the current lane
     def test_move_task_right_out_of_bounds(self):
         response = self.client.post(self.url, {'move_task_right': self.task2.pk})
         self.assertEqual(response.status_code, 302)
         self.task2.refresh_from_db()
         self.assertEqual(self.task2.lane, self.lane2)
 
-    # test moving a lane to the left, so that it is before the lane to the left of it
+    # Test moving a lane to the left, so that it is before the lane to the left of it
     def test_move_lane_left(self):
         response = self.client.post(self.url, {'move_lane_left': self.lane2.lane_id})
         self.assertEqual(response.status_code, 302) 
@@ -133,8 +133,8 @@ class DashboardViewTestCase(TestCase, LogInTester):
         self.assertEqual(self.lane2.lane_order, 1) # lane2 should now be at position 1
         self.assertEqual(self.lane1.lane_order, 2) # lane1 should now be at position 2
 
-    # move a lane to the left when there is no lane to the left of it
-    # keeps the lane in its current position
+    # Move a lane to the left when there is no lane to the left of it
+    # Keeps the lane in its current position
     def test_move_lane_left_out_of_bounds(self):
         response = self.client.post(self.url, {'move_lane_left': self.lane1.lane_id})
         self.assertEqual(response.status_code, 302) 
@@ -143,7 +143,7 @@ class DashboardViewTestCase(TestCase, LogInTester):
         self.assertEqual(self.lane1.lane_order, 1)
         self.assertEqual(self.lane2.lane_order, 2)
     
-    # test moving a lane to the right, so that it is after the lane to the right of it
+    # Test moving a lane to the right, so that it is after the lane to the right of it
     def test_move_lane_right(self):
         response = self.client.post(self.url, {'move_lane_right': self.lane1.lane_id})
         self.assertEqual(response.status_code, 302) 
@@ -152,8 +152,8 @@ class DashboardViewTestCase(TestCase, LogInTester):
         self.assertEqual(self.lane1.lane_order, 2) # lane1 should now be at position 2
         self.assertEqual(self.lane2.lane_order, 1) # lane2 should now be at position 1
 
-    # move a lane to the right when there is no lane to the right of it
-    # keeps the lane in its current position
+    # Move a lane to the right when there is no lane to the right of it
+    # Keeps the lane in its current position
     def test_move_lane_left_out_of_bounds(self):
         response = self.client.post(self.url, {'move_lane_right': self.lane2.lane_id})
         self.assertEqual(response.status_code, 302) 

@@ -43,7 +43,6 @@ class LaneModelTestCase(TestCase):
         self.lane.name = 'x' * 51
         self._assert_lane_is_invalid
 
-    # check test
     def test_lane_name_non_unique(self):
         self.assertEqual(self.lane.lane_name, self.lane2.lane_name)
         self.assertNotEqual(self.lane.lane_name, "New Lane 2")
@@ -61,7 +60,6 @@ class LaneModelTestCase(TestCase):
         self.lane2.team = self.team1
         self._assert_lane_is_invalid
 
-    # fix this test
     def test_lane_order_cannot_be_blank(self):
         self.lane.lane_order = None
         self._assert_lane_is_invalid
@@ -78,6 +76,7 @@ class LaneModelTestCase(TestCase):
         self._assert_lane_is_invalid
 
     # Team
+    
     def test_team_cannot_be_blank(self):
         self.lane.team = None
         self._assert_lane_is_invalid

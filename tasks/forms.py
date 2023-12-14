@@ -327,6 +327,8 @@ class LaneForm(forms.ModelForm):
         fields = ['lane_name', 'lane_id']
     
 class LaneDeleteForm(forms.Form):
+    """"Form enabling a user to delete a lane in the dashboard"""
+    
     confirm_deletion = forms.BooleanField(
         required=True,
         widget=forms.CheckboxInput(attrs={'class': 'confirmClass'})

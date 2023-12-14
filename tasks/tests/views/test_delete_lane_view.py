@@ -28,16 +28,16 @@ class TaskEditViewTestCase(TestCase, LogInTester):
         self.url = reverse('lane_delete', kwargs={'lane_id': self.lane.lane_id})
         self.client.login(username=self.user.username, password='Password123')
 
-    # test if user is successfuly logged in
+    # Test if user is successfuly logged in
     def test_login_user(self):
         logged_in = self.client.login(username='@johndoe', password='Password123')
         self.assertTrue(logged_in)
 
-    # test the URL
+    # Test URL
     def test_delete_lane_url(self):
         self.assertEqual(self.url, f'/lane_delete/{self.lane.lane_id}/')
 
-    # test getting the lane to delete
+    # Test getting the lane to delete
     def test_get_lane(self):
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
@@ -46,7 +46,7 @@ class TaskEditViewTestCase(TestCase, LogInTester):
         self.assertTrue(isinstance(form, LaneDeleteForm))
         self.assertFalse(form.is_bound)
     
-    # test lane deletion
+    # Test lane deletion
     def test_successful_lanes_delete(self):
         session = self.client.session
         session['current_team_id'] = self.team.pk
@@ -67,7 +67,7 @@ class TaskEditViewTestCase(TestCase, LogInTester):
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
         self.assertTemplateUsed(response, 'dashboard.html')
 
-    # test if the 3 default lanes are recreated when there are no lanes remaining after deletion
+    # Test if the 3 default lanes are recreated when there are no lanes remaining after deletion
     def test_successful_lanes_delete_when_no_lanes(self):
         session = self.client.session
         session['current_team_id'] = self.team.pk

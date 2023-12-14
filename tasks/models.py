@@ -175,6 +175,7 @@ class Invite(models.Model):
     
 class Lane(models.Model):
     """Model used for lanes and information related to them"""
+    
     alphanumeric = RegexValidator(
         regex=r'^[a-zA-Z0-9 ]{1,}$',
         message='Enter a valid word with at least 1 alphanumeric character (no special characters allowed).',
