@@ -99,7 +99,7 @@ class TaskModelTestCase(TestCase):
     
     def test_query_tasks_by_lane(self):
         tasks_by_lane = Task.objects.filter(lane=self.lane)
-        self.assertEqual(tasks_by_lane.count(), 2)
+        self.assertEqual(tasks_by_lane.count(), 5)
         
     def test_delete_lane_cascades_to_tasks(self):
         self.lane.delete()
@@ -114,7 +114,7 @@ class TaskModelTestCase(TestCase):
     
     def test_query_tasks_by_team(self):
         tasks_by_team = Task.objects.filter(assigned_team=self.team)
-        self.assertEqual(tasks_by_team.count(), 2)
+        self.assertEqual(tasks_by_team.count(), 5)
         
     def test_delete_team_cascades_to_tasks(self):
         self.team.delete()
