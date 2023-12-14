@@ -117,7 +117,8 @@
     #id_date_field_month,
     #id_date_field_day,
     #id_date_field_year,
-    #id_time_field {
+    #id_time_field 
+    #id_dependencies{
         background-color: rgba(0, 0, 0, 0.342); 
         padding: 10px; 
         border: 1px solid #ccc; 
@@ -128,8 +129,18 @@
 
     input#id_name::placeholder,
     textarea#id_description::placeholder,
-    input#id_time_field::placeholder {
-    color: white; 
+    input#id_time_field::placeholder
+    select#id_dependencies {
+    color: grey; 
+    }
+
+    .form-control{
+        background-color: rgba(0, 0, 0, 0.342); 
+        padding: 10px; 
+        border: 1px solid #ccc; 
+        border-radius: 4px; 
+        box-sizing: border-box; 
+        color: #ffffff; 
     }
 
     .createtasktext {
