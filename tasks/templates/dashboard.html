@@ -245,10 +245,13 @@
       </form>
 
       <div style="display: flex; justify-content: end;">
-        <!-- View team info -->
+
+        <!--
+        View team info
         <button type="button" name="view_team" class="image" data-bs-toggle="collapse" data-bs-target="#team_info{{ team.id }}" aria-expanded="false" aria-controls="team_info{{ team.id }}">
           <img src="../../static/images/info-icon-blue.png" alt="Info Icon">
         </button>
+        -->
 
         <!-- Delete team, shown if you are the team's creator -->
         {% if user == team.team_creator %}
@@ -399,13 +402,11 @@
       </div>
     {% endfor %}
 
-    {% for team in teams %}
-    <div class="accordion-collapse collapse " id="team_info{{ team.id }}" data-bs-parent="#popup">
+    <div class="accordion-collapse collapse " id="team_info" data-bs-parent="#popup">
       <article id="popup_panel">
-        {% include 'team_info.html' with team=team %}
+        {% include 'team_info.html' with team=current_team %}
       </article>
     </div>
-    {% endfor %}
 
     <!-- Create task popup-->
     {% for lane in lanes %}

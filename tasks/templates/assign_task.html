@@ -1,7 +1,8 @@
+{% extends 'base_content.html' %}
 {% block content %}
 
 <style>
-  .assign-task-card{
+  /* .assign-task-card{
     width: 90%;
   }
 
@@ -44,20 +45,49 @@
   .assign-task-submit-btn:hover{
     background: #28242c;
     color: white;
+  } */
+
+  
+  body {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom right, #a55a37, rgba(207, 222, 220, 0.438));
   }
 
+  
+  .assign-button {
+    display: inline-block;
+    background-color: #a55a37;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    z-index: 2;
+    width: 7em;
+    height: 3em;
+    box-sizing: border-box;
+    text-align: center;
+    vertical-align: middle;
+  }
 </style>
 
-<div class="assign-task-container">
-  <div class="assign-task-row row">
-    <div class="assign-task-card">
-      <h1>Assign Task: {{ task_name }}</h1>
-      <form action ="{{ assign_task_url }}" method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <input type="submit" value="Assign Task" class="btn assign-task-submit-btn">
-      </form>
-    </div>
+<div class="task-info-container">
+  <div class="task-info">
+      <div class="task-header">
+          <h2>Assign Task: {{ task.name }}</h2>
+      </div>
+      <div class="task-details">
+        <div class="mb-3">
+          <form action ="{{ assign_task_url }}" method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <input type="submit" value="Assign Task" class="assign-button">
+          </form>
+        </div>
+      </div>
   </div>
 </div>
+
 {% endblock %}

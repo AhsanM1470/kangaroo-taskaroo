@@ -46,7 +46,7 @@
             <div class="field-value">{{ task.assigned_team }}</div>
 
             <div class="field-label">Assigned Users:</div>
-            <div class="field-value">{{ task.assigned_users.all|join:", " }}</div>
+            <div class="field-value">{{ task.get_assigned_users|join:", " }}</div>
         </div>
     </div>
 </div>

@@ -199,12 +199,16 @@ def autocomplete_user(request):
 
         # Exclude the current user from query
         queried_users.append(request.user.username) 
+
+        # Exclude all members who are already a part of the team
+        current_team = Team.objects.get(id=request.session["current_team_id"])
+        user_set = User.objects.exclude(id__in=current_team.get_team_members())
         
         # Exclude all users already part of string
         if len(queried_users) > 1:
-            data = User.objects.exclude(username__in=queried_users).filter(username__icontains=new_query).values_list('username', flat=True)
+            data = user_set.exclude(username__in=queried_users).filter(username__icontains=new_query).values_list('username', flat=True)
         else:
-            data = User.objects.filter(username__icontains=new_query).values_list('username', flat=True)
+            data = user_set.filter(username__icontains=new_query).values_list('username', flat=True)
         
         json = list(data)
         return JsonResponse(json, safe=False)

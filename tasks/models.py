@@ -157,6 +157,7 @@ class Invite(models.Model):
             self.save()
             notif = InviteNotification.objects.create(invite=self)
             user.add_notification(notif)
+        self.save()
 
     def set_team(self, team):
         """Set the team that will send the invite"""
