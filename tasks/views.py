@@ -424,46 +424,6 @@ class ProfileUpdateView(LoginRequiredMixin, UpdateView):
         messages.add_message(self.request, messages.SUCCESS, "Profile updated!")
         return reverse(settings.REDIRECT_URL_WHEN_LOGGED_IN)
 
-# class ProfilePicUpdateView(LoginRequiredMixin, UpdateView):
-#     """Display user profile editing screen, and handle profile modifications."""
-
-#     model = ProfileUpdateForm
-#     template_name = "profile.html"
-#     form_class = ProfileUpdateForm
-    
-#     def get(self, request, *args, **kwargs):
-#         current_user = request.user
-#         user_profile = Profile.objects.get(user=current_user)
-#         form = ProfileUpdateForm()
-#         return render(request, self.template_name, {'form': form, 'profile': user_profile})
-    
-#     def post(self, request, *args, **kwargs):
-#         # current_user = request.user
-#         # user_profile = Profile.objects.get(user=current_user)
-        
-#         user_id = request.GET.get('user_id')
-#         print(user_id)
-#         profile = get_object_or_404(Profile, user=user_id)
-        
-#         form = ProfileUpdateForm(request.POST, instance=profile )
-#         print(profile)
-#         if form.is_valid():
-#             form.save()
-#             return redirect('profile')
-#         else :
-#             form = ProfileUpdateForm(request.POST, instance=profile)
-#         return render(request, 'profile.html', {'form': form, 'profile': profile})
-
-#     def get_object(self):
-#         """Return the object (user) to be updated."""
-#         user = self.request.user
-#         return user
-
-#     def get_success_url(self):
-#         """Return redirect URL after successful update."""
-#         messages.add_message(self.request, messages.SUCCESS, "Profile updated!")
-#         return reverse(settings.REDIRECT_URL_WHEN_LOGGED_IN)
-
 
 class SignUpView(LoginProhibitedMixin, FormView):
     """Display the sign up screen and handle sign ups."""
@@ -635,7 +595,7 @@ priority_order = Case(
 def task_search(request):
     q = request.GET.get('q', '')
     data = Task.objects.all()
-
+    # If a search query is provided, filter tasks based on the 'name' field containing the query string.
     if q:
         data = data.filter(name__icontains=q)
 
@@ -645,14 +605,12 @@ def task_search(request):
         data=data.model.objects.alias(priority_order=priority_order)
         sort_column = 'priority_order'
     if sort_column:
+        # Sort in descending order if 'desc' is specified.
         if sort_direction == 'desc':
           data = data.order_by('-'+sort_column)
         else:
+          # Default is ascending order
           data = data.order_by(sort_column)
-
-    # data = data.model.objects.annotate(
-    #     formatted_due_date=formatDateTime('due_date')
-    # ).values('name', 'description', 'due_date', 'formatted_due_date', 'priority')
 
     context = {'data': data}
     if not data.exists():

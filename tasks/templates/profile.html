@@ -124,11 +124,12 @@
                 </div>
             </div>
             <div class="profileform">
-                <form action="{% url 'profile' %}" method="post"style="width: 70%;>
+                <form action="{% url 'profile' %}" method="post" style="width: 70%;">
                     {% csrf_token %}
                     {% include 'partials/bootstrap_form.html' with form=form %}
                     <input type="submit" value="Update" class="update-btn btn btn-primary">
                 </form>
+                
             </div>
         </div>
     </div>
