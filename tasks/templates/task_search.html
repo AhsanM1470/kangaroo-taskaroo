@@ -64,6 +64,7 @@
                     {% endif %}
                 </th>
                 <th scope="col">Assigned Team</th>
+                <th scope="col">Assigned Member</th>
                 </thead>
                 <tbody>
                 {% for task in data %}
@@ -73,12 +74,13 @@
                         <td>{{ task.due_date }}</td>
                         <td>{{ task.priority }}</td>
                         <td>{{ task.assigned_team }}</td>
+                        <td>{{ task.assigned_users.all|join:", " }}</td>
 
                     </tr>
                 {% endfor %}
             {% if no_tasks_found %}
                 <tr>
-                    <td colspan="3">No tasks found.</td>
+                    <td colspan="5">No tasks found.</td>
                 </tr>
             {% endif %}
             </tbody>
