@@ -138,10 +138,10 @@ class Invite(models.Model):
     def set_invited_users(self, users):
         """Set the invited users of the invite"""
 
-        #users_list = users.split(" ")
+        users_list = users.split(" ")
         # Need to change this to allow for invites
 
-        for username in users.all():
+        for username in users_list:
             user = User.objects.get(username=username)
             self.invited_users.add(user)
             self.save()

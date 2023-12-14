@@ -5,7 +5,7 @@ from tasks.models import Task, Team, User
 from tasks.forms import AssignTaskForm
 from urllib.parse import unquote
 
-class TaskAssignTaskViewTestCase(TestCase, LogInTester):
+class AssignTaskViewTestCase(TestCase, LogInTester):
     """Tests of the assign task view."""
     fixtures = [
         'tasks/tests/fixtures/default_user.json',

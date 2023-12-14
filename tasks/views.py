@@ -757,7 +757,7 @@ class InviteView(LoginRequiredMixin, FormView):
         messages.add_message(self.request, messages.SUCCESS, "Invite Sent!")
         return reverse('my_teams')
 
-class DeleteTeamView(LoginRequiredMixin, View):
+class DeleteTeamView(LoginRequiredMixin, FormView):
     model = Team
     form_class = DeleteTeamForm
     template_name = 'delete_team.html' 
@@ -774,15 +774,13 @@ class DeleteTeamView(LoginRequiredMixin, View):
                     team.delete()
                     messages.success(request, 'Team Deleted!')
                     return redirect('dashboard')
-            else:
-                delete_form = DeleteTeamForm()
         else:
             messages.error(request, 'Cannot have 0 teams!')
             return redirect("dashboard")
             
         return render(request, "delete_team.html", {'team':team, 'delete_form': delete_form})
     
-class RemoveMemberView(LoginRequiredMixin, View):
+class RemoveMemberView(LoginRequiredMixin, FormView):
     form_class = RemoveMemberForm
     template_name = 'remove_team_member.html' 
     form_title = 'Remove Team Member'
@@ -791,9 +789,9 @@ class RemoveMemberView(LoginRequiredMixin, View):
         """Get the team, and remove the requested team member"""
 
         if "team_id" in request.POST:
-            request.session["team_id"] = request.POST.get("team_id")
+            request.session["team_id"] = request.POST.get("current_team_id")
 
-        team = get_object_or_404(Team, id=request.session["team_id"])
+        team = get_object_or_404(Team, id=request.session["current_team_id"])
         user = User.objects.get(id=member_id)
 
         remove_member_form = RemoveMemberForm(request.POST)

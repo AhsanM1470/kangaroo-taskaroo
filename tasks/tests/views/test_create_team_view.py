@@ -1,12 +1,12 @@
 from tasks.tests.helpers import LogInTester
 from django.test import TestCase
 from django.urls import reverse
-from tasks.models import Task, Team, User
+from tasks.models import Team, User, Invite
 from tasks.forms import CreateTeamForm
 from urllib.parse import unquote
 
-class TaskCreateTeamViewTestCase(TestCase, LogInTester):
-    """Tests of the assign task view."""
+class CreateTeamViewTestCase(TestCase, LogInTester):
+    """Tests of the create team view."""
     fixtures = [
         'tasks/tests/fixtures/default_user.json',
         'tasks/tests/fixtures/other_users.json',
@@ -18,42 +18,55 @@ class TaskCreateTeamViewTestCase(TestCase, LogInTester):
     def setUp(self):
         self.user = User.objects.get(username='@johndoe')
         self.other_user = User.objects.get(username='@janedoe')
-        self.team = Team.objects.get(pk=1)
-        self.team.add_invited_member(self.team.team_creator)
-        self.team.add_invited_member(self.user)
-        self.team.add_invited_member(self.other_user)
-        self.team.save()
-
-        self.task = Task.objects.get(pk=1)
-        self.url = reverse('assign_task', kwargs={'task_id': self.task.id})
-
-        self.form_input = {     
-            'team_members': [self.user.id, self.other_user.id]
+        self.form_input = {
+            "team_name": "Kangaroo",
+            "description": "The team we all wanted to be part of. Oh wait.",
+            "members_to_invite": "@janedoe"
         }
+
+        self.url = reverse('create_team')
         self.client.login(username=self.user.username, password='Password123')
 
-        session = self.client.session
-        session["current_team_id"] = self.team.id
-        session.save()
+    def test_create_team_url(self):
+        self.assertEqual(unquote(self.url),f'/create_team/')
 
-    def test_assign_task_url(self):
-        self.assertEqual(unquote(self.url),f'/assign_task/1/')
-
-    def test_get_assign_task(self):
+    def test_get_create_team(self):
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'assign_task.html')
-        form = response.context['form']
+        self.assertTemplateUsed(response, 'create_team.html')
+        form = response.context['team_form']
         self.assertTrue(isinstance(form, CreateTeamForm))
         self.assertFalse(form.is_bound)
-    
-    def test_successful_assign_task(self):
-        before_count = Task.objects.count()
+
+    def test_successful_create_team(self):
+        before_count = Team.objects.count()
         response = self.client.post(self.url, data=self.form_input, follow=True)
-        after_count = Task.objects.count()
-        self.assertEqual(after_count, before_count)
+        after_count = Team.objects.count()
+        self.assertEqual(after_count, before_count + 1)
         redirect_url = reverse('dashboard')
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
         self.assertTemplateUsed(response, 'dashboard.html')
-        self.assertTrue(self.task in self.user.get_tasks())
-        self.assertTrue(self.task in self.other_user.get_tasks())
+        team = Team.objects.get(team_name="Kangaroo")
+        self.assertEqual(team.team_name, 'Kangaroo')
+        self.assertEqual(team.description, 'The team we all wanted to be part of. Oh wait.')
+        self.assertEqual(team.team_creator, self.user)
+        self.assertTrue(self.user in team.get_team_members())
+
+        # Check if invite has been created to the user we specified to invite
+        invite = Invite.objects.all().first()
+        self.assertTrue(isinstance(invite, Invite))
+        self.assertTrue(self.other_user in invite.invited_users.all())
+
+    def test_unsuccessful_create_team(self):
+        form_input = self.form_input
+        form_input["team_name"] = ""
+        before_count = Team.objects.count()
+        response = self.client.post(self.url, data=form_input, follow=True)
+        after_count = Team.objects.count()
+        self.assertEqual(after_count, before_count)
+        self.assertEqual(response.status_code, 200)
+        form = response.context['team_form']
+        self.assertTrue(isinstance(form, CreateTeamForm))
+        self.assertTrue(form.is_bound)
+        self.assertFalse(Team.objects.filter(team_name="Kangaroo").exists())
+        

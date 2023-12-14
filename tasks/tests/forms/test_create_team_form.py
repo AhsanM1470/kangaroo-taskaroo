@@ -46,7 +46,7 @@ class CreateTeamFormTestCase(TestCase):
         before_count = Team.objects.count()
         team = form.create_team(user)
         after_count = Team.objects.count()
-        self.assertNotEqual(after_count, before_count)
+        self.assertEqual(after_count, before_count + 1)
         self.assertEqual(team.team_name, 'Kangaroo')
         self.assertEqual(team.description, 'The team we all wanted to be part of. Oh wait.')
         self.assertEqual(team.team_creator, user)

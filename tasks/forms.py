@@ -264,7 +264,15 @@ class InviteForm(forms.ModelForm):
         model = Invite
         fields = ['users_to_invite', 'invite_message']
     
-    users_to_invite = forms.ModelMultipleChoiceField(queryset=User.objects.all(), required=True)
+    users_to_invite = forms.CharField(required=False, max_length=300, widget=forms.Select(
+                    attrs={
+                        'height' : 80,
+                        'class': 'basicAutoComplete',
+                        'data-url': '/autocomplete_user/',
+                        'data-noresults-text': "No users matching query",
+                        'autocomplete': 'off'} 
+                ))
+    # users_to_invite = forms.ModelMultipleChoiceField(queryset=User.objects.all(), required=True)
 
     def __init__(self, **kwargs):
         """Makes sure only teams that the current user belongs to are given as options"""
@@ -288,7 +296,6 @@ class InviteForm(forms.ModelForm):
         """Create a new invite and send it to each user"""
 
         users = self.cleaned_data.get("users_to_invite")
-        print(users)
 
         invite = Invite.objects.create(
             invite_message=self.cleaned_data.get("invite_message"),
