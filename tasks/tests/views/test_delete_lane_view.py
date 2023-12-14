@@ -7,7 +7,7 @@ from tasks.forms import LaneDeleteForm
 from django.contrib.auth import get_user_model
 
 
-class TaskEditViewTestCase(TestCase, LogInTester):
+class LaneDeleteViewTestCase(TestCase, LogInTester):
     """Tests of the delete lane view."""
 
     def setUp(self):

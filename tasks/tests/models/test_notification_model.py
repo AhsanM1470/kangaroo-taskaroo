@@ -2,6 +2,8 @@ from django.core.exceptions import ValidationError
 from django.test import TestCase
 from tasks.models import TaskNotification, InviteNotification,Task,Team,Invite,User,Lane
 from datetime import datetime,timedelta
+from django.utils import timezone
+import pytz
 
 class TaskNotificationModelTestCase(TestCase):
     """Testing for the TaskNotification model"""
@@ -12,6 +14,8 @@ class TaskNotificationModelTestCase(TestCase):
     ]
 
     def setUp(self):
+        
+        self.timezone_utc = pytz.timezone('UTC')
         
         self.user = User.objects.get(username='@johndoe')
         self.team = Team.objects.create(
@@ -27,7 +31,7 @@ class TaskNotificationModelTestCase(TestCase):
         self.task = Task.objects.create(
             name = 'test-task',
             description = 'A random test task',
-            due_date = datetime.today()+timedelta(days=5),
+            due_date = timezone.make_aware(datetime.today()+timedelta(days=5), self.timezone_utc),
             assigned_team=self.team,
             lane = self.lane
         )
@@ -79,7 +83,7 @@ class TaskNotificationModelTestCase(TestCase):
         self.assertEqual(new_notifs[0].notification_type,TaskNotification.NotificationType.DEADLINE)
 
     def test_notification_shows_deadline_passed(self):
-        self.task.due_date = datetime.today()
+        self.task.due_date = timezone.make_aware(datetime.today(), self.timezone_utc)
         self.task.notify_keydates()
         new_notifs = [notif.as_task_notif() for notif in self.user.notifications.select_related("tasknotification")]
         new_deadline_notifs = list(filter(lambda notif: notif.notification_type==TaskNotification.NotificationType.DEADLINE,new_notifs))

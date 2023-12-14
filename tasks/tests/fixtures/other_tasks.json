@@ -1,3 +1,4 @@
+
 [
     {
         "model": "tasks.task",
@@ -7,6 +8,42 @@
           "description": "Amy's 6969th task within task manager!",
           "due_date": "2024-12-28T10:00:00Z",
           "priority": "medium",
+          "lane": 1,
+          "assigned_team": 1
+        }
+      },
+      {
+        "model": "tasks.task",
+        "pk": 3,
+        "fields": {
+          "name": "Task3",
+          "description": "Annas 3rd task",
+          "due_date": "2023-12-01T00:00:00Z",
+          "priority": "low",
+          "lane": 1,
+          "assigned_team": 1
+        }
+      },
+      {
+        "model": "tasks.task",
+        "pk": 4,
+        "fields": {
+          "name": "Task4",
+          "description": "Annas 4th task",
+          "due_date": "2023-12-02T00:00:00Z",
+          "priority": "medium",
+          "lane": 1,
+          "assigned_team": 1
+        }
+      },
+      {
+        "model": "tasks.task",
+        "pk": 5,
+        "fields": {
+          "name": "Task5",
+          "description": "Annas 5th task",
+          "due_date": "2023-12-03T00:00:00Z",
+          "priority": "high",
           "lane": 1,
           "assigned_team": 1
         }

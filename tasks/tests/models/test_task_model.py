@@ -4,6 +4,7 @@ from django.test import TestCase
 from tasks.models import Task, Lane, Team, User
 from datetime import datetime, timedelta
 from django.utils import timezone
+import pytz
 
 class TaskModelTestCase(TestCase):
     """Unit tests for the Task model."""
@@ -18,6 +19,8 @@ class TaskModelTestCase(TestCase):
     ]
     
     def setUp(self):
+        
+        self.timezone_utc = pytz.timezone('UTC')
         
         self.user = User.objects.get(username='@johndoe')
         self.user2 = User.objects.get(username='@janedoe')
@@ -179,7 +182,7 @@ class TaskModelTestCase(TestCase):
 
     def test_changed_deadline_notif_sent(self):
         self.task.assigned_team.add_invited_member(self.user)
-        self.task.due_date = (datetime.today()+timedelta(days=5))
+        self.task.due_date = timezone.make_aware((datetime.today()+timedelta(days=5)), self.timezone_utc)
         self.task.notify_keydates()
         self.assertEqual(self.task.deadline_notif_sent,datetime.today().date())
         
