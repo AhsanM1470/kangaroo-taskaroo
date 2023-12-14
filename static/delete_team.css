@@ -1,0 +1,42 @@
+.delete-team-form {
+    max-width: 600px;
+    margin: auto;
+    margin-top: 50px;
+    position: relative;
+    background-color: rgb(32, 158, 148);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+.delete-team-form label {
+  font-weight: bold;
+}
+
+.delete-team-btn, .cancel-button {
+    display: inline-block;
+    background-color: rgb(20, 79, 87);
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    z-index: 2;
+    width: 80px;
+    box-sizing: border-box;
+    vertical-align: top;
+    text-align: center;
+}
+
+.delete-team-btn:hover, .cancel-button:hover {
+    background-color: #b5b29a;
+    color: rgb(14, 20, 80);
+}
+
+.deleteForm input[type="checkbox"].confirmClass {
+  display: inline;
+  margin-right: 10px;
+  margin-bottom: 10px;
+  padding: 10px;
+}
