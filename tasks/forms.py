@@ -117,6 +117,7 @@ class TaskForm(forms.ModelForm):
     
     class Meta:
         """Form options"""
+        
         model = Task
         fields = ["name", "description","dependencies", "priority"]
         widgets = {
@@ -125,11 +126,9 @@ class TaskForm(forms.ModelForm):
             # 'lane': forms.Select(attrs={'class':'lane_select'}),
             'priority': forms.Select(attrs={'class': 'priorityClass'}),
         }
-    #
-    # priority = forms.ChoiceField(
-    #     choices=Task.PRIORITY_CHOICES,
-    #     widget=forms.Select(attrs={'class': 'priorityClass'}),
-    # )
+        
+    """Additional fields"""
+    
     dependencies = forms.ModelMultipleChoiceField(queryset = Task.objects.all(),required=False)
 
     date_field = forms.DateField(
@@ -142,6 +141,7 @@ class TaskForm(forms.ModelForm):
     )
 
     def __init__(self, *args, **kwargs):
+        """Instantiates the possible dependencies the form selection"""
         instance = kwargs.get("instance")
         team = kwargs.get("team")
         
@@ -155,13 +155,9 @@ class TaskForm(forms.ModelForm):
                 self.fields['dependencies'].queryset = Task.objects.filter(assigned_team=team)
         else:
             self.fields['dependencies'].queryset = Task.objects.filter(assigned_team=instance.assigned_team).exclude(id=instance.id)
-
-        # instance = kwargs.get("instance")
-        # if instance is not None:
-        #     self.fields['dependencies'].queryset = Task.objects.filter(assigned_team=instance.assigned_team).exclude(id=instance.id)
-        # self.fields['lane'].initial = Lane.objects.first()
         
     def clean(self):
+        """Cleans the date and time fields within the form and combines them into the datetime field within task"""
         cleaned_data = super().clean()
         date = self.cleaned_data.get('date_field')
         time = self.cleaned_data.get('time_field')
@@ -175,6 +171,8 @@ class TaskForm(forms.ModelForm):
         return cleaned_data
     
     def save(self, assigned_team_id=None, lane_id=None, commit=True):
+        """Create a new task."""
+        
         instance = super(TaskForm, self).save(commit=False)
         date = self.cleaned_data.get('date_field')
         time = self.cleaned_data.get('time_field')
@@ -187,7 +185,6 @@ class TaskForm(forms.ModelForm):
                 timezone.datetime.combine(date, time),
                 timezone.get_current_timezone()
             )
-            # instance.due_date = datetime.combine(date, time)
             
         if assigned_team_id is not None:
             instance.assigned_team = Team.objects.get(id=assigned_team_id)
@@ -205,13 +202,15 @@ class TaskForm(forms.ModelForm):
         return instance
         
 class TaskDeleteForm(forms.Form):
+    """Form enabling a user to delete a task."""
+    
     confirm_deletion = forms.BooleanField(
         required=True,
         widget=forms.CheckboxInput(attrs={'class': 'confirmClass'})
     )
 
 class CreateTeamForm(forms.ModelForm):
-    """Form enabling a user to create a team"""
+    """Form enabling a user to create a team."""
 
     class Meta:
         """Form options."""
@@ -223,13 +222,11 @@ class CreateTeamForm(forms.ModelForm):
             'description' : forms.Textarea(attrs={'placeholder': 'Write a team description...'}),
         }
 
-    members_to_invite = forms.ModelMultipleChoiceField(queryset=User.objects.all(), required=False,
-                            widget=forms.TextInput(
-                                attrs=
-                                {'class': 'basicAutoComplete',
-                                       'data-url': '/autocomplete_user/',
-                                       'autocomplete': 'off'} 
-                            ))
+    members_to_invite = forms.ModelMultipleChoiceField(
+        queryset=User.objects.all(), 
+        required=False, 
+        widget=forms.TextInput(attrs={'class': 'basicAutoComplete','data-url': '/autocomplete_user/','autocomplete': 'off'})
+        )
 
     def __init__(self, *args, **kwargs):
         """Makes sure the creator of team is not shown as option to add"""
@@ -300,6 +297,7 @@ class InviteForm(forms.ModelForm):
         return invite
 
 class RemoveMemberForm(forms.Form):
+    """Form enabling a user to remove a member form a team"""
     confirm_deletion = forms.BooleanField(
         required=True,
         widget=forms.CheckboxInput(attrs={'class': 'confirmClass'})
@@ -337,6 +335,7 @@ class RemoveMemberForm(forms.Form):
 #         pass
 
 class DeleteTeamForm(forms.Form):
+    """Form enabling the user to delete a team"""
     confirm_deletion = forms.BooleanField(
         required=True,
         widget=forms.CheckboxInput(attrs={'class': 'confirmClass'})
@@ -350,6 +349,7 @@ class LaneForm(forms.ModelForm):
         fields = ['lane_name', 'lane_id']
     
 class LaneDeleteForm(forms.Form):
+    """Form enabling a user to delete a lane in the dashboard"""
     confirm_deletion = forms.BooleanField(
         required=True,
         widget=forms.CheckboxInput(attrs={'class': 'confirmClass'})
@@ -361,6 +361,7 @@ DEMO_CHOICES =(
     ("3", "Isha"), 
     ("4", "Saloni"), 
 )
+
 class AssignTaskForm(forms.Form):
     """Form enabling a user to assign a task to another user in team"""
 

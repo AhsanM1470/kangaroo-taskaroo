@@ -307,6 +307,7 @@ class AssignTaskView(LoginRequiredMixin, View):
     success_url = reverse_lazy('dashboard')  # Redirect to the dashboard after successful form submission
     
     def post(self, request, task_id):
+        """Post request enabling the user to assign a task to a user"""
         task = Task.objects.get(id=task_id)
         current_team = Team.objects.get(id=request.session["current_team_id"])
         assign_task_form = AssignTaskForm(request.POST, task=task)
@@ -476,17 +477,10 @@ class SignUpView(LoginProhibitedMixin, FormView):
         return reverse(settings.REDIRECT_URL_WHEN_LOGGED_IN)
 
 class CreateTaskView(LoginRequiredMixin, FormView):
+    """View to handle task creation"""
     form_class = TaskForm
-    template_name = 'task_create.html'  # Create a template for your task form
+    template_name = 'task_create.html' 
     success_url = reverse_lazy('dashboard')  # Redirect to the dashboard after successful form submission
-    form_title = 'Create Task'
-    
-    """ Simon
-    def form_valid(self, form):
-        self.object = form.save()
-        #login(self.request, self.object)
-        return super().form_valid(form)
-    """
 
     def get_success_url(self):
         """Return redirect URL after successful update."""
@@ -509,33 +503,30 @@ class CreateTaskView(LoginRequiredMixin, FormView):
     #     return render(request, self.template_name, {'tasks': all_tasks, 'form': form})
     
     def post(self, request):
+        """Post request method enabling the user to create a new task"""
         current_user = request.user
         teams = current_user.get_teams()
         if request.method == 'POST':
             # Use TaskForm to handle form data, including validation and cleaning
 
+            # Instantiating lane id
             lane_id = request.POST.get("lane_id")
             if lane_id != "":
-                print("f in the chat")
                 request.session["lane_id"] = request.POST.get("lane_id")
 
-            print(request.session["lane_id"])
             form = TaskForm(request.POST or None)
+            
+            # Instantiating current team
             current_team_id = request.session.get("current_team_id")
             current_team = Team.objects.get(id=current_team_id)
             if current_team is None and teams.exists():
                 request.session["current_team_id"] = teams.first().id
                 current_team = teams.first()
-            #lanes = Lane.objects.filter(team=current_team).order_by('lane_order') if current_team else Lane.objects.none()
-
-            #default_lane = Lane.objects.get(name='Backlog')
 
             # Check if the form is valid
             if form.is_valid():
-                # Simon Stuff
                 assigned_team_id = request.session["current_team_id"]
                 lane_id = request.session["lane_id"]
-                # form.instance.lane = Lane.objects.first()
                 form.save(assigned_team_id=assigned_team_id, lane_id=lane_id)
                 
                 messages.success(request, 'Task Created!')
@@ -547,9 +538,10 @@ class CreateTaskView(LoginRequiredMixin, FormView):
         return render(request, self.template_name, {'tasks': all_tasks, 'form': form})
     
 class DeleteTaskView(LoginRequiredMixin, View):
+    """View to handle task deletion"""
     model = Task
     form_class = TaskDeleteForm
-    template_name = 'task_delete.html'  # Create a template for your task form
+    template_name = 'task_delete.html'
     success_url = reverse_lazy('dashboard')  # Redirect to the dashboard after successful form submission
     form_title = 'Delete Task'
     context_object_name = 'task'
@@ -560,19 +552,20 @@ class DeleteTaskView(LoginRequiredMixin, View):
         return reverse_lazy('dashboard')
     
     def get(self, request,pk, *args, **kwargs):
+        """Get request method to load the deletion form for a given task"""
         task = get_object_or_404(Task, pk=pk)
         delete_form = TaskDeleteForm()
-        # if this doesnt work use domain explicitly
-        delete_url = '/task_delete/'+str(pk)+'/'
+        delete_url = reverse('task_delete', kwargs={'pk': pk})
         context = {'task': task, 'delete_form': delete_form, 'delete_url': delete_url, 'name': task.name}
         return render(request, self.template_name, context)
     
     def post(self, request, pk, *args, **kwargs):
-        #task_name = kwargs["task_name"]
+        """Post request method to handle task deletion form submission"""
         task = get_object_or_404(Task, pk=pk)
-        #task = Task.objects.get(pk = task_name)
         if request.method == 'POST':
             delete_form = TaskDeleteForm(request.POST)
+            
+            # Check if the form is valid
             if delete_form.is_valid():
                 if delete_form.cleaned_data['confirm_deletion']:
                     task.delete()
@@ -583,9 +576,10 @@ class DeleteTaskView(LoginRequiredMixin, View):
         return render(request, 'task_delete.html', {'task':task, 'delete_form': delete_form})
     
 class TaskEditView(LoginRequiredMixin, View):
+    """View to handle task modification"""
     model = Task
     form_class = TaskForm
-    template_name = 'task_edit.html'  # Create a template for your task form
+    template_name = 'task_edit.html' 
     success_url = reverse_lazy('dashboard')  # Redirect to the dashboard after successful form submission
     
     def get_success_url(self):
@@ -594,6 +588,7 @@ class TaskEditView(LoginRequiredMixin, View):
         return reverse_lazy('dashboard')
     
     def get(self, request, pk, *args, **kwargs):
+        """Get request method to load the task edit form for a given task"""
         task = get_object_or_404(Task, pk=pk)
         date_field = task.due_date.date()
         time_field = task.due_date.time()
@@ -603,27 +598,24 @@ class TaskEditView(LoginRequiredMixin, View):
             'date_field' : date_field,
             'time_field' : time_field
         }
+        # Passing in the task to be modified into the form
         form = TaskForm(initial=initial_data, instance=task)
-        # if this doesnt work use domain explicitly
         update_url = reverse('task_edit', kwargs={'pk': pk})
         context = {'form': form, 'update_url': update_url, 'task': task}
         return render(request, self.template_name, context)
     
     def post(self, request, pk, *args, **kwargs):
-        #task_name = kwargs["task_name"]
+        """Post request method to handle task edit form submissions"""
         task = get_object_or_404(Task, pk=pk)
-        #task = Task.objects.get(pk = task_name)
-        if request.method == 'POST':
-            form = TaskForm(request.POST, instance=task)
-            if form.is_valid():
-                form.save()
-                messages.success(request, 'Task Updated!')
-                return redirect('dashboard')
-        else:
-            form = TaskForm(instance=task)
+        form = TaskForm(request.POST, instance=task)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Task Updated!')
+            return redirect('dashboard')
         return render(request, 'task_edit.html', {'task':task, 'form': form})
     
 class TaskView(LoginRequiredMixin, View):
+    """View to handle task info requests"""
     model = Task
     template_name = 'task.html' 
     
@@ -632,12 +624,11 @@ class TaskView(LoginRequiredMixin, View):
         return reverse_lazy('dashboard')
     
     def get(self, request, pk, *args, **kwargs):
+        """Get request method to return information about a given task"""
         task = get_object_or_404(Task, pk=pk)
         context = {'task': task}
         return render(request, self.template_name, context)
     
-
-
 priority_order = Case(
     When(priority='high', then=Value(3)),
     When(priority='medium', then=Value(2)),

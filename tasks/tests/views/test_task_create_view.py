@@ -59,14 +59,6 @@ class TaskCreateViewTestCase(TestCase, LogInTester):
         self.assertTrue(isinstance(form, TaskForm))
         self.assertFalse(form.is_bound)
        
-    # def test_succesful_task_create(self):
-    #     self.client.login(username=self.user.username, password='Password123')
-    #     task = { 'name': 'Task1', 'description': 'Amys first task within task manager!' }
-    #     response = self.client.post(self.url, task, follow=True)
-    #     redirect_url = reverse('dashboard')
-    #     self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
-
-    #     self.assertTemplateUsed(response, 'dashboard.html')
 
     def test_successful_task_create(self):
         session = self.client.session
@@ -102,20 +94,6 @@ class TaskCreateViewTestCase(TestCase, LogInTester):
         self.assertTrue(isinstance(form, TaskForm))
         self.assertTrue(form.is_bound)
         self.assertFalse(Task.objects.filter(name='Ta').exists())
-
-
-    # def test_unsuccessful_task_create_due_to_duplicate_names(self):
-    #     self.client.login(username=self.user.username, password='Password123')
-    #     self.task_data['name'] = 'task1'
-    #     before_count = Task.objects.count()
-    #     response = self.client.post(self.url, self.task_data, follow=True)
-    #     after_count = Task.objects.count()
-    #     self.assertEqual(after_count, before_count)
-    #     self.assertEqual(response.status_code, 200)
-    #     self.assertTemplateUsed(response, 'create_task.html')
-    #     form = response.context['form']
-    #     self.assertTrue(isinstance(form, TaskForm))
-    #     self.assertFalse(form.is_bound)
 
         
     
