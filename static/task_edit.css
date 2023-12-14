@@ -1,0 +1,90 @@
+body {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom right, #a55a37, rgba(207, 222, 220, 0.438));
+  }
+
+  .task-edit-container {
+    font-family: Arial, sans-serif;
+    max-width: 600px;
+    margin: 50px auto;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    padding: 20px;
+  }
+
+  .task-edit-container h2 {
+    color: #000000;
+    margin-right:auto;
+  }
+
+  .task-details {
+    margin-top: 20px;
+  }
+
+  .field-label {
+    font-weight: bold;
+  }
+
+  .field-value {
+    margin-bottom: 10px;
+  }
+  .submit-btn{
+    display: inline-block;
+    background-color: #a55a37;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    z-index: 2;
+    width: 5em;
+    height: 3em;
+    box-sizing: border-box;
+    text-align: center;
+    vertical-align: middle;
+  }
+
+  .submit-btn:hover{
+    background: #28242c;
+    color: white;
+  }
+
+  .task-header {
+    display: flex;
+  }
+
+  .task-edit-form textarea {
+  padding: 10px;
+  border: 1px solid grey;
+  border-radius: 5px;
+  box-sizing: border-box;
+  width: 100%; 
+  max-width: 600px;
+  height: 100px; 
+  resize: vertical; 
+  }
+
+  .cancel-button {
+    display: inline-block;
+    background-color: #a55a37;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    z-index: 2;
+    width: 5em;
+    height: 3em;
+    box-sizing: border-box;
+    text-align: center;
+    vertical-align: middle;
+  }
+
+  .cancel-button:hover {
+    background: #28242c;
+    color: white;
+  }
