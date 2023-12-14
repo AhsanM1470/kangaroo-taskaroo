@@ -115,26 +115,95 @@
     <div class="teamcreatecard">
         <h1>Create Team</h1>
 
-        <form action ="{%url 'create_team'%}" method="post">
-            {% csrf_token %}
-    
-            {{ team_form.as_p }}
-            
-        <input type="submit" value="Create Team" class="create-team-btn">
-        </form>
-    </div>
+    <form action ="{%url 'create_team'%}" method="post">
+      {% csrf_token %}
+
+      {% for field in team_form %}
+      <div class="mb-3">
+        {{ field.label_tag }}
+        {% if form.is_bound %}
+          {% if field.errors %}
+            {% if field.name == "members_to_invite" %}
+              {% render_field field class="basicAutoComplete form-control is-invalid" %}
+            {% else %}
+              {% render_field field class="form-control is-invalid" %}
+            {% endif %}
+          {% else %}
+            {% if field.name == "members_to_invite" %}
+                {% render_field field class="basicAutoComplete form-control is-valid" %}
+            {% else %}
+                {% render_field field class="form-control is-valid" %}
+            {% endif %}
+          {% endif %}
+        {% else %}
+          {% if field.name == "members_to_invite" %}
+              {% render_field field class="basicAutoComplete form-control" %}
+          {% else %}
+              {% render_field field class="form-control" %}
+          {% endif %}
+        {% endif %}
+        <div class="valid-feedback">
+          Looks good!
+        </div>
+        <div class="invalid-feedback">
+          {{ field.errors }}
+        </div>
+      </div>
+      {% endfor %}
+        
+    <input type="submit" value="Create Team" class="create-team-btn">
+    </form>
+>>>>>>> 07-Assign-Tasks
 </div>
 {% endblock %}
-
 
 {% block script %}
 <!-- Autocomplete for long forms -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 <script src="../../static/bootstrap-autocomplete.js"></script>
 <script>
-    $('.basicAutoComplete').autoComplete({
-        minLength: 1
-    });
+    let search_box_value = ""
+    $('.basicAutoComplete').autoComplete(
+      {
+        minLength: 1,
+        bootstrapVersion: '5',
+      }
+      );
+    
+    $('.basicAutoComplete').on('change', function (evt, item) {
+        let new_value = document.getElementById("id_members_to_invite").value
+        arr = new_value.split(" ")
+        if (arr.length > 1)
+        {
+          // Pop last element, as this is the query
+          arr.pop()
+          search_box_value = arr.join(" ")
+          console.log(search_box_value)
+        }
+      });
+
+    $('.basicAutoComplete').on('autocomplete.select', function (evt, item) {
+
+        let new_string = ""
+        if (search_box_value == "")
+        {
+          new_string = item
+        }
+        else
+        {
+          new_string = search_box_value + " " + item
+        }
+        if (typeof item === 'string')
+        {
+          $('.basicAutoComplete').autoComplete('set', { value: new_string, text: new_string});
+        }
+        else
+        {
+          $('.basicAutoComplete').autoComplete('clear');
+          search_box_value = ""
+        }
+      });
+      //$('.basicAutoComplete').autoComplete('set', { value: item, text: item});
     $('.dropdown-menu').css({'top': 'auto', 'left': 'auto'})
 
 </script>

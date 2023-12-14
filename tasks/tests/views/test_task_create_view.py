@@ -47,7 +47,6 @@ class TaskCreateViewTestCase(TestCase, LogInTester):
     def test_task_create_url(self):
         self.assertEqual(self.url,'/task_create/')
 
-
     def test_get_task(self):
         session = self.client.session
         session["current_team_id"] = self.team.pk

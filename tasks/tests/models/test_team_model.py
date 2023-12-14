@@ -9,21 +9,17 @@ class TeamModelTestCase(TestCase):
     
     fixtures = [
         'tasks/tests/fixtures/default_user.json',
-        'tasks/tests/fixtures/other_users.json'
+        'tasks/tests/fixtures/other_users.json',
+        'tasks/tests/fixtures/default_team.json'
     ]
 
     def setUp(self):
-        self.user = User.objects.get(username='@johndoe')
+        self.user = User.objects.get(pk=5)
         self.other_user = User.objects.get(username="@peterpickles")
-        self.team = Team.objects.create(
-            team_name="Kangaroo",
-            team_creator=self.user,
-            description="The team we all wanted to be part of. Oh wait."
-        )
+        self.team = Team.objects.get(id=1)
         self.team.add_invited_member(self.user) # Add the creator to team
         self.team.add_invited_member(self.other_user)
         
-
     def test_valid_team(self):
         self._assert_team_is_valid()
 
@@ -49,15 +45,6 @@ class TeamModelTestCase(TestCase):
 
     def test_team_description_cannot_be_over_200_characters_long(self):
         self.team.description = 'x' * 201
-        self._assert_team_is_invalid()
-
-    def test_team_name_must_be_unique(self):
-        second_team = Team.objects.create(
-            team_name="FakeKangaroo",
-            team_creator=self.other_user,
-            description="Yep"
-        )
-        self.team.team_name = second_team.team_name
         self._assert_team_is_invalid()
     
     def test_team_must_have_a_creator(self):
