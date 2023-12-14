@@ -75,11 +75,20 @@ class User(AbstractUser):
         return self.notifications.all().order_by("-id")
     
 
-    
+# class Profile(models.Model):
+#     user = models.OneToOneField(User, on_delete=models.CASCADE)
+#     avatar = models.ImageField(default='templates/profile_pics/person-icon-grey.png', upload_to='profile_pics')
+#     def __str__(self):
+#         return f'{self.user.username} Profile'
+
+#     def get_profile_image(self):
+#         if self.avatar and hasattr(self.avatar, 'url'):
+#             return self.avatar.url
+#         else:
+#             return '../tasks/templates/profile_pics/person-icon-grey.png'
 
 class Team(models.Model):
     """Model used to hold teams of different users and their relevant information"""
-    
     
     team_name = models.CharField(max_length=50, blank=False)
     team_creator = models.ForeignKey(User, on_delete=models.CASCADE, blank=False, related_name="created_teams")
@@ -88,7 +97,7 @@ class Team(models.Model):
     
     def __str__(self):
         """Overrides string to show the team's name"""
-        
+    
         return self.team_name
         
     def add_invited_member(self, user):
@@ -188,6 +197,8 @@ class Lane(models.Model):
     team = models.ForeignKey('Team', on_delete=models.CASCADE, related_name='lanes')
 
     class Meta:
+        """Model options."""
+        
         unique_together = ('lane_order', 'team')
         ordering = ['lane_order']
 
@@ -236,6 +247,7 @@ class Task(models.Model):
             user.add_notification(notif)
 
     def notify_keydates(self):
+        """Configures the deadline notifications for the task based on the current date"""
         if datetime.today().date() < (self.due_date-timedelta(days=5)).date() and self.deadline_notif_sent == datetime.today().date():
             self.deadline_notif_sent = (datetime.today()-timedelta(days=1)).date()
         if self.deadline_notif_sent != datetime.today().date():
@@ -250,6 +262,7 @@ class Task(models.Model):
         self.save()
 
     def set_dependencies(self,new_dependencies):
+        """Discards the previous dependencies and sets the new dependencies for a task"""
         self.dependencies.clear()
         for task in new_dependencies.all():
             self.dependencies.add(task)
@@ -257,9 +270,6 @@ class Task(models.Model):
 
     def __str__(self):
         return self.name
-
-
-    # Could add a boolean field to indicate if the task has expired?
 
 """
 class AssignedTask(models.Model):
@@ -280,25 +290,30 @@ class AssignedTask(models.Model):
 
 class Notification(models.Model): 
     """Generic template model for notifications"""
+
     def as_task_notif(self):
+        """Return notification as instance of TaskNotification"""
         try:
             return self.tasknotification
         except TaskNotification.DoesNotExist:
             return None
 
     def as_invite_notif(self):
+        """Return notification as instance of InviteNotification"""
         try:
             return self.invitenotification
         except InviteNotification.DoesNotExist:
             return None
 
     def display(self):
+        """Return string representing notification"""
         return "This is a notification"
 
 class TaskNotification(Notification): 
     """Model used to represent a notification relating to a specific task"""
 
     class NotificationType(models.TextChoices):
+        """Acts as an enum within the model"""
         ASSIGNMENT = "AS"
         DEADLINE = "DL"
 
@@ -306,6 +321,7 @@ class TaskNotification(Notification):
     notification_type = models.CharField(max_length=2,choices=NotificationType.choices,default=NotificationType.ASSIGNMENT)
 
     def display(self):
+        """Overrides function from Notification"""
         if self.notification_type== self.NotificationType.ASSIGNMENT:
             return f'{self.task.name} has been assigned to you.'
         elif self.notification_type == self.NotificationType.DEADLINE:
@@ -319,4 +335,5 @@ class InviteNotification(Notification):
     invite = models.ForeignKey(Invite,blank=False,on_delete=models.CASCADE)
 
     def display(self):
-       return f"Do you wish to join {self.invite.get_inviting_team().team_name}?"
+        """Overrides function from Notification"""
+        return f"Do you wish to join {self.invite.get_inviting_team().team_name}?"
