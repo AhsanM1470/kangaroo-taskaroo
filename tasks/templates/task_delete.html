@@ -2,18 +2,32 @@
 {% block content %}
 {% include 'partials/messages.html' %}
 
+<style>
+  body{
+    background: linear-gradient(to bottom right, #a55a37, rgba(207, 222, 220, 0.438));
+    height:100vh;
+    width: 100vw;
+    color: white;
+    margin: 0;
+    font-family: 'Arial', sans-serif;
+  }
+</style>
 
-<div class="container">
-  <title>Delete Task</title>
-  
-    <form method="post" action="{% url 'task_delete' task.id %}" class="deleteForm">
-      {% csrf_token %}
-      <h4>Are you sure you want to delete "{{ task.name }}"?</h4>
-      {{ delete_form }}
-      <div>
-        <button type="submit" class="submit-lane-delete btn btn-primary">Submit</button>
-        <a href="{% url 'dashboard' %}" class="cancel-button">Cancel</a>
-      </div>
-    </form>
+
+<div class="task-delete-body">
+  <div class="container">
+    <title>Delete Task</title>
+    
+      <form method="post" action="{% url 'task_delete' task.id %}" class="deleteForm">
+        {% csrf_token %}
+        <h4>Are you sure you want to delete "{{ task.name }}"?</h4>
+        {{ delete_form }}
+        <div>
+          <button type="submit" class="submit-lane-delete btn btn-primary">Submit</button>
+          <a href="{% url 'dashboard' %}" class="cancel-button">Cancel</a>
+        </div>
+      </form>
+  </div>
 </div>
+
 {% endblock %}
