@@ -46,5 +46,17 @@
       "password": "pbkdf2_sha256$260000$4BNvFuAWoTT1XVU8D6hCay$KqDsdCG+bHl8TwYcvA60SGhOMluAheVOnF1PMz0wClilc=",
       "is_active": true
     }
+  },
+  {
+    "model": "tasks.user",
+    "pk": 6, 
+    "fields": {
+      "first_name": "Charlie",
+      "last_name": "Bucket",
+      "username": "@charlie",
+      "email": "charlie@example.org",
+      "password": "pbkdf2_sha256$260000$4BNvFuAWoTT1XVU8D6hCay$KqDsdCG+bHl8TwYcvA60SGhOMluAheVOnF1PMz0wClilc=",
+      "is_active": true
+    }
   }
 ]
