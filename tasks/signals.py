@@ -13,6 +13,8 @@ def create_team_for_superuser(sender, instance, created, **kwargs):
             )
         team.add_invited_member(instance)
         
+        
+        
 @receiver(post_save, sender=get_user_model())
 def create_team_for_superuser(sender, instance, **kwargs):
     # Check if the user is now a superuser
@@ -25,3 +27,4 @@ def create_team_for_superuser(sender, instance, **kwargs):
                 team_creator=instance
             )
             team.add_invited_member(instance)
+            
