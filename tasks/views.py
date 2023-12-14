@@ -535,7 +535,8 @@ class CreateTaskView(LoginRequiredMixin, FormView):
             #lanes = Lane.objects.filter(team=current_team).order_by('lane_order') if current_team else Lane.objects.none()
             lane_id = request.POST.get("lane_id")
             #default_lane = Lane.objects.get(name='Backlog')
-
+            # if form.fields['time_field'] is None:
+            #     form.fields['time_field'] = "00:00:00"
             # Check if the form is valid
             if form.is_valid():
                 assigned_team_id = request.session["current_team_id"]
