@@ -1,12 +1,3 @@
-.deleteForm body{
-    background: linear-gradient(to bottom right, #a55a37, rgba(207, 222, 220, 0.438));
-    height:100vh;
-    width: 100%;
-    color: white;
-    margin: 0;
-    font-family: 'Arial', sans-serif;
-  }
-
 /*
 *forms
 */

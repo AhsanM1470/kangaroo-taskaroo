@@ -5,8 +5,8 @@
 <style>
 
     body {
-        width: 100vw;
-        height: 100vh;
+        width: 100%;
+        height: 100%;
         background: linear-gradient(to bottom right, #a55a37, rgba(207, 222, 220, 0.438));
     }
 
@@ -34,6 +34,7 @@
     }
 
     .field-value {
+        max-width:420px;word-wrap:break-word;
         margin-bottom: 10px;
     }
     .edit-button,
@@ -79,7 +80,7 @@
             <div class="field-value">{{ task.name }}</div>
 
             <div class="field-label">Description:</div>
-            <div class="field-value">{{ task.description }}</div>
+            <div class="field-value" style="max-width:540px;word-wrap:break-word;">{{ task.description }}</div>
 
             <div class="field-label">Due Date:</div>
             <div class="field-value">{{ task.due_date }}</div>
