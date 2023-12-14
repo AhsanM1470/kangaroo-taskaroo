@@ -403,7 +403,6 @@
     <div class="accordion-collapse collapse " id="team_info{{ team.id }}" data-bs-parent="#popup">
       <article id="popup_panel">
         {% include 'team_info.html' with team=team %}
-
       </article>
     </div>
     {% endfor %}
@@ -417,7 +416,7 @@
       </div>
     {% endfor %}
 
-    <!-- Create teak popup -->
+    <!-- Create team popup -->
     <div class="accordion-collapse collapse" id="create_team" data-bs-parent="#popup">
       <article id="popup_panel" style="overflow: auto;">
         {% include 'create_team.html' with team_form=create_team_form %}
