@@ -28,3 +28,4 @@ urlpatterns = [
     path('dashboard/', views.DashboardView.as_view(), name='dashboard'),
     path('my_teams/', views.my_teams, name="my_teams"),
     path('notif_delete/<int:notif_id>/',views.notif_delete,name='notif_delete')
+]

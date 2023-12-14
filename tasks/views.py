@@ -78,7 +78,7 @@ class DashboardView(LoginRequiredMixin, View):
         else:    
             Lane.objects.none()
             Task.objects.none()
-        assign_task_form = AssignTaskForm(team=current_team, user=current_user)
+        assign_task_form = AssignTaskForm(team=current_team)
         create_task_form = TaskForm()
         invite_form = InviteForm(user=current_user, team=current_team)
         create_team_form = CreateTeamForm(user=current_user)

@@ -110,7 +110,7 @@ class TaskEditViewTestCase(TestCase, LogInTester):
         redirect_url = reverse('dashboard')
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
         self.assertTemplateUsed(response, 'dashboard.html')
-        form = response.context['form']
+        form = response.context['create_task_form']
         self.assertTrue(isinstance(form, TaskForm))
         self.assertFalse(form.is_bound)
 
