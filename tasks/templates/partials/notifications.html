@@ -38,6 +38,7 @@
         display: inline-block;
         padding: 10px;
         color: white;
+        width: 5em;
     }
     .tasknotifdelete {
         display: inline-block;
@@ -62,8 +63,8 @@
                 <div class="invitenotifbtns">
                     <form action ="{%url 'press_invite'%}" method="post">
                         {% csrf_token %}
-                        <input type="submit" value="Accept" name="status">
-                        <input type="submit" value="Reject" name="status">
+                        <input type="submit" value="Accept" name="status" class="invitenotif">
+                        <input type="submit" value="Reject" name="status" class="invitenotif">
                         <input type="hidden" name="id" value= {{ notification.invitenotification.invite.id }}>
                         </form> 
                 </div>

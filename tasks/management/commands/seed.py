@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand, CommandError
 
-from tasks.models import User, Team
+from tasks.models import User, Team, Task, Lane
 
 import pytz
 from faker import Faker
@@ -69,9 +69,8 @@ class Command(BaseCommand):
         """Create a starting team for every user"""
         try:
             self.create_team(user)
-        except:
-            print("bruh")
-            pass
+        except Exception as e:
+            print(f"Error creating team for user {user.username}: {e}")
 
     def create_user(self, data):
         user = User.objects.create_user(
@@ -117,6 +116,15 @@ class Command(BaseCommand):
                 shared_team.add_invited_member(user)
         except Exception as e:
             self.stdout.write(self.style.ERROR(f'Error creating shared team: {e}'))
+            
+    def create_tasks_for_user(self, user, team):
+        task_name = self.faker.sentence()
+        num_assigned_users = random.randint(1, min(5, self.USER_COUNT))  # Assign up to 5 users to a task
+        assigned_users = random.sample(list(team.get_team_members), num_assigned_users)
+        task = Task.objects.create(name=task_name, team=team)
+        task.assigned_to.set(assigned_users)
+        task.save()
+        return task
 
 
 def create_username(first_name, last_name):
