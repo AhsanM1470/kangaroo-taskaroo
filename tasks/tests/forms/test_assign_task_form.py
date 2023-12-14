@@ -1,7 +1,7 @@
 """Unit tests of the assign task form."""
 from django.test import TestCase
 from tasks.forms import AssignTaskForm
-from tasks.models import User, Task
+from tasks.models import User, Task, Team
 
 class AssignTaskFormTestCase(TestCase):
     """Unit tests of the Assign Task form."""
@@ -17,8 +17,13 @@ class AssignTaskFormTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.get(username="@johndoe")
         self.other_user = User.objects.get(username="@janedoe")
+        self.team = Team.objects.get(pk=1)
+        self.team.add_invited_member(self.team.team_creator)
+        self.team.add_invited_member(self.user)
+        self.team.add_invited_member(self.other_user)
+
         self.form_input = {     
-            'team_members': [self.user, self.other_user]
+            'team_members': [self.user.id, self.other_user.id]
         }
 
     def test_form_has_necessary_fields(self):
@@ -45,6 +50,7 @@ class AssignTaskFormTestCase(TestCase):
         """Check if form only shows team members as choices to assign task"""
         task = Task.objects.get(id=1)
         team = task.assigned_team
+        self.assertTrue(team == self.team)
         form = AssignTaskForm(team=team, task=task)
         self.assertFalse(form.is_valid())
         team_member_choices = form.fields["team_members"].queryset
@@ -61,3 +67,10 @@ class AssignTaskFormTestCase(TestCase):
         new_form = AssignTaskForm(task=task)
         self.assertTrue(self.user in new_form.fields["team_members"].initial)
         self.assertTrue(self.other_user in new_form.fields["team_members"].initial)
+    
+    def test_form_accepts_no_users_assigned(self):
+        """Check if you can have a task with no assigned users in form"""
+        task = Task.objects.get(id=1)
+        form_input = {}
+        form = AssignTaskForm(task=task, data=form_input)
+        self.assertTrue(form.is_valid())

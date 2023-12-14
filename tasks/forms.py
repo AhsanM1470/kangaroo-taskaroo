@@ -368,7 +368,7 @@ class AssignTaskForm(forms.Form):
 
         fields = ['team_members']
 
-    team_members = forms.ModelMultipleChoiceField(queryset=User.objects.all(), required=True, widget=forms.CheckboxSelectMultiple)
+    team_members = forms.ModelMultipleChoiceField(queryset=User.objects.all(), required=False, widget=forms.CheckboxSelectMultiple)
 
     def __init__(self, *args, **kwargs):
         """Show all the users who are part of the current team"""

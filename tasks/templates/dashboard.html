@@ -349,11 +349,18 @@
               </form>
 
               <!-- Assign a Task -->
-              <form method="post" action="{% url 'assign_task' task.id %}">
+              <form method="get" action="{% url 'assign_task' task.id %}">
               {% csrf_token %}
+              <button type="submit" class="image" title="Assign Task">
+                <img src="../../static/images/person-icon-grey.png">
+              </button>
+              
+              <!-- Right now, it does not show a pop up
               <button type="submit" class="image" data-bs-toggle="collapse" data-bs-target="#task_pop_up{{ task.id }}" aria-expanded="false" aria-controls="task_pop_up{{ task.id }}" title="Assign Task">
                 <img src="../../static/images/person-icon-grey.png">
               </button>
+              -->
+
               </form>
 
               <!-- View/edit task form -->

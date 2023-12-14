@@ -139,6 +139,7 @@ class Invite(models.Model):
         """Set the invited users of the invite"""
 
         #users_list = users.split(" ")
+        # Need to change this to allow for invites
 
         for username in users.all():
             user = User.objects.get(username=username)
@@ -228,11 +229,16 @@ class Task(models.Model):
 
     def set_assigned_users(self, assigned_users):
         """Set the assigned users of the task"""
+       
+        self.assigned_users.clear() # Reset the assigned users
 
+        # May need to delete notifications if previously assigned users are not reassigned to task
+
+        # Reassign users
         for user in assigned_users:
             self.assigned_users.add(user)
             self.save()
-            notif = TaskNotification.objects.create(task=self,notification_type="AS")
+            notif = TaskNotification.objects.create(task=self, notification_type="AS")
             user.add_notification(notif)
 
     def notify_keydates(self):

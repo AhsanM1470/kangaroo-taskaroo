@@ -290,42 +290,51 @@ def my_teams(request):
 #         messages.add_message(request, messages.SUCCESS, "Tried to remove team member, but there ain't no functionality hehe")
 #     return redirect("my_teams")
 
-@login_required
-def assign_task(request, task_id):
-    """Assigns a task to a user using the task model"""
 
-    task = Task.objects.get(id=task_id)
-    current_team = Team.objects.filter(id=request.session["current_team_id"]).first()
+# @login_required
+# def assign_task(request, task_id):
+#     """Assigns a task to a user using the task model"""
+
+#     print(f"Task = {task_id}")
+#     task = Task.objects.get(id=task_id)
+#     current_team = Team.objects.filter(id=request.session["current_team_id"]).first()
     
-    if request.method == "GET":
-        assign_task_form = AssignTaskForm(team=current_team, task=task)
-        return render(request, "assign_task.html", {"assign_form": assign_task_form})
+#     if request.method == "GET":
+#         assign_task_form = AssignTaskForm(team=current_team, task=task)
+#         return render(request, "assign_task.html", {"assign_form": assign_task_form})
 
-    if request.method == "POST":
-        """Gets the task that has just been pressed"""
+#     if request.method == "POST":
+#         """Gets the task that has just been pressed"""
 
-        assign_task_form = AssignTaskForm(request.POST, task=task)
-        if assign_task_form.is_valid():
-            assign_task_form.assign_task()
-            messages.add_message(request, messages.SUCCESS, "Assigned Task!")
-            return redirect("dashboard")
-        else:
-            messages.add_message(request, messages.ERROR, "Task does not exist!")
-            return render (request, "assign_task.html", {"form": assign_task_form})
+#         assign_task_form = AssignTaskForm(request.POST, task=task)
+#         if assign_task_form.is_valid():
+#             assign_task_form.assign_task()
+#             messages.add_message(request, messages.SUCCESS, "Assigned Task!")
+#             return redirect("dashboard")
+#         else:
+#             messages.add_message(request, messages.ERROR, "Task does not exist!")
+#             return render(request, "assign_task.html", {"form": assign_task_form})
 
 class AssignTaskView(LoginRequiredMixin, View):
     template_name = 'assign_task.html'  # Create a template for your task form
     success_url = reverse_lazy('dashboard')  # Redirect to the dashboard after successful form submission
-    
+
+    def get(self, request, task_id):
+        task = Task.objects.get(id=task_id)
+        current_team = Team.objects.get(id=request.session["current_team_id"])
+        assign_task_form = AssignTaskForm(team=current_team, task=task)
+        return render(request, 'assign_task.html', {'task': task, 'form': assign_task_form})
+
     def post(self, request, task_id):
         task = Task.objects.get(id=task_id)
         current_team = Team.objects.get(id=request.session["current_team_id"])
-        assign_task_form = AssignTaskForm(request.POST, task=task)
+        assign_task_form = AssignTaskForm(task=task, data=request.POST)
         if assign_task_form.is_valid():
             assign_task_form.assign_task()
             messages.success(request, 'Assigned Task!')
             return redirect('dashboard')
         else:
+            print("frik")
             assign_task_form = AssignTaskForm(team=current_team, task=task)
         return render(request, 'assign_task.html', {'task': task, 'form': assign_task_form})
 
