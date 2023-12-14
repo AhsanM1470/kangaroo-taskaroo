@@ -9,18 +9,15 @@ class InviteModelTestCase(TestCase):
     
     fixtures = [
         'tasks/tests/fixtures/default_user.json',
-        'tasks/tests/fixtures/other_users.json'
+        'tasks/tests/fixtures/other_users.json',
+        'tasks/tests/fixtures/default_team.json'
     ]
 
     def setUp(self):
         self.user = User.objects.get(username='@johndoe')
         self.other_user = User.objects.get(username="@peterpickles")
-        self.team = Team.objects.create(
-            team_name="Kangaroo",
-            team_creator=self.user,
-            description="The team we all wanted to be part of. Oh wait."
-        )
-        users_to_invite = User.objects.filter(username="@peterpickles") 
+        self.team = Team.objects.get(id=1)
+        users_to_invite = "@peterpickles"
         
         self.invite = Invite.objects.create(
             invite_message="Yo Yo Yo",
@@ -49,17 +46,23 @@ class InviteModelTestCase(TestCase):
         self.invite.status = "Accept"
         inviting_team = self.invite.inviting_team
         invited_users = self.invite.invited_users
-        self.invite.close()
+
+        for user in invited_users.all():
+            self.invite.close(user_to_invite=user)
 
         for user in invited_users.all():
             self.assertTrue(inviting_team in user.get_teams())
     
     def test_closed_invite_is_deleted(self):
+        """Check that once every user has accepted/rejected invite, it is deleted from database"""
         id = self.invite.id
-        self.invite.close()
+        invited_users = self.invite.invited_users
+
+        for user in invited_users.all():
+            self.invite.close(user_to_invite=user)
 
         with self.assertRaises(Invite.DoesNotExist):
-            Invite.objects.get(pk = id) 
+            Invite.objects.get(pk=id) 
 
     def _assert_invite_is_valid(self):
         try:

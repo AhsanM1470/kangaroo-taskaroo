@@ -105,7 +105,8 @@ class InviteNotificationModelTestCase(TestCase):
         )
         self.team.add_invited_member(self.creator)
 
-        self.invitees = User.objects.filter(username='@janedoe')
+        #self.invitees = User.objects.filter(username='@janedoe')
+        self.invitees = "@janedoe"
         self.invitee = User.objects.get(username='@janedoe')
         self.invite = Invite.objects.create(
             invite_message= "A random invite message",

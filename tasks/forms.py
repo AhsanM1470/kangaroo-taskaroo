@@ -216,7 +216,6 @@ class TaskDeleteForm(forms.Form):
 
 class CreateTeamForm(forms.ModelForm):
     """Form enabling a user to create a team."""
-
     class Meta:
         """Form options."""
 
@@ -226,25 +225,15 @@ class CreateTeamForm(forms.ModelForm):
             'team_name' : forms.TextInput(attrs={'placeholder': 'Enter the team name...'}),
             'description' : forms.Textarea(attrs={'placeholder': 'Write a team description...'}),
         }
-
-    members_to_invite = forms.ModelMultipleChoiceField(
-        queryset=User.objects.all(), 
-        required=False, 
-        widget=forms.TextInput(attrs={'class': 'basicAutoComplete','data-url': '/autocomplete_user/','autocomplete': 'off'})
-        )
-
-    def __init__(self, *args, **kwargs):
-        """Makes sure the creator of team is not shown as option to add"""
-
-        self.creator = kwargs.get("user")
-        if self.creator != None:
-            kwargs.pop("user") 
-
-        super().__init__(*args, **kwargs)
-
-        if self.creator != None:
-            self.fields["members_to_invite"].queryset = User.objects.exclude(username=self.creator.username)
     
+    members_to_invite = forms.CharField(required=False, max_length=300, widget=forms.Select(
+                        attrs={
+                            'height' : 80,
+                            'class': 'basicAutoComplete',
+                            'data-url': '/autocomplete_user/',
+                            'data-noresults-text': "No users matching query",
+                            'autocomplete': 'off'} ))
+
     def create_team(self, creator):
         """Create a new team, sending the requested members invites to join team"""
 
@@ -259,7 +248,7 @@ class CreateTeamForm(forms.ModelForm):
         """Add the creator to team members as well"""
         team.add_invited_member(creator)
 
-        if members_to_invite != None: # If you had members you added in the form
+        if members_to_invite != "": # If you had members you added in the form
             default_invite = Invite.objects.create(
                 invite_message="Please join my team!",
                 inviting_team=team)
@@ -276,8 +265,15 @@ class InviteForm(forms.ModelForm):
         model = Invite
         fields = ['users_to_invite', 'invite_message']
     
-    users_to_invite = forms.ModelMultipleChoiceField(queryset=User.objects.all(), required=True)
-
+    users_to_invite = forms.CharField(required=False, max_length=300, widget=forms.Select(
+                    attrs={
+                        'height' : 80,
+                        'class': 'basicAutoComplete',
+                        'data-url': '/autocomplete_user/',
+                        'data-noresults-text': "No users matching query",
+                        'autocomplete': 'off'} 
+                ))
+    
     def __init__(self, **kwargs):
         """Makes sure only teams that the current user belongs to are given as options"""
         """Makes sure only users who are not already part of the team are shown"""
@@ -300,7 +296,6 @@ class InviteForm(forms.ModelForm):
         """Create a new invite and send it to each user"""
 
         users = self.cleaned_data.get("users_to_invite")
-        print(users)
 
         invite = Invite.objects.create(
             invite_message=self.cleaned_data.get("invite_message"),
@@ -382,9 +377,9 @@ class AssignTaskForm(forms.Form):
     class Meta:
         """Form options."""
 
-        fields = ['team_members', 'task']
+        fields = ['team_members']
 
-    team_members = forms.ModelMultipleChoiceField(queryset=User.objects.all(), required=True, widget=forms.CheckboxSelectMultiple)
+    team_members = forms.ModelMultipleChoiceField(queryset=User.objects.all(), required=False, widget=forms.CheckboxSelectMultiple)
 
     def __init__(self, *args, **kwargs):
         """Show all the users who are part of the current team"""

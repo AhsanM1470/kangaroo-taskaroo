@@ -70,7 +70,7 @@ class TaskDeleteViewTestCase(TestCase, LogInTester):
         deleted_task = Task.objects.filter(name='Test Task').first()
         self.assertIsNone(deleted_task, "Test Task should be deleted")
         
-    def test_unsuccesful_task_create(self):
+    def test_unsuccesful_task_delete(self):
         self.task_data_bad = { }
         before_count = Task.objects.count()
         response = self.client.post(self.url, self.task_data_bad)
