@@ -19,7 +19,7 @@ class InviteFormTestCase(TestCase):
         self.other_user = User.objects.get(username="@janedoe")
 
         self.form_input = {
-            "users_to_invite": [self.user, self.other_user],
+            "users_to_invite": f"{self.user.username} {self.other_user}",
             "invite_message": "Please join my team!",
         }
 

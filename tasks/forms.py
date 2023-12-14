@@ -273,8 +273,7 @@ class InviteForm(forms.ModelForm):
                         'data-noresults-text': "No users matching query",
                         'autocomplete': 'off'} 
                 ))
-    # users_to_invite = forms.ModelMultipleChoiceField(queryset=User.objects.all(), required=True)
-
+    
     def __init__(self, **kwargs):
         """Makes sure only teams that the current user belongs to are given as options"""
         """Makes sure only users who are not already part of the team are shown"""

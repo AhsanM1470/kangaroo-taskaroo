@@ -38,7 +38,7 @@ class DeleteTeamViewTestCase(TestCase, LogInTester):
         self.client.login(username=self.user.username, password='Password123')
 
     def test_delete_team_url(self):
-        self.assertEqual(unquote(self.url), f'/delete_team/1/')
+        self.assertEqual(unquote(self.url), f'/delete_team/2/')
 
     def test_get_delete_team_view(self):
         response = self.client.get(self.url)

@@ -150,7 +150,6 @@ class Invite(models.Model):
         """Set the invited users of the invite"""
 
         users_list = users.split(" ")
-        # Need to change this to allow for invites
 
         for username in users_list:
             user = User.objects.get(username=username)

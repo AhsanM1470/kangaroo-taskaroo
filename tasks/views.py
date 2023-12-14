@@ -81,7 +81,7 @@ class DashboardView(LoginRequiredMixin, View):
         assign_task_form = AssignTaskForm(team=current_team)
         create_task_form = TaskForm(team=current_team)
         invite_form = InviteForm(user=current_user, team=current_team)
-        create_team_form = CreateTeamForm(user=current_user)
+        create_team_form = CreateTeamForm()
 
         detect_keydates()
 

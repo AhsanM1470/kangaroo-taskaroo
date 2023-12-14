@@ -153,58 +153,5 @@
         
     <input type="submit" value="Create Team" class="create-team-btn">
     </form>
->>>>>>> 07-Assign-Tasks
 </div>
 {% endblock %}
-
-{% block script %}
-<!-- Autocomplete for long forms -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
-<script src="../../static/bootstrap-autocomplete.js"></script>
-<script>
-    let search_box_value = ""
-    $('.basicAutoComplete').autoComplete(
-      {
-        minLength: 1,
-        bootstrapVersion: '5',
-      }
-      );
-    
-    $('.basicAutoComplete').on('change', function (evt, item) {
-        let new_value = document.getElementById("id_members_to_invite").value
-        arr = new_value.split(" ")
-        if (arr.length > 1)
-        {
-          // Pop last element, as this is the query
-          arr.pop()
-          search_box_value = arr.join(" ")
-          console.log(search_box_value)
-        }
-      });
-
-    $('.basicAutoComplete').on('autocomplete.select', function (evt, item) {
-
-        let new_string = ""
-        if (search_box_value == "")
-        {
-          new_string = item
-        }
-        else
-        {
-          new_string = search_box_value + " " + item
-        }
-        if (typeof item === 'string')
-        {
-          $('.basicAutoComplete').autoComplete('set', { value: new_string, text: new_string});
-        }
-        else
-        {
-          $('.basicAutoComplete').autoComplete('clear');
-          search_box_value = ""
-        }
-      });
-      //$('.basicAutoComplete').autoComplete('set', { value: item, text: item});
-    $('.dropdown-menu').css({'top': 'auto', 'left': 'auto'})
-
-</script>
-{% endblock %}  
