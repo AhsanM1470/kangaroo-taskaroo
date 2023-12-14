@@ -46,7 +46,7 @@ class TaskNotificationModelTestCase(TestCase):
         self.assertEqual(len(self.assign_notifications),1)
         display_result = self.assign_notifications[0].display()
         target = "test-task has been assigned to you."
-        self.assertEquals(display_result,target)
+        self.assertEqual(display_result,target)
 
     def test_deadline_notification_displays_correctly(self):
         self.assertEqual(len(self.deadline_notifications),1)

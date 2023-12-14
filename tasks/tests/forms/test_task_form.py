@@ -31,7 +31,6 @@ class TaskFormTestCase(TestCase):
             'priority':'medium',
             'time_field': '10:05:00',
             'lane': self.lane,
-            'assigned_team' : self.team
         }
 
     def test_valid_sign_up_form(self):
@@ -74,7 +73,7 @@ class TaskFormTestCase(TestCase):
         self.form_input['date_field'] = date(2024, 12, 19)
         form = TaskForm(data=self.form_input)
         before_count = Task.objects.count()
-        form.save()
+        form.save(assigned_team_id=self.team.id)
         self.assertTrue(form.is_valid())
         cleaned_data = form.cleaned_data
         self.assertEqual(cleaned_data['date_field'], self.form_input['date_field'])
@@ -116,5 +115,5 @@ class TaskFormTestCase(TestCase):
         self.form_input['dependencies'] = Task.objects.filter(pk=1)
         form = TaskForm(data=self.form_input)
         self.assertTrue(form.is_valid)
-        task2 = form.save()
+        task2 = form.save(assigned_team_id=self.team.id)
         self.assertIn(self.task, task2.dependencies.all())
