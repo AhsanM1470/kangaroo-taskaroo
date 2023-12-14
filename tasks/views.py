@@ -645,9 +645,10 @@ priority_order = Case(
 )
 
 def task_search(request):
+    
     q = request.GET.get('q', '')
     data = Task.objects.all()
-
+    # If a search query is provided, filter tasks based on the 'name' field containing the query string.
     if q:
         data = data.filter(name__icontains=q)
 
@@ -657,15 +658,13 @@ def task_search(request):
         data=data.model.objects.alias(priority_order=priority_order)
         sort_column = 'priority_order'
     if sort_column:
+        # Sort in descending order if 'desc' is specified.
         if sort_direction == 'desc':
           data = data.order_by('-'+sort_column)
         else:
+        # Default is ascending order.
           data = data.order_by(sort_column)
-
-    # data = data.model.objects.annotate(
-    #     formatted_due_date=formatDateTime('due_date')
-    # ).values('name', 'description', 'due_date', 'formatted_due_date', 'priority')
-
+          
     context = {'data': data}
     if not data.exists():
         context['no_tasks_found'] = True
