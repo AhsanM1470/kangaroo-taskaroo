@@ -6,6 +6,7 @@ from django.core.exceptions import ValidationError
 from .models import User, Task, Team, Invite, Lane
 from django.utils import timezone
 from datetime import datetime,timedelta
+from datetime import time as tm
 from django.core.files.images import get_image_dimensions
 
 class LogInForm(forms.Form):
@@ -139,6 +140,7 @@ class TaskForm(forms.ModelForm):
     time_field = forms.TimeField(
         label='Time',
         widget=forms.TimeInput(attrs={'placeholder': '00:00:00'}),
+        required=False,
     )
 
     def __init__(self, *args, **kwargs):
@@ -178,7 +180,9 @@ class TaskForm(forms.ModelForm):
         date = self.cleaned_data.get('date_field')
         time = self.cleaned_data.get('time_field')
 
-        if date is not None and time is not None:
+        if date is not None:
+            if time is None:
+                time = tm(0,0,0)
             if datetime.combine(date,time) != instance.due_date:
                 instance.deadline_notif_sent = (datetime.today()-timedelta(days=1)).date()
                 
