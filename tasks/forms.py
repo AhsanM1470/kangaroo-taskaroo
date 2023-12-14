@@ -232,7 +232,7 @@ class CreateTeamForm(forms.ModelForm):
                             'class': 'basicAutoComplete',
                             'data-url': '/autocomplete_user/',
                             'data-noresults-text': "No users matching query",
-                            'autocomplete': 'off'} 
+                            'autocomplete': 'off'} ))
 
     def create_team(self, creator):
         """Create a new team, sending the requested members invites to join team"""

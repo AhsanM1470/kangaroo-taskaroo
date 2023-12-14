@@ -188,31 +188,6 @@ class DashboardView(LoginRequiredMixin, View):
             lane.lane_order = next_lane.lane_order + 1
             lane.save()
 
-<<<<<<< HEAD
-=======
-    # Ensure a current team is selected
-    if current_team is None and teams.exists():
-        request.session["current_team_id"] = teams.first().id
-        current_team = teams.first()
-
-    lanes = Lane.objects.filter(team=current_team).order_by('lane_order') if current_team else Lane.objects.none()
-    team_tasks = current_team.get_tasks() if current_team else Task.objects.none()
-    create_task_form = TaskForm(team=current_team)
-    create_team_form = CreateTeamForm()
-
-    detect_keydates()
-
-    return render(request, 'dashboard.html', {
-        'user': current_user,
-        'lanes': lanes,
-        'tasks': team_tasks,
-        'teams': teams,
-        "current_team": current_team,
-        "create_task_form": create_task_form,
-        "create_team_form": create_team_form,
-    })
->>>>>>> 07-Assign-Tasks
-
 # Autocomplete Query
         
 def autocomplete_user(request):
@@ -234,77 +209,8 @@ def autocomplete_user(request):
         json = list(data)
         return JsonResponse(json, safe=False)
     else:
-<<<<<<< HEAD
-        return HttpResponse("No cookies")
-      
-=======
         return HttpResponse("Wrong Query")
 
-# Move tasks to the left lane
-def move_task_left(request, pk):
-    """" Move the task to the left lane """
-    if request.method == 'POST':
-        task = get_object_or_404(Task, pk=pk)
-        current_lane = task.lane
-        # Filter left lanes within the same team
-        left_lane = Lane.objects.filter(lane_order__lt=current_lane.lane_order, team=current_lane.team).order_by('-lane_order').first()
-        
-        if left_lane:
-            task.lane = left_lane
-            task.save()
-
-        return redirect('dashboard')
-
-# Move tasks to the right lane
-def move_task_right(request, pk):
-    """" Move the task to the right lane """
-    if request.method == 'POST':
-        task = get_object_or_404(Task, pk=pk)
-        current_lane = task.lane
-        # Filter right lanes within the same team
-        right_lane = Lane.objects.filter(lane_order__gt=current_lane.lane_order, team=current_lane.team).order_by('lane_order').first()
-        
-        if right_lane:
-            task.lane = right_lane
-            task.save()
-
-        return redirect('dashboard')
-    
-# move a lane to the left
-def move_lane_left(request, lane_id):
-    """" Move the lane 1 space left """
-    if request.method == 'POST':
-        #with transaction.atomic():
-        lane = get_object_or_404(Lane, pk=lane_id)
-        previous_lane = Lane.objects.filter(lane_order__lt=lane.lane_order, team=lane.team).order_by('-lane_order').first()
-        if previous_lane:
-            # temp value to avoid unique value constraint
-            temp_order = -1
-            lane.lane_order, previous_lane.lane_order = temp_order, lane.lane_order
-            lane.save()
-            previous_lane.save()
-            lane.lane_order = previous_lane.lane_order - 1
-            lane.save()
-    return redirect('dashboard')
-
-# move a lane to the right
-def move_lane_right(request, lane_id):
-    """" Move the lane 1 space right """
-    if request.method == 'POST':
-        #with transaction.atomic():
-        lane = get_object_or_404(Lane, pk=lane_id)
-        next_lane = Lane.objects.filter(lane_order__gt=lane.lane_order, team=lane.team).order_by('lane_order').first()
-        if next_lane:
-                # Use a temporary value to avoid unique constraint violation
-            temp_order = -1
-            lane.lane_order, next_lane.lane_order = temp_order, lane.lane_order
-            lane.save()
-            next_lane.save()
-            lane.lane_order = next_lane.lane_order + 1
-            lane.save()
-    return redirect('dashboard')
-
->>>>>>> 07-Assign-Tasks
 @login_required
 def create_team(request):
     """Form that allows user to create a new team"""
