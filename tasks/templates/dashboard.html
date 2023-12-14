@@ -246,13 +246,6 @@
 
       <div style="display: flex; justify-content: end;">
 
-        <!--
-        View team info
-        <button type="button" name="view_team" class="image" data-bs-toggle="collapse" data-bs-target="#team_info{{ team.id }}" aria-expanded="false" aria-controls="team_info{{ team.id }}">
-          <img src="../../static/images/info-icon-blue.png" alt="Info Icon">
-        </button>
-        -->
-
         <!-- Delete team, shown if you are the team's creator -->
         {% if user == team.team_creator %}
         <form method="post" style="display: inline;" action="{% url 'delete_team' team.id %}">
@@ -376,7 +369,6 @@
             <p>No tasks currently in this lane.</p>
           {% endfor %}
     
-          <!-- <button type="submit" class="btn btn-secondary" style="width: 100%;">New Task</button> -->
           <button type="button" class="newtaskbtn btn btn-secondary" data-bs-toggle="collapse" data-bs-target="#create_task{{ lane.lane_id }}" aria-expanded="false" aria-controls="create_task {{ lane.lane_id }}" style="width: 100%;">New Task</button>
         </div>
         {% endfor %}
