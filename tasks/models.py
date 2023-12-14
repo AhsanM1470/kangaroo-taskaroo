@@ -73,6 +73,7 @@ class User(AbstractUser):
     def get_notifications(self):
         """Returns a query set of the user's notifications"""
         return self.notifications.all().order_by("-id")
+    
 
 # class Profile(models.Model):
 #     user = models.OneToOneField(User, on_delete=models.CASCADE)
