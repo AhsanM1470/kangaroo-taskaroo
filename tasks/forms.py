@@ -144,6 +144,7 @@ class TaskForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         instance = kwargs.get("instance")
         team = kwargs.get("team")
+        
         if team != None:
             kwargs.pop("team")
         

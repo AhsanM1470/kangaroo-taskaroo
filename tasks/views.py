@@ -143,7 +143,7 @@ def dashboard(request):
 
     lanes = Lane.objects.filter(team=current_team).order_by('lane_order') if current_team else Lane.objects.none()
     team_tasks = current_team.get_tasks() if current_team else Task.objects.none()
-    assign_task_form = AssignTaskForm(team=current_team)
+    #assign_task_form = AssignTaskForm(team=current_team)
     create_task_form = TaskForm(team=current_team)
     create_team_form = CreateTeamForm(user=current_user)
 
@@ -492,29 +492,34 @@ class CreateTaskView(LoginRequiredMixin, FormView):
         """Return redirect URL after successful update."""
         messages.add_message(self.request, messages.SUCCESS, "Task created!")
         return reverse_lazy('dashboard')
-    
-    
-    def get(self, request):
-        current_user = request.user
-        teams = current_user.get_teams()
-        current_team_id = request.session.get("current_team_id")
-        current_team = Team.objects.get(id=current_team_id)
-        if current_team is None and teams.exists():
-            request.session["current_team_id"] = teams.first().id
-            current_team = teams.first()
-        lanes = Lane.objects.filter(team=current_team).order_by('lane_order') if current_team else Lane.objects.none()
-        #default_lane = Lane.objects.get(name='Backlog')
-        form = TaskForm(initial={'lane': lanes},team=current_team)
-        # form.fields['lane'].queryset = lanes
-        all_tasks = Task.objects.all()
-        return render(request, self.template_name, {'tasks': all_tasks, 'form': form})
+  
+    # def get(self, request):
+    #     current_user = request.user
+    #     teams = current_user.get_teams()
+    #     current_team_id = request.session.get("current_team_id")
+    #     current_team = Team.objects.get(id=current_team_id)
+    #     if current_team is None and teams.exists():
+    #         request.session["current_team_id"] = teams.first().id
+    #         current_team = teams.first()
+    #     lanes = Lane.objects.filter(team=current_team).order_by('lane_order') if current_team else Lane.objects.none()
+    #     #default_lane = Lane.objects.get(name='Backlog')
+    #     form = TaskForm(initial={'lane': lanes},team=current_team)
+    #     form.fields['lane'].queryset = lanes
+    #     all_tasks = Task.objects.all()
+    #     return render(request, self.template_name, {'tasks': all_tasks, 'form': form})
     
     def post(self, request):
         current_user = request.user
         teams = current_user.get_teams()
         if request.method == 'POST':
             # Use TaskForm to handle form data, including validation and cleaning
-            
+
+            lane_id = request.POST.get("lane_id")
+            if lane_id != "":
+                print("f in the chat")
+                request.session["lane_id"] = request.POST.get("lane_id")
+
+            print(request.session["lane_id"])
             form = TaskForm(request.POST or None)
             current_team_id = request.session.get("current_team_id")
             current_team = Team.objects.get(id=current_team_id)
@@ -522,13 +527,14 @@ class CreateTaskView(LoginRequiredMixin, FormView):
                 request.session["current_team_id"] = teams.first().id
                 current_team = teams.first()
             #lanes = Lane.objects.filter(team=current_team).order_by('lane_order') if current_team else Lane.objects.none()
-            lane_id = request.POST.get("lane_id")
+
             #default_lane = Lane.objects.get(name='Backlog')
 
             # Check if the form is valid
             if form.is_valid():
                 # Simon Stuff
                 assigned_team_id = request.session["current_team_id"]
+                lane_id = request.session["lane_id"]
                 # form.instance.lane = Lane.objects.first()
                 form.save(assigned_team_id=assigned_team_id, lane_id=lane_id)
                 
