@@ -328,9 +328,13 @@
                 <img src="../../static/images/move-left-icon-grey.png">
               </button>
             </form>
-
-            {{ task.name }}
-          
+            {% if task.dependencies.all.count > 0 %}
+              <p style="color: #555555;">
+              {% else %}
+              <p>
+              {% endif %}
+                {{ task.name }}
+              </p> 
             <!-- Form for moving task to the right lane -->
             <form method="post" action="{% url 'dashboard' %}">
             {% csrf_token %}
@@ -341,9 +345,12 @@
             </form>
 
             <!-- Assign a Task -->
-            <button type="button" class="image" data-bs-toggle="collapse" data-bs-target="#task_pop_up{{ task.id }}" aria-expanded="false" aria-controls="task_pop_up{{ task.id }}" title="Assign Task">
-              <img src="../../static/images/person-icon-grey.png">
-            </button>
+            <form method="get" action="{% url 'assign_task' task.id %}">
+              {% csrf_token %}
+              <button type="submit" class="image" title="Assign Task">
+                <img src="../../static/images/person-icon-grey.png">
+              </button>
+            </form>
 
             <!-- View/edit task form -->
             <form method="get" action="{% url 'task' task.id %}">

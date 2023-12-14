@@ -149,7 +149,10 @@ class Invite(models.Model):
     def set_invited_users(self, users):
         """Set the invited users of the invite"""
 
-        for user in users.all():
+        users_list = users.split(" ")
+
+        for username in users_list:
+            user = User.objects.get(username=username)
             self.invited_users.add(user)
             self.save()
             notif = InviteNotification.objects.create(invite=self)
@@ -169,18 +172,17 @@ class Invite(models.Model):
 
     def close(self, user_to_invite=None):
         """Closes the invite and perform relevant behavior for
-        1. invite has been accepted/rejected
-        2. If the inviter wants to withdraw the invitation"""
+            when the invite has been accepted/rejected """
 
-        if self.status == "Accept":
-            if user_to_invite:
+        if user_to_invite:
+            if self.status == "Accept":
                 self.get_inviting_team().add_invited_member(user_to_invite) 
-                self.invited_users.remove(user_to_invite)  
-                notifs = user_to_invite.get_notifications()
-                notif = list(filter(lambda notif: notif.as_invite_notif() != None and notif.as_invite_notif().invite == self,notifs))[0]
-                notif.delete()
-                self.save()
-        if self.invited_users.count()==0:
+            self.invited_users.remove(user_to_invite)  
+            notifs = user_to_invite.get_notifications()
+            notif = list(filter(lambda notif: notif.as_invite_notif() != None and notif.as_invite_notif().invite == self,notifs))[0]
+            notif.delete()
+            self.save()
+        if self.invited_users.count() == 0:
             self.delete()
     
 class Lane(models.Model):
@@ -240,11 +242,16 @@ class Task(models.Model):
 
     def set_assigned_users(self, assigned_users):
         """Set the assigned users of the task"""
+       
+        self.assigned_users.clear() # Reset the assigned users
 
+        # May need to delete notifications if previously assigned users are not reassigned to task
+
+        # Reassign users
         for user in assigned_users:
             self.assigned_users.add(user)
             self.save()
-            notif = TaskNotification.objects.create(task=self,notification_type="AS")
+            notif = TaskNotification.objects.create(task=self, notification_type="AS")
             user.add_notification(notif)
 
     def notify_keydates(self):
