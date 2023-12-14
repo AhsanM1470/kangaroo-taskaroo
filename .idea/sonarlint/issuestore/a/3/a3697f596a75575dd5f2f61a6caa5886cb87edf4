@@ -1,0 +1,19 @@
+
+npython:S1192ş"NDefine a constant instead of duplicating this literal 'my_teams.html' 3 times.(Àö‡ı8ìÓîÊÅ1
+xpython:S1542"TRename function "formatDateTime" to match the regular expression ^[a-z_][a-z0-9_]*$.(¸ñÉóıÿÿÿÿ8íÓîÊÅ1
+Upython:S1481#"6Remove the unused local variable "formatted_datetime".(Ê›í„8íÓîÊÅ1
+xpython:S3776'"TRefactor this function to reduce its Cognitive Complexity from 23 to the 15 allowed.(–‰ºˆûÿÿÿÿ8íÓîÊÅ1
+Bpython:S125D"Remove this commented out code.(äŞê¤úÿÿÿÿ8íÓîÊÅ1
+=python:S125J"Remove this commented out code.(²ô‚¨8îÓîÊÅ1
+Bpython:S125S"Remove this commented out code.(ëâ›¬øÿÿÿÿ8îÓîÊÅ1
+Bpython:S125W"Remove this commented out code.(Š£“Éùÿÿÿÿ8îÓîÊÅ1
+>python:S125"Remove this commented out code.(…Óµ•8îÓîÊÅ1
+Qpython:S1172É",Remove the unused function parameter "args".(ÄÀŸëÿÿÿÿÿ8îÓîÊÅ1
+Spython:S1172É".Remove the unused function parameter "kwargs".(ÄÀŸëÿÿÿÿÿ8îÓîÊÅ1
+Cpython:S125ğ"Remove this commented out code.(ÌÒ­üÿÿÿÿ8ïÓîÊÅ1
+>python:S125“"Remove this commented out code.(Øçì¶8ïÓîÊÅ1
+>python:S125•"Remove this commented out code.(”š®Ú8ïÓîÊÅ1
+>python:S125½"Remove this commented out code.(Øçì¶8ğÓîÊÅ1
+>python:S125¿"Remove this commented out code.(”š®Ú8ğÓîÊÅ1
+>python:S125ñ"Remove this commented out code.(Ö¹†ê8ğÓîÊÅ1
+Opython:S1172û"/Remove the unused function parameter "request".(¾€8ğÓîÊÅ1

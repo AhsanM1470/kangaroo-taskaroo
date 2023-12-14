@@ -72,11 +72,11 @@ class TaskSearchViewTests(TestCase, LogInTester):
         self.assertEqual(actual_order, expected_order)
     
     def test_empty_search(self):
+        # Test search with empty query
         response = self.client.get(reverse('task_search'))
         self.assertContains(response, "Task 1")
         self.assertContains(response, "Task 2")
         self.assertContains(response, "Task 3")
-        
 
 
 

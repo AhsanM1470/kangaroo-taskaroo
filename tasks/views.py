@@ -16,7 +16,11 @@ from django.urls import reverse_lazy
 from django.views.decorators.http import require_POST
 from .forms import TaskForm, TaskDeleteForm, AssignTaskForm
 from .models import Task, Invite, Team, Lane, Notification, User
+<<<<<<< HEAD
 from django.http import HttpResponseBadRequest, HttpResponse, HttpResponseRedirect, JsonResponse
+=======
+from django.http import HttpResponseBadRequest
+>>>>>>> 19-profile-picture
 from datetime import datetime
 from django.db.models import Max, Case, Value, When
 
@@ -437,7 +441,7 @@ class PasswordView(LoginRequiredMixin, FormView):
 class ProfileUpdateView(LoginRequiredMixin, UpdateView):
     """Display user profile editing screen, and handle profile modifications."""
 
-    model = UserForm
+    model = User
     template_name = "profile.html"
     form_class = UserForm
 
@@ -465,6 +469,11 @@ class SignUpView(LoginProhibitedMixin, FormView):
         login(self.request, self.object)
         
         # Create default team
+        team = Team.objects.create(
+            team_name="My Team",
+            team_creator=self.request.user,
+            description="A default team for you to start managing your tasks!"
+        )
         team = Team.objects.create(
             team_name="My Team",
             team_creator=self.request.user,
@@ -653,9 +662,9 @@ def task_search(request):
         if sort_direction == 'desc':
           data = data.order_by('-'+sort_column)
         else:
-        # Default is ascending order.
+          # Default is ascending order
           data = data.order_by(sort_column)
-          
+
     context = {'data': data}
     if not data.exists():
         context['no_tasks_found'] = True

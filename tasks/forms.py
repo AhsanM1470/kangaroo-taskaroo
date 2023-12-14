@@ -6,6 +6,7 @@ from django.core.exceptions import ValidationError
 from .models import User, Task, Team, Invite, Lane
 from django.utils import timezone
 from datetime import datetime,timedelta
+from django.core.files.images import get_image_dimensions
 
 class LogInForm(forms.Form):
     """Form enabling registered users to log in."""
@@ -29,9 +30,9 @@ class UserForm(forms.ModelForm):
 
     class Meta:
         """Form options."""
-
         model = User
         fields = ['first_name', 'last_name', 'username', 'email']
+
 
 class NewPasswordMixin(forms.Form):
     """Form mixing for new_password and password_confirmation fields."""

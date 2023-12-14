@@ -17,6 +17,8 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from tasks import views
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -47,3 +49,6 @@ urlpatterns = [
     path('task/<int:pk>/move-right/', views.move_task_right, name='move_task_right'),
     path('notif_delete/<int:notif_id>/',views.notif_delete,name='notif_delete')
 ]
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL,
+                          document_root=settings.MEDIA_ROOT)
