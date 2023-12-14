@@ -1,0 +1,62 @@
+.deleteForm body{
+    background: linear-gradient(to bottom right, #a55a37, rgba(207, 222, 220, 0.438));
+    height:100vh;
+    width: 100%;
+    color: white;
+    margin: 0;
+    font-family: 'Arial', sans-serif;
+  }
+
+/*
+*forms
+*/
+
+.deleteForm {
+    max-width: 600px;
+    margin: auto;
+    margin-top: 50px;
+    position: relative;
+    background-color: rgb(32, 158, 148);
+    border: 1px solid white;
+    box-shadow: 0 0 10px rgba(0,0,0,0.4);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+.deleteForm input[type="checkbox"].confirmClass {
+    display: inline;
+    margin-right: 10px;
+    margin-bottom: 10px;
+    padding: 10px;
+  }
+
+label {
+  font-weight: bold;
+}
+
+/*
+*Button
+*/
+
+.submit-lane-delete, .cancel-button {
+    display: inline-block;
+    background-color: rgb(20, 79, 87);
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    z-index: 2;
+    width: 80px;
+    box-sizing: border-box;
+    vertical-align: top;
+    text-align: center;
+}
+
+.submit-lane-delete:hover, .cancel-button:hover {
+  background: #28242c;
+  color: white;
+}
+
