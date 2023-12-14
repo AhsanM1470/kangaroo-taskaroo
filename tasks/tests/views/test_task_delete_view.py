@@ -11,28 +11,18 @@ class TaskDeleteViewTestCase(TestCase, LogInTester):
     """Tests of the task delete view."""
     fixtures = [
         'tasks/tests/fixtures/default_user.json',
-        'tasks/tests/fixtures/other_users.json'
+        'tasks/tests/fixtures/other_users.json',
+        'tasks/tests/fixtures/default_team.json',
+        'tasks/tests/fixtures/default_lane.json',
+        'tasks/tests/fixtures/default_task.json',
     ]
     
     def setUp(self):
         self.user = User.objects.get(username='@johndoe')
-        self.team = Team.objects.create(
-            team_name = 'test-team',
-            team_creator= self.user,
-            description = "A random test team"
-        )
+        self.team = Team.objects.get(pk=1)
+        self.lane = Lane.objects.get(pk=1)
         self.team.add_invited_member(self.user)
-        self.lane = Lane.objects.create(
-            lane_id = 1,
-            team=self.team
-        )
-        self.task = Task.objects.create(
-            name='Test Task',
-            description = 'A random test task',
-            due_date = datetime(2024,1,19,10,5),
-            assigned_team=self.team,
-            lane = self.lane
-        )
+        self.task = Task.objects.get(pk=1)
         self.url = reverse('task_delete', kwargs={'pk': self.task.pk})
 
         self.form_input = {
@@ -81,4 +71,4 @@ class TaskDeleteViewTestCase(TestCase, LogInTester):
         form = response.context['form']
         self.assertTrue(isinstance(form, TaskDeleteForm))
         self.assertTrue(form.is_bound)
-        self.assertTrue(Task.objects.filter(name='Test Task').exists())
+        self.assertTrue(Task.objects.filter(name='Task1').exists())
