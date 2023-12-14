@@ -154,7 +154,7 @@ class DashboardViewTestCase(TestCase, LogInTester):
 
     # Move a lane to the right when there is no lane to the right of it
     # Keeps the lane in its current position
-    def test_move_lane_left_out_of_bounds(self):
+    def test_move_lane_right_out_of_bounds(self):
         response = self.client.post(self.url, {'move_lane_right': self.lane2.lane_id})
         self.assertEqual(response.status_code, 302) 
         self.lane1.refresh_from_db()
