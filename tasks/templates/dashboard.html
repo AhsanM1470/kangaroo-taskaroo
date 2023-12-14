@@ -139,6 +139,12 @@
     overflow-wrap: break-word;
     word-wrap: break-word;
   }
+  #popup_panel ul{
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+
 
   #sidebar{
     width: 12.4vw;
@@ -376,6 +382,7 @@
   
   <!-- Popups -->
   <div class="accordion" id="popup">
+
     <!-- Assign task to a user popup -->
     {% for task in tasks %}
       <div class="accordion-collapse collapse" id="task_pop_up{{ task.id }}" data-bs-parent="#popup">
@@ -389,6 +396,7 @@
     <div class="accordion-collapse collapse " id="team_info{{ team.id }}" data-bs-parent="#popup">
       <article id="popup_panel">
         {% include 'team_info.html' with team=team %}
+
       </article>
     </div>
     {% endfor %}

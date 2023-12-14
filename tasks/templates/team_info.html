@@ -43,6 +43,24 @@
 
       <div class="field-label">List of Team Members:</div>
       <div class="field-value">{{ team.get_team_members_list }}</div>
+      
+      {% for member in team.get_team_members %}
+      <ul>
+      <label style="display: inline;">{{ member.username }} </label>
+
+      <!--Only allow the user to remove members if they are the team's creator-->
+      {% if user == team.team_creator and member != user %}
+      <form method="post" style="display: inline;" action="{% url 'remove_member' member.id %}">
+        {% csrf_token %}
+        <input type="hidden" name="team_id" value="{{ team.id }}">
+        <button type="submit" class="image" title="Remove team member">
+          <img src="../../static/images/bin-icon-grey.png">
+        </button>
+      </form>
+      {% endif %}
+      </ul>
+      {% endfor %}
+      
     </div>
 </div>
 {% endblock %}

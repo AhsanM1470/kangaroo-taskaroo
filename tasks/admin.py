@@ -5,6 +5,7 @@ from .models import User, Team, Invite, Task
 
 """These haven't been fully finished, but seem to work for what is needed so far"""
 
+#admin.site.register(Profile)
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
     """Configuration of the adminstrative interface for users"""

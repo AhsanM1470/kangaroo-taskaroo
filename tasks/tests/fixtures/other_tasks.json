@@ -1,0 +1,14 @@
+[
+    {
+        "model": "tasks.task",
+        "pk": 2,
+        "fields": {
+          "name": "Task2",
+          "description": "Amy's 6969th task within task manager!",
+          "due_date": "2024-12-28T10:00:00Z",
+          "priority": "medium",
+          "lane": 1,
+          "assigned_team": 1
+        }
+      }
+]
