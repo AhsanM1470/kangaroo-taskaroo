@@ -16,11 +16,7 @@ from django.urls import reverse_lazy
 from django.views.decorators.http import require_POST
 from .forms import TaskForm, TaskDeleteForm, AssignTaskForm
 from .models import Task, Invite, Team, Lane, Notification, User
-<<<<<<< HEAD
 from django.http import HttpResponseBadRequest, HttpResponse, HttpResponseRedirect, JsonResponse
-=======
-from django.http import HttpResponseBadRequest
->>>>>>> 19-profile-picture
 from datetime import datetime
 from django.db.models import Max, Case, Value, When
 
