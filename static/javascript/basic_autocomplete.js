@@ -1,4 +1,8 @@
+function manageAutocomplete()
+
+
 let search_box_value = ""
+
 $('.basicAutoComplete').autoComplete(
   {
     minLength: 1,
@@ -7,7 +11,7 @@ $('.basicAutoComplete').autoComplete(
   }
   );
 
-$('.basicAutoComplete').on('change', function (evt, item) {
+$('.basicAutoComplete').on('change', function changeAutocomplete (evt, item) {
     let new_value = document.getElementById("id_members_to_invite").value
     arr = new_value.split(" ")
     if (arr.length > 1)
@@ -15,7 +19,6 @@ $('.basicAutoComplete').on('change', function (evt, item) {
       // Pop last element, as this is the query
       arr.pop()
       search_box_value = arr.join(" ")
-      console.log(search_box_value)
     }
   });
 
