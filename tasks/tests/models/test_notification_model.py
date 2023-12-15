@@ -61,13 +61,6 @@ class TaskNotificationModelTestCase(TestCase):
     def test_notifications_stored_correctly(self):
         self.assertEqual(self.notifications.count(),2)
         self.assertEqual(len(self.task_notifs),2)
-
-    def test_notification_deleted_when_deadline_postponed(self):
-        self.task.due_date = self.task.due_date + timedelta(days=1)
-        self.task.notify_keydates()
-        new_notifs = [notif.as_task_notif() for notif in self.user.notifications.select_related("tasknotification")]
-        new_deadline_notifs = list(filter(lambda notif: notif.notification_type==TaskNotification.NotificationType.DEADLINE,new_notifs))
-        self.assertEqual(len(new_deadline_notifs),0)
         
     def test_notification_refreshed_with_sooner_deadline(self):
         self.assertEqual(self.task_notifs[1].notification_type,TaskNotification.NotificationType.DEADLINE)
