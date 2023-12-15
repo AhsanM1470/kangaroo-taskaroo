@@ -18,7 +18,7 @@
                         </form> 
                 </div>
             </div>
-            {% elif notification.as_task_notif != None %}
+            {% elif notification.as_task_notif != None  and notification.tasknotification.task.assigned_team == current_team %}
             <div class="task-notifs-bubbles">
                 <div class="task-notif">
                     {{notification.tasknotification.display}}
