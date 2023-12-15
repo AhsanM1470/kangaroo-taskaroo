@@ -397,7 +397,7 @@
     {% for lane in lanes %}
       <div class="accordion-collapse collapse" id="create_task{{ lane.lane_id }}" data-bs-parent="#popup" style="width: 100%;">
         <article id="popup_panel" style="overflow: auto;">
-          {% include 'task_create.html' with form=create_task_form lane_id=lane.lane_id %}
+          {% include 'task_create_popup.html' with form=create_task_form lane_id=lane.lane_id %}
         </article>
       </div>
     {% endfor %}

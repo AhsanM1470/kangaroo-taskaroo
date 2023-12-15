@@ -1,53 +1,6 @@
 {% extends 'base_content.html' %}
 {% block content %}
 
-<style>
-  .assign-task-card{
-    width: 90%;
-  }
-
-  .assign-task-row {
-    justify-content: center;
-  }
-
-  .assign-task-container {
-    border: 1px solid rgba(255, 255, 255, 0.623);
-    background: linear-gradient(to bottom right, #a55a37, rgba(207, 222, 220, 0.438));
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.589);
-    height: 100%;
-    width: 100%;
-  }
-
-  .team-info-container h2 {
-    padding: 10px;
-    font-weight: bold;
-  }
-
-  .assign-task-submit-btn{
-    display: inline-block;
-    background-color: rgb(32, 143, 158);
-    color: white;
-    padding: 5px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-    z-index: 2;
-    height: 2em;
-    width: 7em;
-    box-sizing: border-box;
-    text-align: center;
-    text-decoration: none;
-    vertical-align: middle;
-    margin-right: auto;
-  }
-
-  .assign-task-submit-btn:hover{
-    background: #28242c;
-    color: white;
-  }
-</style>
-
 <div class="assign-task-container">
   <div class="assign-task-row row">
     <div class="assign-task-card">

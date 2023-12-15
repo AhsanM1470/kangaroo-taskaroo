@@ -47,7 +47,7 @@
     color: white;
   }
 
-.task-create-cancel-button {
+.task-create-cancel-btn {
     display: inline-block;
     background-color: rgb(32, 143, 158);
     color: white;
@@ -64,7 +64,7 @@
     padding: 5px;
 }
 
-.cancel-create-btn:hover{
+.task-create-cancel-btn:hover{
     background: #28242c;
     color: white;
 }
