@@ -47,6 +47,14 @@
     .invitenotifbtns {
         display: inline-block;
     }
+
+    .acceptbtn {
+        color: #558855;
+    }
+
+    .rejectbtn {
+        color: #855558;
+    }
 </style>
 
 <li>
@@ -63,8 +71,8 @@
                 <div class="invitenotifbtns">
                     <form action ="{%url 'press_invite'%}" method="post">
                         {% csrf_token %}
-                        <input type="submit" value="Accept" name="status" class="invitenotif">
-                        <input type="submit" value="Reject" name="status" class="invitenotif">
+                        <input type="submit" value="Accept" name="status" class="invitenotif acceptbtn">
+                        <input type="submit" value="Reject" name="status" class="invitenotif rejectbtn">
                         <input type="hidden" name="id" value= {{ notification.invitenotification.invite.id }}>
                         </form> 
                 </div>
