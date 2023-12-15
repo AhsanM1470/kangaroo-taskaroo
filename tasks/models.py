@@ -73,19 +73,6 @@ class User(AbstractUser):
     def get_notifications(self):
         """Returns a query set of the user's notifications"""
         return self.notifications.all().order_by("-id")
-    
-
-# class Profile(models.Model):
-#     user = models.OneToOneField(User, on_delete=models.CASCADE)
-#     avatar = models.ImageField(default='templates/profile_pics/person-icon-grey.png', upload_to='profile_pics')
-#     def __str__(self):
-#         return f'{self.user.username} Profile'
-
-#     def get_profile_image(self):
-#         if self.avatar and hasattr(self.avatar, 'url'):
-#             return self.avatar.url
-#         else:
-#             return '../tasks/templates/profile_pics/person-icon-grey.png'
 
 class Team(models.Model):
     """Model used to hold teams of different users and their relevant information"""
@@ -108,11 +95,8 @@ class Team(models.Model):
     
     def remove_team_member(self, user):
         """Removes user from team"""
-
-        if user == self.team_creator:
-            print("Cannot remove the team's creator!")
         
-        else:
+        if user != self.team_creator:
             self.team_members.remove(user)
             self.save()
     
@@ -138,7 +122,7 @@ class Team(models.Model):
 
 class Invite(models.Model):
     """Model used to hold information about invites"""
-    
+
     invited_users = models.ManyToManyField(User, blank=False)
     inviting_team = models.ForeignKey(Team, on_delete=models.CASCADE, default=None, blank=False)
     invite_message = models.TextField(validators=[MaxLengthValidator(100)], blank=True)
@@ -162,8 +146,7 @@ class Invite(models.Model):
 
     def set_team(self, team):
         """Set the team that will send the invite"""
-        
-        print(team)
+    
         self.inviting_team = team
         self.save()
 
@@ -212,7 +195,7 @@ class Lane(models.Model):
         
 class Task(models.Model):
     """Model used for tasks and information related to them"""
-    #taskID = models.AutoField(primary_key=True, unique=True)
+
     alphanumeric = RegexValidator(
         regex=r'^[a-zA-Z0-9 ]{3,}$',
         message='Enter a valid word with at least 3 alphanumeric characters (no special characters allowed).',
@@ -247,8 +230,6 @@ class Task(models.Model):
        
         self.assigned_users.clear() # Reset the assigned users
 
-        # May need to delete notifications if previously assigned users are not reassigned to task
-
         # Reassign users
         for user in assigned_users:
             self.assigned_users.add(user)
@@ -275,7 +256,6 @@ class Task(models.Model):
                 if len(current_notifs)>0:
                     current_notifs[0].delete()
                 self.deadline_notif_sent=datetime.today().date()
-                print("done!!")
                 notif_to_add = TaskNotification.objects.create(task=self,notification_type="DL")
                 user.add_notification(notif_to_add)
         self.save()
@@ -289,22 +269,6 @@ class Task(models.Model):
 
     def __str__(self):
         return self.name
-
-"""
-class AssignedTask(models.Model):
-    #M odel used for holding the information about a task assigned to a specific user of a team
-    assigned_member = models.ForeignKey(User, blank=True, on_delete=models.CASCADE, default=None)
-    team = models.ForeignKey(Team, blank=False, on_delete=models.CASCADE)
-    task = models.OneToOneField(Task, blank=False, on_delete=models.CASCADE)
-
-    def add_assigned_members(self, assigned_members):
-        #Set assigned team member/s to task
-        
-        for team_member in assigned_members.all():
-            self.assigned_members.add(team_member)
-            self.save()
-
-"""
 
 
 class Notification(models.Model): 
