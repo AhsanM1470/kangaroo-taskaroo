@@ -95,6 +95,7 @@ class DashboardView(LoginRequiredMixin, View):
             "invite_form" : invite_form,
             "create_task_form": create_task_form,
             "create_team_form": create_team_form,
+            'is_dashboard': True
         }
     
     def post(self, request, *args, **kwargs):
