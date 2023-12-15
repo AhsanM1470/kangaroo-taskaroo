@@ -41,3 +41,8 @@
 .navbar-name:hover{
     color: rgb(32, 143, 158);
 }
+
+.invite-btn{
+    background: none;
+    border: none;
+}
