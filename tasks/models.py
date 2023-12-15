@@ -258,17 +258,26 @@ class Task(models.Model):
 
     def notify_keydates(self):
         """Configures the deadline notifications for the task based on the current date"""
-        if datetime.today().date() < (self.due_date-timedelta(days=5)).date() and self.deadline_notif_sent == datetime.today().date():
-            self.deadline_notif_sent = (datetime.today()-timedelta(days=1)).date()
-        if self.deadline_notif_sent != datetime.today().date():
+        if datetime.today().date() < (self.due_date-timedelta(days=5)).date():
+            if self.deadline_notif_sent == datetime.today().date():
+                self.deadline_notif_sent = (datetime.today()-timedelta(days=1)).date()
+            else:
+                self.deadline_notif_sent = (self.due_date-timedelta(days=5)).date()
+                for user in self.assigned_team.team_members.all():
+                    current_notifs = list(filter(lambda notif: notif.as_task_notif() != None and notif.as_task_notif().task == self and notif.as_task_notif().notification_type=="DL",user.get_notifications()))
+                    if len(current_notifs)>0:
+                        current_notifs[0].delete()
+                    else:
+                        break
+        if self.deadline_notif_sent <= datetime.today().date():
             for user in self.assigned_team.team_members.all():
                 current_notifs = list(filter(lambda notif: notif.as_task_notif() != None and notif.as_task_notif().task == self and notif.as_task_notif().notification_type=="DL",user.get_notifications()))
                 if len(current_notifs)>0:
                     current_notifs[0].delete()
-                if datetime.today().date() >= (self.due_date-timedelta(days=5)).date():
-                    self.deadline_notif_sent=datetime.today().date()
-                    notif_to_add = TaskNotification.objects.create(task=self,notification_type="DL")
-                    user.add_notification(notif_to_add)
+                self.deadline_notif_sent=datetime.today().date()
+                print("done!!")
+                notif_to_add = TaskNotification.objects.create(task=self,notification_type="DL")
+                user.add_notification(notif_to_add)
         self.save()
 
     def set_dependencies(self,new_dependencies):
