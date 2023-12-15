@@ -2,11 +2,11 @@
 
 ## Team members
 The members of the team are:
-- Simon Ha
-- Hannah Porteous
-- Xinyao (Anna) Liao
-- Amy Jassal 
--	Muhammad (Ahsan) Mahfuz
+-   Simon Ha
+-   Hannah Porteous
+-   Xinyao (Anna) Liao
+-   Amy Jassal 
+-   Muhammad (Ahsan) Mahfuz
 
 ## Project structure
 The project is called `task_manager`.  It currently consists of a single app `tasks`.
