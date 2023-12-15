@@ -18,8 +18,8 @@ user_fixtures = [
 class Command(BaseCommand):
     """Build automation command to seed the database."""
 
-    USER_COUNT = 100
-    TEAM_COUNT = 100
+    USER_COUNT = 50
+    TEAM_COUNT = 40
     MAX_USERS_PER_TEAM = 25
     MAX_LANES_PER_TEAM = 10
     MAX_TASKS_PER_LANE = 8
@@ -232,14 +232,15 @@ class Command(BaseCommand):
             description=self.faker.paragraph()
             description = description[:200]
             due_date = self.faker.date_time_this_decade(after_now=True, before_now=False, tzinfo=timezone.utc) + timedelta(days=100)
-            
+            task_priority = self.faker.random_element(['low', 'medium', 'high'])
             
             task = Task.objects.create(
                 name=name,
                 description = description,
                 due_date = due_date,
                 assigned_team=team,
-                lane = lane
+                lane = lane,
+                priority = task_priority
             )
             
             return task
@@ -250,11 +251,12 @@ class Command(BaseCommand):
         task_count = 0
         tasks = []
         while task_count < number_of_tasks:
+            print(f"Seeding tasks {task_count}/{number_of_tasks}", end='\r')
             task = self.try_create_task(lane, team)
             if task is not None:
                 tasks.append(task)
                 task_count += 1
-        print(f"Task seeding for {lane.lane_id} complete.      ")
+        print(f"Task seeding for {lane.lane_id} lane complete.      ")
         return tasks
         
     def set_dependencies_for_tasks(self, tasks):
