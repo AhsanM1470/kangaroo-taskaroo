@@ -13,7 +13,7 @@ class PressInviteViewTestCase(TestCase, LogInTester):
     ]
     
     def setUp(self):
-        self.user = User.objects.get(username='@johndoe')
+        self.user = User.objects.get(username='@janedoe')
         self.team = Team.objects.get(pk=1)
         self.other_team = Team.objects.create(
             team_name="Kangaroo",
@@ -25,7 +25,7 @@ class PressInviteViewTestCase(TestCase, LogInTester):
             invite_message= "A random invite message",
             inviting_team = self.team
         )
-        self.invite.set_invited_users("@johndoe")
+        self.invite.set_invited_users("@janedoe")
         self.url = reverse('press_invite')
         self.client.login(username=self.user.username, password='Password123')
 
