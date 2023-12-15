@@ -22,6 +22,7 @@ from django.db.models import Max, Case, Value, When
 
 def detect_keydates(team):
     tasks = Task.objects.filter(assigned_team = team)
+    print(tasks.count())
     for task in tasks:
         task.notify_keydates()
 
@@ -56,6 +57,7 @@ class DashboardView(LoginRequiredMixin, View):
             current_team = teams.first()
 
         self.create_default_lanes(current_team)
+        detect_keydates(current_team)
 
         return render(request, self.template_name, self.get_context_data(current_user, current_team))
     
@@ -83,8 +85,6 @@ class DashboardView(LoginRequiredMixin, View):
         invite_form = InviteForm()
         create_team_form = CreateTeamForm()
 
-        detect_keydates(current_team)
-
         return {
             'user': current_user,
             'lanes': lanes,
@@ -95,6 +95,7 @@ class DashboardView(LoginRequiredMixin, View):
             "invite_form" : invite_form,
             "create_task_form": create_task_form,
             "create_team_form": create_team_form,
+            'is_dashboard': True
         }
     
     def post(self, request, *args, **kwargs):
