@@ -3,26 +3,24 @@
     justify-content: center;
     align-items: center;
     height: 100%;
+    margin-top: 1em;
   }
 
   .sign-up-row{
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 80%;
     width: 100%;
-    max-width: 700px;
-    height: 650px;
     background-color: rgb(28, 116, 128);
     box-shadow: 0 0 10px rgba(0,0,0,0.5);
     border-radius: 4px;
-    overflow: auto;
   }
 
   .sign-up-form{
-    padding-bottom: 2em;
+    padding-top: 1em;
+    padding-bottom: 1em;
     width: 60%;
-    height: 95%;
+    height: 100%;
     background: transparent;
   }
 
@@ -36,7 +34,7 @@
     margin-top: 2%;
     border-radius: 50px;
     background: #a55a37;
-    color: #532b2c;
+    color: rgb(9, 46, 51);
     border-color: #a55a37;
     transition: ease-in 0.3s;
     margin-left: auto;

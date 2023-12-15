@@ -7,11 +7,13 @@ from .models import Team
 def create_team_for_superuser(sender, instance, created, **kwargs):
     if created and instance.is_superuser:
         # Create a team for the superuser
-        team = Team.objects.create(
-            team_name="My Team",
-            team_creator=instance
-            )
-        team.add_invited_member(instance)
+        if instance.get_teams().count ==0:
+            
+            team = Team.objects.create(
+                team_name="My Team",
+                team_creator=instance
+                )
+            team.add_invited_member(instance)
         
         
         

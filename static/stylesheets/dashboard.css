@@ -1,0 +1,190 @@
+.lane-header::-webkit-scrollbar, .board-container::-webkit-scrollbar, .task-dashboard::-webkit-scrollbar {
+    width: 0.5em; /* Width of the scrollbar */
+    height: 0.3em;
+}
+
+.your-teams-label{
+  margin-top: 0.5em;
+  padding-left: 0.5em;
+  font-weight: bold;
+}
+
+.dashboard-image{
+  border: none;
+  background: transparent;
+}
+
+.flex-container{
+  display: flex;
+  height: 100vh;
+}
+
+.board-container{
+  overflow: auto;
+  height: 100vh;
+  width: 88vw;
+}
+
+.board{
+  display: flex;
+  align-items: flex-start;
+  justify-content: start;
+  gap: 1em;
+}
+
+.lane{
+  display: flex;
+  flex-direction: column;
+  gap: 0.9em;
+
+  background: rgba(45, 125, 139, 0.685);
+  box-shadow: 0px 5px 15px rgba(0,0,0,0.25);
+
+  padding: 0.8em;
+  border-radius: 4px;
+  min-width: 20vw;
+  min-height: 10vh;
+  max-width: 30vw;
+  overflow: hidden;
+}
+
+.lane-name-label, .lane-name-input{
+  display: block;
+  font-size: 1.2em;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  overflow-wrap: break-word;
+  max-width: 20vw;
+}
+
+.lane-header{
+  overflow: auto;
+}
+
+.lane-name-input{
+  display: none;
+  font-size: 1.5em;
+  font-weight: bold;
+  border: none;
+  background: transparent;
+  width: 100%;
+}
+
+.toggle-lane-name:checked + .lane-name-label + .lane-name-input{
+  display: block;
+}
+
+.toggle-lane-name:checked + .lane-name-label{
+  display: none;
+}
+
+.task-dashboard{
+  background: rgb(221, 221, 221);
+  box-shadow: 0px 5px 15px rgba(0,0,0,0.1);
+  padding: 0.5em;
+  border-radius: 4px;
+
+  font-size: 0.95em;
+  cursor: pointer;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  overflow-x:auto;
+}
+
+.task-dashboard img{
+  transform: scale(0.8);
+}
+
+#popup_panel{
+  height: 100vh;
+  width: 20vw;
+  justify-content: center;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+}
+#popup_panel ul{
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+#sidebar{
+  width: 12.4vw;
+  height: 100vh;
+  background-color: rgba(15, 77, 85, 0.541);
+  border-right: 1px solid #FFFFFF55;
+  border-left: 1px solid #FFFFFF55;
+  color: white;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+}
+
+#sidebar ul{
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+#sidebar li{
+  transition: background-color 0.3s;
+  padding-left: 0.5em;
+}
+
+#sidebar li:hover{
+  background-color: #068286;
+}
+
+#task_sidebar{
+  height: 100vh;
+  padding: 1em;
+  background-color: rgba(222, 206, 206, 0.8);
+  border: 10px solid #00000055;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+}
+
+.add-team-style {
+  border-style: solid;
+  border-color: rgba(255, 255, 255, 0.295);
+  border-width: 2px;
+  background-color: #00000055;
+}
+
+#sidebar button{
+  color: white;
+  border: none;
+  background-color: inherit;
+  transition: background-color 0.3s;
+  padding-left: 5%;
+}
+
+#sidebar button:hover{
+  background-color: #067d867c;
+}
+
+.collapsing {
+    transition-duration: 0.7s;
+}
+
+.dashboard-hr { 
+  display: block;
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+  margin-left: auto;
+  margin-right: auto;
+  border-style: inset;
+  border-width: 1px;
+} 
+
+.new-task-btn {
+  background-color: #094d50;
+}
+
+.new-task-btn:hover {
+  background-color: #062425;
+}

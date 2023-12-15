@@ -1,69 +1,24 @@
-<style>
-  a{
-    text-decoration: none;
-    font-size: 1rem;
-    border-radius: 2px;
-    color: white;
-    margin-right: 10px;
-  }
-
-  p{
-    margin-top: 0;
-    margin-bottom: 0;
-  }
-
-  .team-btn{
-    width:auto;
-    padding:5px;
-  }
-
-  .navbarteam{
-    color: white;
-    margin-bottom: 0;
-    display: flex;
-    justify-content: center;
-    width:40vw;
-    word-wrap: break-word;
-    font-size: 1rem;
-    text-align: center;
-    vertical-align: middle;
-  }
-
-  .navbaruser{
-    color: white;
-    margin-right: 3em;
-  }
-
-  .navbar-name {
-    color: #bb4e1b;
-    font-size: 1.5rem;
-  }
-
-  .navbar-name:hover{
-    color: rgb(32, 143, 158);
-  }
-</style>
-
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-  
-  <div class="container">
+  <div class="navbar-container container">
     <a class="navbar-name" href="{% url 'dashboard' %}">
       Kangaroo Taskaroo
     </a>
-    <div class="navbarteam">
-      <p>{{ current_team.team_name }}</p>
+    <div class="navbar-team">
+      <p class="navbar-team-name">{{ current_team.team_name }}</p>
     </div>
 
-    <!-- View team info -->
-    <button type="button" name="view_team" class="image" data-bs-toggle="collapse" data-bs-target="#team_info" aria-expanded="false" aria-controls="team_info">
-      <img src="../../static/images/info-icon-blue.png" alt="Info Icon">
-    </button>
+    {% if is_dashboard %}
+      <!-- View team info -->
+      <button type="button" name="view_team" class="navbar-image" data-bs-toggle="collapse" data-bs-target="#team_info" aria-expanded="false" aria-controls="team_info" style="border: none; background: transparent;">
+        <img src="../../static/images/info-icon-blue.png" alt="Info Icon" title="Team Info">
+      </button>
 
-    <!--Invite Team Members if creator-->
-    {% if user == current_team.team_creator %}
-    <button type="button" name="view_team" class="image" data-bs-toggle="collapse" data-bs-target="#invite_member" aria-expanded="false" aria-controls="invite_member">
-      <img src="../../static/images/add-icon-grey.png" alt="Invite Members" title="Invite Members">
-    </button>
+      <!--Invite Team Members if creator-->
+      {% if user == current_team.team_creator %}
+      <button type="button" name="view_team" class="navbar-image" data-bs-toggle="collapse" data-bs-target="#invite_member" aria-expanded="false" aria-controls="invite_member" style="border: none; background: transparent;">
+        <img src="../../static/images/add-icon-grey.png" alt="Invite Members" title="Invite Members">
+      </button>
+      {% endif %}
     {% endif %}
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">

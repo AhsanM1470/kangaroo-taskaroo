@@ -1,46 +1,15 @@
-<style>
-  .dropdown-username {
-    display: block;
-    width: 100%;
-    padding: .25rem 1rem;
-    clear: both;
-    font-weight: 400;
-    color: #212529;
-    text-align: inherit;
-    text-decoration: none;
-    white-space: nowrap;
-    background-color: transparent;
-    border: 0;
-    font-weight: bold;
-  }
-
-  .styled-dropdown {
-    background: linear-gradient(to bottom, rgb(19, 120, 134), #bb4e1b98);
-    border: 1px solid rgb(155, 140, 151);
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-  }
-
-  .styledbtns:hover {
-    background-color: #bb4e1b67;
-  }
-
-  .dropdown-divider {
-    color: #241007f1;
-  }
-</style>
-
 <div class="collapse navbar-collapse" id="navbarSupportedContent">
 
   <!--Change drop down menu. Maybe unecessary-->
 
   <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
     <li class="nav-item dropdown">
-      <a class="nav-link" title='search' href="{% url 'task_search' %}">
+      <a class="nav-link" title='Search Tasks' href="{% url 'task_search' %}">
         <span class="bi bi-search"></span>
       </a>
     </li>
     <li class="nav-item dropdown">
-      <a class="nav-link" href="#" id="notifications-dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+      <a class="nav-link" title='Notifications' href="#" id="notifications-dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
         <span class="bi-bell"></span>
       </a>
       <ul class="dropdown-menu dropdown-menu-end styled-dropdown" aria-labelledby="notifications-dropdown" style="width: 300px;">

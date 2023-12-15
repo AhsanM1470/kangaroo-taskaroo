@@ -50,13 +50,7 @@
     font-size: 1.2em;
   }
 
-  .btn-primary {
-    background-color: #a55a37;
-    color: #fff;
-    border: 1px solid #7c494b;
-  }
-
-  .btn-secondary {
+  .home-btn {
     background-color: #a55a37;
     color: #532b2c;
     border: 1px solid #7c494b;
@@ -64,7 +58,7 @@
     transition: ease-in 0.3s;
   }
 
-  .btn-secondary:hover{
+  .home-btn:hover{
     background-color: transparent;
     color: #532b2c;
   }

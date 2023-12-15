@@ -7,11 +7,6 @@
       scrollbar-color: #888 transparent;
   }
 
-  .lane-header::-webkit-scrollbar, .board-container::-webkit-scrollbar, .task::-webkit-scrollbar {
-      width: 0.5em; /* Width of the scrollbar */
-      height: 0.3em;
-  }
-
   ::-webkit-scrollbar-thumb {
       background: #ffffff88;
       border-radius: 4px;
@@ -24,204 +19,6 @@
   body{
     background: linear-gradient(to bottom right, #bb4e1b, rgb(32, 143, 158));
   }
-
-  h3{
-    margin-bottom: 0;
-    margin-left:1em;
-  }
-
-  h6{
-    margin-top: 0.5em;
-    padding-left: 0.5em;
-  }
-
-  .username h5{
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  .image{
-    border: none;
-    background: transparent;
-  }
-
-  .flex-container{
-    display: flex;
-    height: 100vh;
-  }
-
-  .board-container{
-    overflow: auto;
-    height: 100vh;
-    width: 88vw;
-  }
-
-  .board{
-    display: flex;
-    align-items: flex-start;
-    justify-content: start;
-    gap: 1em;
-  }
-
-  .lane{
-    display: flex;
-    flex-direction: column;
-    gap: 0.9em;
-
-    background: rgba(45, 125, 139, 0.685);
-    box-shadow: 0px 5px 15px rgba(0,0,0,0.25);
-
-    padding: 0.8em;
-    border-radius: 4px;
-    min-width: 20vw;
-    min-height: 10vh;
-    max-width: 30vw;
-    overflow: hidden;
-  }
-
-  .lane-name-label, .lane-name-input{
-    display: block;
-    font-size: 1.2em;
-    font-weight: bold;
-    border: none;
-    cursor: pointer;
-    width: 100%;
-    overflow-wrap: break-word;
-    max-width: 20vw;
-  }
-
-  .lane-header{
-    overflow: auto;
-  }
-
-  .lane-name-input{
-    display: none;
-    font-size: 1.5em;
-    font-weight: bold;
-    border: none;
-    background: transparent;
-    width: 100%;
-  }
-
-  .toggle-lane-name:checked + .lane-name-label + .lane-name-input{
-    display: block;
-  }
-
-  .toggle-lane-name:checked + .lane-name-label{
-    display: none;
-  }
-
-  .task{
-    background: rgb(221, 221, 221);
-    box-shadow: 0px 5px 15px rgba(0,0,0,0.1);
-    padding: 0.5em;
-    border-radius: 4px;
-
-    font-size: 0.95em;
-    cursor: pointer;
-
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-
-    overflow-x:auto;
-  }
-
-  .task img{
-    transform: scale(0.8);
-  }
-
-  #popup_panel{
-    height: 100vh;
-    width: 20vw;
-    justify-content: center;
-    overflow-wrap: break-word;
-    word-wrap: break-word;
-  }
-  #popup_panel ul{
-    padding: 0;
-    margin: 0;
-    list-style: none;
-  }
-
-
-  #sidebar{
-    width: 12.4vw;
-    height: 100vh;
-    background-color: rgba(15, 77, 85, 0.541);
-    border-right: 1px solid #FFFFFF55;
-    border-left: 1px solid #FFFFFF55;
-    color: white;
-    overflow-wrap: break-word;
-    word-wrap: break-word;
-  }
-
-  #sidebar ul{
-    padding: 0;
-    margin: 0;
-    list-style: none;
-  }
-
-  #sidebar li{
-    transition: background-color 0.3s;
-    padding-left: 0.5em;
-  }
-
-  #sidebar li:hover{
-    background-color: #068286;
-  }
-
-  #task_sidebar{
-    height: 100vh;
-    padding: 1em;
-    background-color: rgba(222, 206, 206, 0.8);
-    border: 10px solid #00000055;
-    overflow-wrap: break-word;
-    word-wrap: break-word;
-  }
-
-  .add-team-style {
-    border-style: solid;
-    border-color: rgba(255, 255, 255, 0.295);
-    border-width: 2px;
-    background-color: #00000055;
-  }
-
-  #sidebar button{
-    color: white;
-    border: none;
-    background-color: inherit;
-    transition: background-color 0.3s;
-    padding-left: 5%;
-  }
-
-  #sidebar button:hover{
-    background-color: #067d867c;
-  }
-
-  .collapsing {
-      transition-duration: 0.7s;
-  }
-
-  hr { 
-    display: block;
-    margin-top: 0.5em;
-    margin-bottom: 0.5em;
-    margin-left: auto;
-    margin-right: auto;
-    border-style: inset;
-    border-width: 1px;
-  } 
-
-  .newtaskbtn {
-    background-color: #094d50;
-  }
-
-  .newtaskbtn:hover {
-    background-color: #062425;
-  }
-
 </style>
 
 <div class="flex-container">
@@ -232,8 +29,8 @@
       </div>
     </ul>
 
-    <h6 style="font-weight: bold;">Your Teams:</h6>
-    <hr>
+    <h6 class="your-teams-label">Your Teams:</h6>
+    <hr class="dashboard-hr">
     {% for team in teams %}
 
     <ul style="display: flex; align-items: center;">
@@ -250,7 +47,7 @@
         {% if user == team.team_creator %}
         <form method="post" style="display: inline;" action="{% url 'delete_team' team.id %}">
         {% csrf_token %}
-          <button type="submit" class="image" title="Delete Team">
+          <button type="submit" class="dashboard-image" title="Delete Team">
             <img src="../../static/images/bin-icon-blue.png" alt="Delete Icon">
           </button>
         </form>
@@ -274,7 +71,7 @@
               <form method="post" action="{% url 'dashboard' %}" style="display: inline;">
                 {% csrf_token %}
                 <input type="hidden" name="move_lane_left" value="{{ lane.lane_id }}">
-                <button type="submit" class="image" title="Move lane left">
+                <button type="submit" class="dashboard-image" title="Move lane left">
                     <img src="../../static/images/move-left-icon.png">
                 </button>
               </form>
@@ -297,7 +94,7 @@
             <form method="post" action="{% url 'dashboard' %}" style="display: inline;">
               {% csrf_token %}
               <input type="hidden" name="move_lane_right" value="{{ lane.lane_id }}">
-              <button type="submit" class="image" title="Move lane right">
+              <button type="submit" class="dashboard-image" title="Move lane right">
                   <img src="../../static/images/move-right-icon.png">
               </button>
             </form>
@@ -306,7 +103,7 @@
             <form method="post" action="{% url 'lane_delete' lane.lane_id %}" style="display: inline;">
                 {% csrf_token %}
                 <input type="hidden" name="delete_lane" value="{{ lane.lane_id }}">
-                <button type="submit" class="image" title="Delete lane">
+                <button type="submit" class="dashboard-image" title="Delete lane">
                     <img src="../../static/images/bin-icon.png">
                 </button>
             </form>
@@ -315,27 +112,34 @@
           <!-- Tasks for each lane -->
           {% for task in tasks %}
           {% if task.lane_id == lane.lane_id %}
-          <div class="task">
+          <div class="task-dashboard">
             <!-- Form for moving tasks to the left lane -->
             <form method="post" action="{% url 'dashboard' %}">
               {% csrf_token %}
               <input type="hidden" name="move_task_left" value="{{ task.id }}">
-              <button type="submit" class="image" title="Move task left">
+              <button type="submit" class="dashboard-image" title="Move task left">
                 <img src="../../static/images/move-left-icon-grey.png">
               </button>
             </form>
-            {% if task.dependencies.all.count > 0 %}
-              <p style="color: #555555;">
+            
+            <span style="margin-top: 1em;">
+              <!-- Tasks with a dependency are blue -->
+              {% if task.dependencies.all.count > 0 %}
+              <p style="color: #1933d8;">
+                {{ task.name }}
+              </p>
               {% else %}
               <p>
-              {% endif %}
                 {{ task.name }}
-              </p> 
+              </p>
+              {% endif %}
+            </span>
+
             <!-- Form for moving task to the right lane -->
             <form method="post" action="{% url 'dashboard' %}">
             {% csrf_token %}
               <input type="hidden" name="move_task_right" value="{{ task.id }}">
-              <button type="submit" class="image" title="Move task right">
+              <button type="submit" class="dashboard-image" title="Move task right">
                 <img src="../../static/images/move-right-icon-grey.png">
               </button>
             </form>
@@ -343,7 +147,7 @@
             <!-- Assign a Task -->
             <form method="get" action="{% url 'assign_task' task.id %}">
               {% csrf_token %}
-              <button type="submit" class="image" title="Assign Task">
+              <button type="submit" class="dashboard-image" title="Assign Task">
                 <img src="../../static/images/person-icon-grey.png">
               </button>
             </form>
@@ -351,7 +155,7 @@
             <!-- View/edit task form -->
             <form method="get" action="{% url 'task' task.id %}">
               {% csrf_token %}
-              <button type="submit" class="image" title="View and edit task">
+              <button type="submit" class="dashboard-image" title="View and edit task">
                 <img src="../../static/images/edit-icon-grey.png">
               </button>
             </form>
@@ -359,7 +163,7 @@
             <!-- Delete task form -->
             <form method="post" action="{% url 'task_delete' task.id %}" style="display: inline;">
               {% csrf_token %}
-              <button type="submit" class="image" title="Delete task">
+              <button type="submit" class="dashboard-image" title="Delete task">
                 <img src="../../static/images/bin-icon-grey.png">
               </button>
             </form>
@@ -370,7 +174,7 @@
           {% endfor %}
     
           <!-- <button type="submit" class="btn btn-secondary" style="width: 100%;">New Task</button> -->
-          <button type="button" class="newtaskbtn btn btn-secondary" data-bs-toggle="collapse" data-bs-target="#create_task{{ lane.lane_id }}" aria-expanded="false" aria-controls="create_task {{ lane.lane_id }}" style="width: 100%;">New Task</button>
+          <button type="button" class="new-task-btn btn btn-secondary" data-bs-toggle="collapse" data-bs-target="#create_task{{ lane.lane_id }}" aria-expanded="false" aria-controls="create_task {{ lane.lane_id }}" style="width: 100%;">New Task</button>
         </div>
         {% endfor %}
       </div>
@@ -397,7 +201,7 @@
     {% for lane in lanes %}
       <div class="accordion-collapse collapse" id="create_task{{ lane.lane_id }}" data-bs-parent="#popup" style="width: 100%;">
         <article id="popup_panel" style="overflow: auto;">
-          {% include 'task_create.html' with form=create_task_form lane_id=lane.lane_id %}
+          {% include 'task_create_popup.html' with form=create_task_form lane_id=lane.lane_id %}
         </article>
       </div>
     {% endfor %}
