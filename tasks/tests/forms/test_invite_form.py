@@ -35,6 +35,14 @@ class InviteFormTestCase(TestCase):
         form = InviteForm(data=self.form_input)
         self.assertTrue(form.is_valid())
 
+    def test_users_to_invite_cannot_be_blank(self):
+        bad_input = {
+            "users_to_invite": "",
+            "invite_message": "Please join my team!",
+        }
+        form = InviteForm(data=bad_input)
+        self.assertFalse(form.is_valid())
+
     def test_form_must_invite_correctly(self):
         form = InviteForm(data=self.form_input)
         self.assertTrue(form.is_valid())

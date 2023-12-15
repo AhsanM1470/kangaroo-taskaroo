@@ -265,7 +265,7 @@ class InviteForm(forms.ModelForm):
         model = Invite
         fields = ['users_to_invite', 'invite_message']
     
-    users_to_invite = forms.CharField(required=False, max_length=300, widget=forms.Select(
+    users_to_invite = forms.CharField(required=True, max_length=300, widget=forms.Select(
                     attrs={
                         'height' : 80,
                         'class': 'basicAutoComplete',
@@ -274,23 +274,23 @@ class InviteForm(forms.ModelForm):
                         'autocomplete': 'off'} 
                 ))
     
-    def __init__(self, **kwargs):
-        """Makes sure only teams that the current user belongs to are given as options"""
-        """Makes sure only users who are not already part of the team are shown"""
+    # def __init__(self, **kwargs):
+    #     """Makes sure only teams that the current user belongs to are given as options"""
+    #     """Makes sure only users who are not already part of the team are shown"""
 
-        self.user = kwargs.get("user")
-        self.team = kwargs.get("team")
-        if self.user != None:
-            kwargs.pop("user") 
-        if self.team != None:
-            kwargs.pop("team") 
+    #     self.user = kwargs.get("user")
+    #     self.team = kwargs.get("team")
+    #     if self.user != None:
+    #         kwargs.pop("user") 
+    #     if self.team != None:
+    #         kwargs.pop("team") 
 
-        super().__init__(**kwargs)
+    #     super().__init__(**kwargs)
 
-        if self.user != None:
-            self.fields['users_to_invite'].queryset = User.objects.exclude(id=self.user.id)
-        if self.team != None:
-            self.fields['users_to_invite'].queryset.exclude(id__in=self.team.get_team_members())
+    #     if self.user != None:
+    #         self.fields['users_to_invite'].queryset = User.objects.exclude(id=self.user.id)
+    #     if self.team != None:
+    #         self.fields['users_to_invite'].queryset.exclude(id__in=self.team.get_team_members())
     
     def send_invite(self, inviting_team=None):
         """Create a new invite and send it to each user"""
