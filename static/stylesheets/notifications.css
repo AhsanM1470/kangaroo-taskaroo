@@ -7,7 +7,7 @@
     background-color: #91431f;
     max-width: 350px;
     width: 90%;
-    max-height: 70px; 
+    height: auto; 
     overflow: auto; 
     justify-content: center;
     align-items: center;
@@ -33,10 +33,9 @@
     color: white;
 }
 .invite-notif {
-    display: inline-block;
     padding: 10px;
     color: white;
-    width: 5em;
+    width: 15em;
 }
 .task-notif-delete {
     display: inline-block;
@@ -44,4 +43,18 @@
 
 .invite-notif-btns {
     display: inline-block;
+}
+
+.acceptbtn {
+    background-color: #558855;
+    width: 4em;
+    margin: 1em;
+    height : 50%;
+}
+
+.rejectbtn {
+    background-color: #855558;
+    width: 4em;
+    margin: 1em;
+    height : 50%;
 }
