@@ -138,6 +138,7 @@ class Team(models.Model):
 
 class Invite(models.Model):
     """Model used to hold information about invites"""
+    
     invited_users = models.ManyToManyField(User, blank=False)
     inviting_team = models.ForeignKey(Team, on_delete=models.CASCADE, default=None, blank=False)
     invite_message = models.TextField(validators=[MaxLengthValidator(100)], blank=True)
