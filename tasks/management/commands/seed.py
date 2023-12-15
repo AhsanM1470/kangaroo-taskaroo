@@ -18,7 +18,7 @@ user_fixtures = [
 class Command(BaseCommand):
     """Build automation command to seed the database."""
 
-    USER_COUNT = 10
+    USER_COUNT = 300
     TEAM_COUNT = 8
     MAX_USERS_PER_TEAM = 5
     MAX_LANES_PER_TEAM = 4
