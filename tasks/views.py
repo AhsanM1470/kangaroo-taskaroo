@@ -255,7 +255,6 @@ class AssignTaskView(LoginRequiredMixin, View):
             messages.success(request, 'Assigned Task!')
             return redirect('dashboard')
         else:
-            print("frik")
             assign_task_form = AssignTaskForm(team=current_team, task=task)
         return render(request, 'assign_task.html', {'task': task, 'form': assign_task_form})
 

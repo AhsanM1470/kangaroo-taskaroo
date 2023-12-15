@@ -51,8 +51,10 @@ class Command(BaseCommand):
     def generate_random_users(self):
         user_count = User.objects.count()
         while  user_count < self.USER_COUNT:
+            print(f"Seeding user {user_count}/{self.USER_COUNT}", end='\r')
             self.generate_user()
             user_count = User.objects.count()
+        print("User seeding complete.      ")
 
     def generate_user(self):
         first_name = self.faker.first_name()
