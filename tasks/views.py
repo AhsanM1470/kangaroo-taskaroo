@@ -233,27 +233,6 @@ def create_team(request):
     
     return render(request, "create_team.html", {"team_form": team})
 
-@login_required
-def my_teams(request):
-    """Display the user's teams page and their invites"""
-
-    current_user = request.user
-    user_teams = current_user.get_teams()
-    user_invites = current_user.get_invites()
-    team_form = CreateTeamForm()
-
-    """Only show the invite and remove form for creators of teams"""
-    if len(current_user.get_created_teams()) > 0:
-        invite_form = InviteForm(user=current_user)
-        remove_form = RemoveMemberForm()
-        return render(request, 'my_teams.html', {'teams': user_teams, 'invites': user_invites, 
-                                                 'team_form': team_form, "invite_form" : invite_form,
-                                                 "remove_form": remove_form})
-    else:
-        return render(request, 'my_teams.html', 
-                      {'teams': user_teams, 'invites': user_invites, 
-                       'team_form': team_form})
-
 # @login_required
 # def remove_member(request):
 #     if request.method == "POST":
