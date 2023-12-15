@@ -14,8 +14,8 @@
 
     <!--Invite Team Members if creator-->
     {% if user == current_team.team_creator %}
-    <button type="button" name="view_team" class="image" data-bs-toggle="collapse" data-bs-target="#invite_member" aria-expanded="false" aria-controls="invite_member">
-      <img src="../../static/images/add-icon-grey.png" alt="Invite Members" title="Invite Members">
+    <button type="button" name="view_team" class="image invite-btn" data-bs-toggle="collapse" data-bs-target="#team_info" aria-expanded="false" aria-controls="team_info">
+      <img src="../../static/images/info-icon-blue.png" alt="Info Icon" title="Team Info">
     </button>
     {% endif %}
 
