@@ -16,7 +16,7 @@ from django.urls import reverse_lazy
 from django.views.decorators.http import require_POST
 from .forms import TaskForm, TaskDeleteForm, AssignTaskForm
 from .models import Task, Invite, Team, Lane, Notification, User
-from django.http import HttpResponseBadRequest, HttpResponse, HttpResponseRedirect, JsonResponse
+from django.http import HttpResponse, JsonResponse
 from datetime import datetime
 from django.db.models import Max, Case, Value, When
 
@@ -234,40 +234,11 @@ def create_team(request):
     
     return render(request, "create_team.html", {"team_form": team})
 
-# @login_required
-# def remove_member(request):
-#     if request.method == "POST":
-#         messages.add_message(request, messages.SUCCESS, "Tried to remove team member, but there ain't no functionality hehe")
-#     return redirect("my_teams")
-
-
-# @login_required
-# def assign_task(request, task_id):
-#     """Assigns a task to a user using the task model"""
-
-#     print(f"Task = {task_id}")
-#     task = Task.objects.get(id=task_id)
-#     current_team = Team.objects.filter(id=request.session["current_team_id"]).first()
-    
-#     if request.method == "GET":
-#         assign_task_form = AssignTaskForm(team=current_team, task=task)
-#         return render(request, "assign_task.html", {"assign_form": assign_task_form})
-
-#     if request.method == "POST":
-#         """Gets the task that has just been pressed"""
-
-#         assign_task_form = AssignTaskForm(request.POST, task=task)
-#         if assign_task_form.is_valid():
-#             assign_task_form.assign_task()
-#             messages.add_message(request, messages.SUCCESS, "Assigned Task!")
-#             return redirect("dashboard")
-#         else:
-#             messages.add_message(request, messages.ERROR, "Task does not exist!")
-#             return render(request, "assign_task.html", {"form": assign_task_form})
-
 class AssignTaskView(LoginRequiredMixin, View):
-    template_name = 'assign_task.html'  # Create a template for your task form
-    success_url = reverse_lazy('dashboard')  # Redirect to the dashboard after successful form submission
+    """View to assign task to user"""
+
+    template_name = 'assign_task.html'
+    success_url = reverse_lazy('dashboard')
 
     def get(self, request, task_id):
         task = Task.objects.get(id=task_id)
@@ -469,7 +440,6 @@ class DeleteLaneView(LoginRequiredMixin, View):
     def get(self, request, lane_id, *args, **kwargs):
         """Return the delete lane URL."""
         lane = get_object_or_404(Lane, lane_id=lane_id)
-        #! NOT NECESSARY??
         delete_form = LaneDeleteForm()
         delete_url = '/lane_delete/'+str(lane_id)+'/'
         context = {'lane': lane, 'delete_form': delete_form, 'delete_url': delete_url, 'lane_id': lane_id}
@@ -500,21 +470,6 @@ class CreateTaskView(LoginRequiredMixin, FormView):
         """Return redirect URL after successful update."""
         messages.add_message(self.request, messages.SUCCESS, "Task created!")
         return reverse_lazy('dashboard')
-  
-    # def get(self, request):
-    #     current_user = request.user
-    #     teams = current_user.get_teams()
-    #     current_team_id = request.session.get("current_team_id")
-    #     current_team = Team.objects.get(id=current_team_id)
-    #     if current_team is None and teams.exists():
-    #         request.session["current_team_id"] = teams.first().id
-    #         current_team = teams.first()
-    #     lanes = Lane.objects.filter(team=current_team).order_by('lane_order') if current_team else Lane.objects.none()
-    #     #default_lane = Lane.objects.get(name='Backlog')
-    #     form = TaskForm(initial={'lane': lanes},team=current_team)
-    #     form.fields['lane'].queryset = lanes
-    #     all_tasks = Task.objects.all()
-    #     return render(request, self.template_name, {'tasks': all_tasks, 'form': form})
     
     def post(self, request):
         """Post request method enabling the user to create a new task"""
@@ -536,12 +491,7 @@ class CreateTaskView(LoginRequiredMixin, FormView):
             if current_team is None and teams.exists():
                 request.session["current_team_id"] = teams.first().id
                 current_team = teams.first()
-            #lanes = Lane.objects.filter(team=current_team).order_by('lane_order') if current_team else Lane.objects.none()
             lane_id = request.POST.get("lane_id")
-            #default_lane = Lane.objects.get(name='Backlog')
-            # if form.fields['time_field'] is None:
-            #     form.fields['time_field'] = "00:00:00"
-            # Check if the form is valid
             if form.is_valid():
                 assigned_team_id = request.session["current_team_id"]
                 lane_id = request.session["lane_id"]
@@ -654,7 +604,8 @@ priority_order = Case(
 )
 
 def task_search(request):
-    
+    """ Function to search for a task """
+
     q = request.GET.get('q', '')
     data = Task.objects.all()
     # If a search query is provided, filter tasks based on the 'name' field containing the query string.
@@ -681,22 +632,17 @@ def task_search(request):
     return render(request, 'task_search.html', context)
 
 def notif_delete(request,notif_id):
+    """"Function to delete a notification"""
+
     notification = Notification.objects.get(pk=notif_id)
     notification.delete()
     return redirect('dashboard')
 
 class InviteView(LoginRequiredMixin, FormView):
-    """Functionality for using the invite form"""
+    """View to invite team member"""
 
     template_name = 'invite.html'
     form_class = InviteForm
-
-    # def get_form_kwargs(self, **kwargs):
-    #     """Pass the current user to the invite form."""
-
-    #     kwargs = super().get_form_kwargs(**kwargs)
-    #     kwargs.update({'user': self.request.user})
-    #     return kwargs
 
     def form_valid(self, form):
         
@@ -711,6 +657,7 @@ class InviteView(LoginRequiredMixin, FormView):
         return reverse('dashboard')
 
 class DeleteTeamView(LoginRequiredMixin, FormView):
+    """"View to delete a team"""
     model = Team
     form_class = DeleteTeamForm
     template_name = 'delete_team.html' 
@@ -734,6 +681,8 @@ class DeleteTeamView(LoginRequiredMixin, FormView):
         return render(request, "delete_team.html", {'team':team, 'delete_form': delete_form})
     
 class RemoveMemberView(LoginRequiredMixin, FormView):
+    """"View to remove a team member"""
+
     form_class = RemoveMemberForm
     template_name = 'remove_team_member.html' 
     form_title = 'Remove Team Member'
