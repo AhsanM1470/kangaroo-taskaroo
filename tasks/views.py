@@ -20,8 +20,8 @@ from django.http import HttpResponseBadRequest, HttpResponse, HttpResponseRedire
 from datetime import datetime
 from django.db.models import Max, Case, Value, When
 
-def detect_keydates():
-    tasks = Task.objects.all()
+def detect_keydates(team):
+    tasks = Task.objects.filter(assigned_team = team)
     for task in tasks:
         task.notify_keydates()
 
@@ -83,7 +83,7 @@ class DashboardView(LoginRequiredMixin, View):
         invite_form = InviteForm()
         create_team_form = CreateTeamForm()
 
-        detect_keydates()
+        detect_keydates(current_team)
 
         return {
             'user': current_user,
