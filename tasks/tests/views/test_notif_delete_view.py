@@ -22,6 +22,12 @@ class NotifDeleteViewTestCase(TestCase):
     def test_notif_delete_url(self):
         self.assertEqual(self.url,'/notif_delete/1/')
 
+    def test_get_notif_delete_view(self):
+        response = self.client.get(self.url, follow=True)
+        redirect_url = reverse('dashboard')
+        self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
+        self.assertTemplateUsed(response, 'dashboard.html')
+
     def test_successful_notif_delete(self):
         total_notifs_before = Notification.objects.count()
         user_notifs_before = self.user.notifications.count()
