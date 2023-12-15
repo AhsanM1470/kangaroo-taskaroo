@@ -1,0 +1,146 @@
+.task-create-form {
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+
+    max-width: 600px;
+    margin: auto;
+    position: relative;
+    padding: 20px;
+}
+
+.task-create-form label {
+    font-weight: bold;
+    display: block;
+}
+
+.task-create-form textarea {
+    padding: 10px;
+    border: 1px solid grey;
+    border-radius: 5px;
+    box-sizing: border-box;
+    width: 100%; 
+    max-width: 600px;
+    height: 100px; 
+    resize: vertical; 
+}
+
+.task-create-submit-btn{
+    display: inline-block;
+    background-color: rgb(32, 143, 158);
+    color: white;
+    padding: 5px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    z-index: 2;
+    width: 5em;
+    height: 2em;
+    box-sizing: border-box;
+    text-align: center;
+    text-decoration: none;
+    vertical-align: middle;
+    margin-right: auto;
+  }
+
+  .task-create-submit-btn:hover{
+    background: #28242c;
+    color: white;
+  }
+
+.task-create-cancel-button {
+    display: inline-block;
+    background-color: rgb(32, 143, 158);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    width: 5em;
+    box-sizing: border-box;
+    text-align: center;
+    text-decoration: none;
+    vertical-align: middle;
+    height: 2em;
+    padding: 5px;
+}
+
+.cancel-create-btn:hover{
+    background: #28242c;
+    color: white;
+}
+
+.task-name-class {
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+    border: 1px solid black;
+    border-radius: 5px;
+}
+
+.task-description-class {
+    height: 100px;
+}
+
+.task-create-hr {
+    color: white;
+    height: 100px;
+    border: none;
+    padding: 0.3%;
+}
+.clearfix{
+    clear:both
+}
+
+.form-btns {
+    display: flex;
+}
+
+.task-container {
+    padding-left: 0;
+    padding-right: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+    border: 1px solid rgba(255, 255, 255, 0.623);
+    background: linear-gradient(to bottom right, #a55a37, rgba(207, 222, 220, 0.438));
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.589);
+    overflow-y: scroll;
+}
+
+#id_name,
+#id_description,
+#id_lane,
+#id_priority,
+#id_date_field_month,
+#id_date_field_day,
+#id_date_field_year,
+#id_time_field 
+#id_dependencies{
+    background-color: rgba(0, 0, 0, 0.342); 
+    padding: 10px; 
+    border: 1px solid #ccc; 
+    border-radius: 4px; 
+    box-sizing: border-box; 
+    color: #ffffff; 
+}
+
+input#id_name::placeholder,
+textarea#id_description::placeholder,
+input#id_time_field::placeholder
+select#id_dependencies {
+color: grey; 
+}
+
+.form-control{
+    background-color: rgba(0, 0, 0, 0.342); 
+    padding: 10px; 
+    border: 1px solid #ccc; 
+    border-radius: 4px; 
+    box-sizing: border-box; 
+    color: #ffffff; 
+}
+
+.create-task-text {
+    font-weight: bolder;
+    font-size: 1.5em;
+}

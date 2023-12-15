@@ -1,0 +1,42 @@
+.remove-member-form {
+    max-width: 600px;
+    margin: auto;
+    margin-top: 50px;
+    position: relative;
+    background: linear-gradient(to bottom right, rgb(54, 107, 171), rgb(207, 222, 220));
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+.remove-member-form label {
+  font-weight: bold;
+}
+
+.remove-member-submit-btn, .cancel-remove-member-btn {
+    display: inline-block;
+    background-color: #dedccf;
+    color: #15257d;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    z-index: 2;
+    width: 80px;
+    box-sizing: border-box;
+    vertical-align: top;
+    text-align: center;
+}
+
+.remove-member-submit-btn:hover, .cancel-remove-member-btn:hover {
+    background-color: #b5b29a;
+    color: rgb(14, 20, 80);
+}
+
+.remove-member-form input[type="checkbox"].confirmClass {
+  display: inline;
+  margin-right: 10px;
+  margin-bottom: 10px;
+  padding: 10px;
+}

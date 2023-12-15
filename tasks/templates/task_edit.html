@@ -16,8 +16,8 @@
     {% csrf_token %}
     {% include 'partials/bootstrap_form.html' with form=form %}
     <div>
-      <button class="submit-btn">Submit</button>
-      <a href="{% url 'task' task.id %}" class="cancel-button">Cancel</a>
+      <button class="submit-edit-btn">Submit</button>
+      <a href="{% url 'task' task.id %}" class="cancel-edit-btn">Cancel</a>
     </div>
   </form>
 </div>

@@ -1,40 +1,8 @@
 {% block content %}
 
-<style>
-  .teaminfoitems{
-    width: 90%;
-  }
-
-  .row {
-    justify-content: center;
-  }
-
-  .teaminfocontainer {
-    border: 1px solid rgba(255, 255, 255, 0.623);
-    background: linear-gradient(to bottom right, #a55a37, rgba(207, 222, 220, 0.438));
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.589);
-    height: 100%;
-    width: 100%;
-    overflow-y: scroll
-  }
-
-  .teaminfocontainer h2 {
-    padding: 10px;
-    font-weight: bold;
-  }
-
-  .field-label {
-    font-weight: bold;
-}
-
-.field-value {
-    margin-bottom: 10px;
-}
-</style>
-
-<div class="teaminfocontainer">
-  <div class="row">
-    <div class="teaminfoitems">
+<div class="team-info-container">
+  <div class="row" style="justify-content: center;">
+    <div class="team-info-items">
       
       <div class="field-value"><h2> {{ team.team_name }} </h2></div>
 

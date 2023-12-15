@@ -24,7 +24,7 @@
 .field-value {
   margin-bottom: 10px;
 }
-.submit-btn{
+.submit-edit-btn{
   display: inline-block;
   background-color: #a55a37;
   color: white;
@@ -41,7 +41,7 @@
   vertical-align: middle;
 }
 
-.submit-btn:hover{
+.submit-edit-btn:hover{
   background: #28242c;
   color: white;
 }
@@ -61,7 +61,7 @@ height: 100px;
 resize: vertical; 
 }
 
-.cancel-button {
+.cancel-edit-btn {
   display: inline-block;
   background-color: #a55a37;
   color: white;
@@ -78,7 +78,7 @@ resize: vertical;
   vertical-align: middle;
 }
 
-.cancel-button:hover {
+.cancel-edit-btn:hover {
   background: #28242c;
   color: white;
 }
