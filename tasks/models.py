@@ -250,14 +250,14 @@ class Task(models.Model):
                         current_notifs[0].delete()
                     else:
                         break
-        if self.deadline_notif_sent <= datetime.today().date():
+        if self.deadline_notif_sent < datetime.today().date():
             for user in self.assigned_team.team_members.all():
                 current_notifs = list(filter(lambda notif: notif.as_task_notif() != None and notif.as_task_notif().task == self and notif.as_task_notif().notification_type=="DL",user.get_notifications()))
                 if len(current_notifs)>0:
                     current_notifs[0].delete()
                 self.deadline_notif_sent=datetime.today().date()
                 notif_to_add = TaskNotification.objects.create(task=self,notification_type="DL")
-                user.add_notification(notif_to_add)
+                user.add_notification(notif_to_add) 
         self.save()
 
     def set_dependencies(self,new_dependencies):
