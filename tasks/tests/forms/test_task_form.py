@@ -104,7 +104,15 @@ class TaskFormTestCase(TestCase):
         self.assertFalse(form.is_valid())
         self.assertIn('date_field', form.errors)
         self.assertEqual(form.errors['date_field'], ['Pick a date-time in the future!'])
-        
+
+    def test_empty_date_field_gives_default_midnight(self):
+        self.form_input['time_field'] = None
+        form = TaskForm(data=self.form_input)
+        self.assertTrue(form.is_valid())
+        target_due_date = datetime(2024, 12, 28)
+        task = form.save(assigned_team_id = self.team.id)
+        self.assertEqual(task.due_date,target_due_date)
+    
     def test_task_with_team(self):
         form = TaskForm(data=self.form_input)
         expected_queryset = Task.objects.filter(assigned_team=self.team)
