@@ -19,7 +19,6 @@ class AssignTaskViewTestCase(TestCase, LogInTester):
         self.user = User.objects.get(username='@johndoe')
         self.other_user = User.objects.get(username='@janedoe')
         self.team = Team.objects.get(pk=1)
-        print(self.team.get_team_members())
         self.team.add_invited_member(self.team.team_creator)
         self.team.add_invited_member(self.user)
         self.team.add_invited_member(self.other_user)

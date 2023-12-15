@@ -369,6 +369,7 @@
             <p>No tasks currently in this lane.</p>
           {% endfor %}
     
+          <!-- <button type="submit" class="btn btn-secondary" style="width: 100%;">New Task</button> -->
           <button type="button" class="newtaskbtn btn btn-secondary" data-bs-toggle="collapse" data-bs-target="#create_task{{ lane.lane_id }}" aria-expanded="false" aria-controls="create_task {{ lane.lane_id }}" style="width: 100%;">New Task</button>
         </div>
         {% endfor %}
@@ -385,15 +386,7 @@
   <!-- Popups -->
   <div class="accordion" id="popup">
 
-    <!-- Assign task to a user popup -->
-    {% for task in tasks %}
-      <div class="accordion-collapse collapse" id="task_pop_up{{ task.id }}" data-bs-parent="#popup">
-        <article id="popup_panel"  style="overflow: auto;">
-          {% include 'assign_task.html' with form=assign_task_form task_name=task.name %}
-        </article>
-      </div>
-    {% endfor %}
-
+    <!--View Team Info-->
     <div class="accordion-collapse collapse" id="team_info" data-bs-parent="#popup">
       <article id="popup_panel">
         {% include 'team_info.html' with team=current_team %}
