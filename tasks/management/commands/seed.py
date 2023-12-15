@@ -32,12 +32,12 @@ class Command(BaseCommand):
         self.faker = Faker('en_GB')
 
     def handle(self, *args, **options):
+
         self.create_users()
         self.users = User.objects.all()
-        self.teams = Team.objects.all()
         self.create_shared_team()
-        self.generate_random_teams(self.users)
-        self.generate_random_lanes(self.teams)
+        random_teams = self.generate_random_teams(self.users)
+        self.generate_random_lanes(random_teams)
 
     def create_users(self):
         self.generate_user_fixtures()
@@ -102,6 +102,7 @@ class Command(BaseCommand):
             is_superuser=True,
             is_staff=True,
         )
+        return user
             
     def create_default_team(self, user):
         team = Team.objects.create(
@@ -148,6 +149,7 @@ class Command(BaseCommand):
 
     def generate_random_teams(self, users):
         teams_count = 0
+        teams = []
         while teams_count < self.TEAM_COUNT:
             print(f"Seeding team {teams_count}/{self.TEAM_COUNT}", end='\r')
             team = self.try_create_team()
@@ -158,8 +160,10 @@ class Command(BaseCommand):
                     if user not in team.team_members.all():
                         team.team_members.add(user)
                 team.save()
+                teams.append(team)
                 teams_count += 1
         print("Team seeding complete.      ")
+        return teams
         
 # Random Task Generation
         
@@ -194,7 +198,7 @@ class Command(BaseCommand):
     def generate_random_lanes(self, teams):
         count = 0
         for team in teams:
-            print(f"Seeding lanes per team {count}/{self.TEAM_COUNT} teams", end='\r')
+            print(f"Seeding lanes and tasks for team {count}/{self.TEAM_COUNT}", end='\r')
             number_of_lanes = self.faker.pyint(min_value=1, max_value=self.MAX_LANES_PER_TEAM)
             lanes_count = 0
             while lanes_count < number_of_lanes:
@@ -204,6 +208,7 @@ class Command(BaseCommand):
                     tasks = self.generate_random_tasks_for_lane(lane, number_of_tasks, team)
                     self.set_dependencies_for_tasks(tasks)
                     lanes_count += 1
+            count += 1
         print("Lane seeding complete.      ")
         
 # Random Task Generation
@@ -257,7 +262,7 @@ class Command(BaseCommand):
                 task.set_assigned_users(assigned_users)
                 tasks.append(task)
                 task_count += 1
-        print(f"Task seeding for {lane.lane_id} lane complete.      ")
+        #print(f"Task seeding for {lane.lane_id} lane complete.      ")
         return tasks
         
     def set_dependencies_for_tasks(self, tasks):
