@@ -708,7 +708,7 @@ class InviteView(LoginRequiredMixin, FormView):
     def form_invalid(self, form):
         """Go back to dashboard"""
         
-        messages.add_message(self.request, messages.error, "Invite cannot be blank!")
+        messages.add_message(self.request, messages.ERROR, "Users to invite cannot be blank!")
         return redirect("dashboard")
 
     def get_success_url(self):
