@@ -44,6 +44,11 @@ Run all tests with:
 ```
 $ python3 manage.py test
 ```
+Run the javascript tests with:
+```
+$ firefox tasks/tests/test.html
+(Or any browser instead of firefox)
+```
 
 ## Sources
 The packages used by this application are specified in `requirements.txt`

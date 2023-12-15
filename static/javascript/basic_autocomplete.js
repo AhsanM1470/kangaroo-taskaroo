@@ -1,6 +1,8 @@
 var search_box_value = ""
 var invite_search_box_value = ""
 
+
+
 function setup()
 {
   
@@ -94,3 +96,4 @@ function setup()
   
   $('.dropdown-menu').css({'top': 'auto', 'left': 'auto'})
 }
+setup()
