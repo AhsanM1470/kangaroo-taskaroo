@@ -1,0 +1,28 @@
+.dropdown-username {
+    display: block;
+    width: 100%;
+    padding: .25rem 1rem;
+    clear: both;
+    font-weight: 400;
+    color: #212529;
+    text-align: inherit;
+    text-decoration: none;
+    white-space: nowrap;
+    background-color: transparent;
+    border: 0;
+    font-weight: bold;
+}
+
+.styled-dropdown {
+    background: linear-gradient(to bottom, rgb(19, 120, 134), #bb4e1b98);
+    border: 1px solid rgb(155, 140, 151);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.styledbtns:hover {
+    background-color: #bb4e1b67;
+}
+
+.dropdown-divider {
+    color: #241007f1;
+}

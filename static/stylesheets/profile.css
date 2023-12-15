@@ -1,0 +1,96 @@
+.profile-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-right: 0;
+}
+
+.profile-card {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    border: 1px solid rgb(155, 140, 151);
+    text-align: center;
+    background: rgb(13, 84, 94);
+    justify-content: flex-start;
+    align-items: center;
+    padding: 1em;
+    align-items: flex-start;
+}
+
+
+.profile-form {
+    padding-bottom: 0.1em;
+    padding-top: 0.1em;
+    border-radius: 10px;
+    width: 60%;
+    justify-content: center;
+    align-items: center;
+}
+
+.profile-form h1 {
+    text-align: left;
+    font-size: 1.5em;
+    margin-top: 1;
+    padding-top: 0;
+}
+
+.profile-title {
+    font-size: 1.5em;
+    margin-bottom: 10px;
+    align-self: flex-start;
+}
+
+.update-profile-btn {
+    width: 30%;
+    margin-top: 1em;
+    background: white;
+    color: black;
+    transition: ease-in 0.3s;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+}
+
+.update-profile-btn:hover {
+    background: #28242c;
+    color: white;
+
+}
+
+.media-body {
+    padding: 0em; 
+    font-size: 0.85em;
+}
+
+.my-image {
+    border-radius: 50%; 
+    border: 3px solid white;
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+}
+.media-body .account-heading {
+    font-size: 1.15em;
+    margin-top: 0.5em;
+    margin-bottom: 0.1em;
+    word-break: break-word;
+}
+
+.media {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 0.5em;
+
+}
+
+.profile-form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}

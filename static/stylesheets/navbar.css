@@ -1,0 +1,43 @@
+.navbar-name{
+    text-decoration: none;
+    font-size: 1rem;
+    border-radius: 2px;
+    color: white;
+    margin-right: 10px;
+}
+
+.navbar-team-name{
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.team-btn{
+    width:auto;
+    padding:5px;
+}
+
+.navbar-team{
+    color: white;
+    margin-bottom: 0;
+    display: flex;
+    justify-content: center;
+    width:40vw;
+    word-wrap: break-word;
+    font-size: 1rem;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.navbar-user{
+    color: white;
+    margin-right: 3em;
+}
+
+.navbar-name {
+    color: #bb4e1b;
+    font-size: 1.5rem;
+}
+
+.navbar-name:hover{
+    color: rgb(32, 143, 158);
+}
