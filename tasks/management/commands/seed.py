@@ -18,11 +18,11 @@ user_fixtures = [
 class Command(BaseCommand):
     """Build automation command to seed the database."""
 
-    USER_COUNT = 10
-    TEAM_COUNT = 8
-    MAX_USERS_PER_TEAM = 5
-    MAX_LANES_PER_TEAM = 4
-    MAX_TASKS_PER_LANE = 4
+    USER_COUNT = 300
+    TEAM_COUNT = 100
+    MAX_USERS_PER_TEAM = 25
+    MAX_LANES_PER_TEAM = 8
+    MAX_TASKS_PER_LANE = 5
     
     DEFAULT_PASSWORD = 'Password123'
     help = 'Seeds the database with sample data'
@@ -51,10 +51,8 @@ class Command(BaseCommand):
     def generate_random_users(self):
         user_count = User.objects.count()
         while  user_count < self.USER_COUNT:
-            print(f"Seeding user {user_count}/{self.USER_COUNT}", end='\r')
             self.generate_user()
             user_count = User.objects.count()
-        print("User seeding complete.      ")
 
     def generate_user(self):
         first_name = self.faker.first_name()

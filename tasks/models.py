@@ -95,11 +95,8 @@ class Team(models.Model):
     
     def remove_team_member(self, user):
         """Removes user from team"""
-
-        if user == self.team_creator:
-            print("Cannot remove the team's creator!")
         
-        else:
+        if user != self.team_creator:
             self.team_members.remove(user)
             self.save()
     
@@ -149,8 +146,7 @@ class Invite(models.Model):
 
     def set_team(self, team):
         """Set the team that will send the invite"""
-        
-        print(team)
+    
         self.inviting_team = team
         self.save()
 
@@ -246,12 +242,9 @@ class Task(models.Model):
     def notify_keydates(self):
         """Configures the deadline notifications for the task based on the current date"""
         if datetime.today().date() < (self.due_date-timedelta(days=5)).date():
-            print("muffin")
             if self.deadline_notif_sent == datetime.today().date():
-                print("today")
                 self.deadline_notif_sent = (datetime.today()-timedelta(days=1)).date()
             else:
-                print("mwahaha")
                 self.deadline_notif_sent = (self.due_date-timedelta(days=5)).date()
                 for user in self.assigned_team.team_members.all():
                     current_notifs = list(filter(lambda notif: notif.as_task_notif() != None and notif.as_task_notif().task == self and notif.as_task_notif().notification_type=="DL",user.get_notifications()))
@@ -263,7 +256,6 @@ class Task(models.Model):
                 if len(current_notifs)>0:
                     current_notifs[0].delete()
                 self.deadline_notif_sent=datetime.today().date()
-                print("done!!")
                 notif_to_add = TaskNotification.objects.create(task=self,notification_type="DL")
                 user.add_notification(notif_to_add)
         self.save()

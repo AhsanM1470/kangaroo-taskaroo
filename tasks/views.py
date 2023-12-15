@@ -22,7 +22,6 @@ from django.db.models import Max, Case, Value, When
 
 def detect_keydates(team):
     tasks = Task.objects.filter(assigned_team = team)
-    print(tasks.count())
     for task in tasks:
         task.notify_keydates()
 
