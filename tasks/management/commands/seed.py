@@ -19,10 +19,11 @@ class Command(BaseCommand):
     """Build automation command to seed the database."""
 
     USER_COUNT = 300
-    TEAM_COUNT = 8
-    MAX_USERS_PER_TEAM = 5
-    MAX_LANES_PER_TEAM = 4
-    MAX_TASKS_PER_LANE = 4
+    TEAM_COUNT = 100
+    MAX_USERS_PER_TEAM = 25
+    MAX_LANES_PER_TEAM = 8
+    MAX_TASKS_PER_LANE = 5
+
     
     DEFAULT_PASSWORD = 'Password123'
     help = 'Seeds the database with sample data'
@@ -153,9 +154,6 @@ class Command(BaseCommand):
             if team is not None:
                 num_members = self.faker.pyint(min_value=1, max_value=self.MAX_USERS_PER_TEAM)
                 random_users = self.faker.random_elements(list(users), num_members, unique=True)
-                # team.add_invited_member(*self.faker.random_elements(list(users), num_members, unique=True))
-                # for x in self.faker.random_elements(users, num_members, unique=True):
-                #     team.add_invited_member(x)
                 for user in random_users:
                     if user not in team.team_members.all():
                         team.team_members.add(user)
@@ -273,37 +271,6 @@ class Command(BaseCommand):
                 for x in dependencies:
                     if x not in task.dependencies.all():
                         task.dependencies.add(x)
-            
-    # def generate_random_teams(self, users, number_of_teams):
-    #     teams = []
-    #     for i in range(number_of_teams):
-    #         team_creator = self.faker.random_element(users)
-    #         team = Team.objects.create(
-    #             team_name = self.faker.word(),
-    #             team_creator = team_creator,
-    #             description = self.faker.paragraph()
-    #         )
-            
-    #         team.add_invited_member(team_creator)
-            
-    #         num_members = self.faker.random_int(min=1, max=10)
-    #         for x in self.faker.random_elements(users, num_members, unique=True):
-    #             team.add_invited_member(x)
-                
-    #         teams.append(team)
-    #         # team.members.add(*self.faker.random_elements(users, num_members, unique=True))
-            
-    #     return teams
-    
-    # def create_tasks_for_user(self, user, team):
-    #     task_name = self.faker.sentence()
-    #     num_assigned_users = random.randint(1, min(5, self.USER_COUNT))  # Assign up to 5 users to a task
-    #     assigned_users = random.sample(list(team.get_team_members), num_assigned_users)
-    
-    #     task.assigned_to.set(assigned_users)
-    #     task.save()
-    #     return task
-
 
 def create_username(first_name, last_name):
     return '@' + first_name.lower() + last_name.lower()
