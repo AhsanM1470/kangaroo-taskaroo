@@ -49,5 +49,3 @@ $ python3 manage.py test
 
 ## Sources
 The packages used by this application are specified in `requirements.txt`
-
-*Declare are other sources here, and remove this line*
