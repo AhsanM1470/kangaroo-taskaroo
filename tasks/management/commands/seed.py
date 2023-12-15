@@ -18,10 +18,10 @@ user_fixtures = [
 class Command(BaseCommand):
     """Build automation command to seed the database."""
 
-    USER_COUNT = 50
-    TEAM_COUNT = 40
-    MAX_USERS_PER_TEAM = 25
-    MAX_LANES_PER_TEAM = 10
+    USER_COUNT = 10
+    TEAM_COUNT = 8
+    MAX_USERS_PER_TEAM = 8
+    MAX_LANES_PER_TEAM = 5
     MAX_TASKS_PER_LANE = 8
     
     DEFAULT_PASSWORD = 'Password123'
@@ -254,6 +254,9 @@ class Command(BaseCommand):
             print(f"Seeding tasks {task_count}/{number_of_tasks}", end='\r')
             task = self.try_create_task(lane, team)
             if task is not None:
+                num_assigned_users = self.faker.pyint(min_value=0, max_value=team.team_members.count())
+                assigned_users = self.faker.random_elements(list(team.team_members.all()), num_assigned_users, unique=True)
+                task.set_assigned_users(assigned_users)
                 tasks.append(task)
                 task_count += 1
         print(f"Task seeding for {lane.lane_id} lane complete.      ")
@@ -296,7 +299,7 @@ class Command(BaseCommand):
     #     task_name = self.faker.sentence()
     #     num_assigned_users = random.randint(1, min(5, self.USER_COUNT))  # Assign up to 5 users to a task
     #     assigned_users = random.sample(list(team.get_team_members), num_assigned_users)
-    #     task = Task.objects.create(name=task_name, team=team)
+    
     #     task.assigned_to.set(assigned_users)
     #     task.save()
     #     return task
@@ -307,6 +310,5 @@ def create_username(first_name, last_name):
 
 def create_email(first_name, last_name):
     return first_name + '.' + last_name + '@example.org'
-
 
 
