@@ -26,6 +26,5 @@ urlpatterns = [
     path('task/<int:pk>/', views.TaskView.as_view(), name='task'),
     path('lane_delete/<int:lane_id>/', views.DeleteLaneView.as_view(), name='lane_delete'),
     path('dashboard/', views.DashboardView.as_view(), name='dashboard'),
-    path('my_teams/', views.my_teams, name="my_teams"),
     path('notif_delete/<int:notif_id>/',views.notif_delete,name='notif_delete')
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

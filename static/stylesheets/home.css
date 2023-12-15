@@ -1,14 +1,4 @@
-{% extends 'base.html' %}
-{% block body %}
-<style>
-  body, html {
-    height: 100%;
-    margin: 0;
-    font-family: 'Arial', sans-serif;
-    background: linear-gradient(to bottom right, #bb4e1b, rgb(32, 143, 158));
-  }
-
-  .home-container {
+.home-container {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -78,27 +68,3 @@
     background-color: transparent;
     color: #532b2c;
   }
-</style>
-{#<div id='cover-image'>#}
-  <div class="home-container container">
-        <div class="home-card card">
-          <div class="section1">
-            <h1 class="cover-heading">KangarooTaskaroo</h1>
-            <p class="cover-text">A task manager application by Team <i>kangaroo</i></p>
-          </div>
-          <div class="section2">
-            <p>
-              <a href='{% url 'sign_up' %}' class="btn btn-lg btn-secondary">
-                Sign up
-              </a>
-            </p>
-            <p>
-              <a href='{% url 'log_in' %}' class="btn btn-lg btn-secondary">
-                Log in
-              </a>
-            </p>
-          </div>
-      </div>
-  </div>
-{#</div>#}
-{% endblock %}

@@ -1,5 +1,8 @@
 from django.core.management.base import BaseCommand, CommandError
-
+from django.core.exceptions import ValidationError
+from django.core.validators import RegexValidator
+from datetime import timedelta
+from django.utils import timezone
 from tasks.models import User, Team, Task, Lane
 
 import pytz
@@ -12,11 +15,15 @@ user_fixtures = [
     {'username': '@charlie', 'email': 'charlie.johnson@example.org', 'first_name': 'Charlie', 'last_name': 'Johnson'},
 ]
 
-
 class Command(BaseCommand):
     """Build automation command to seed the database."""
 
-    USER_COUNT = 10
+    USER_COUNT = 50
+    TEAM_COUNT = 40
+    MAX_USERS_PER_TEAM = 25
+    MAX_LANES_PER_TEAM = 10
+    MAX_TASKS_PER_LANE = 8
+    
     DEFAULT_PASSWORD = 'Password123'
     help = 'Seeds the database with sample data'
 
@@ -28,6 +35,8 @@ class Command(BaseCommand):
         self.users = User.objects.all()
         self.teams = Team.objects.all()
         self.create_shared_team()
+        self.generate_random_teams(self.users)
+        self.generate_random_lanes(self.teams)
 
     def create_users(self):
         self.generate_user_fixtures()
@@ -61,14 +70,14 @@ class Command(BaseCommand):
             else:
                 user = self.create_user(data)
                 if user is not None:
-                    self.try_create_team(user)
+                    self.try_create_starter_team(user)
         except:
             pass
     
-    def try_create_team(self, user):
+    def try_create_starter_team(self, user):
         """Create a starting team for every user"""
         try:
-            self.create_team(user)
+            self.create_default_team(user)
         except Exception as e:
             print(f"Error creating team for user {user.username}: {e}")
 
@@ -93,7 +102,7 @@ class Command(BaseCommand):
             is_staff=True,
         )
             
-    def create_team(self, user):
+    def create_default_team(self, user):
         team = Team.objects.create(
             team_name="My Team",
             team_creator=user,
@@ -117,14 +126,180 @@ class Command(BaseCommand):
         except Exception as e:
             self.stdout.write(self.style.ERROR(f'Error creating shared team: {e}'))
             
-    def create_tasks_for_user(self, user, team):
-        task_name = self.faker.sentence()
-        num_assigned_users = random.randint(1, min(5, self.USER_COUNT))  # Assign up to 5 users to a task
-        assigned_users = random.sample(list(team.get_team_members), num_assigned_users)
-        task = Task.objects.create(name=task_name, team=team)
-        task.set_assigned_users(assigned_users)
-        task.save()
-        return task
+# Random Team Generation
+
+    def try_create_team(self):
+        try:
+            name = self.faker.word()
+            name = name[:50]
+            team_creator = self.faker.random_element(self.users)
+            description=self.faker.paragraph()
+            description = description[:200]
+            team = Team.objects.create(
+                team_name=name,
+                description=description,
+                team_creator=team_creator
+            )
+            team.add_invited_member(team_creator)
+            return team
+        except:
+            return None
+
+    def generate_random_teams(self, users):
+        teams_count = 0
+        while teams_count < self.TEAM_COUNT:
+            print(f"Seeding team {teams_count}/{self.TEAM_COUNT}", end='\r')
+            team = self.try_create_team()
+            if team is not None:
+                num_members = self.faker.pyint(min_value=1, max_value=self.MAX_USERS_PER_TEAM)
+                random_users = self.faker.random_elements(list(users), num_members, unique=True)
+                # team.add_invited_member(*self.faker.random_elements(list(users), num_members, unique=True))
+                # for x in self.faker.random_elements(users, num_members, unique=True):
+                #     team.add_invited_member(x)
+                for user in random_users:
+                    if user not in team.team_members.all():
+                        team.team_members.add(user)
+                team.save()
+                teams_count += 1
+        print("Team seeding complete.      ")
+        
+# Random Task Generation
+        
+    def generate_valid_lane_name(self, validator):
+        while True:
+            lane_name = self.faker.word()
+            try:
+                validator(lane_name) 
+                return lane_name
+            except ValidationError:
+                pass
+    
+    def try_create_lane(self, order_number, team):
+        alphanumeric = RegexValidator(
+            regex=r'^[a-zA-Z0-9 ]{1,}$',
+            message='Enter a valid word with at least 1 alphanumeric character (no special characters allowed).',
+            code='invalid_lane_name'
+        )
+        
+        try:
+            name = self.generate_valid_lane_name(alphanumeric)
+            name = name[:50]
+            lane = Lane.objects.create(
+                lane_name=name,
+                lane_order=order_number,
+                team=team
+            )
+            return lane
+        except:
+            return None
+        
+    def generate_random_lanes(self, teams):
+        count = 0
+        for team in teams:
+            print(f"Seeding lanes per team {count}/{self.TEAM_COUNT} teams", end='\r')
+            number_of_lanes = self.faker.pyint(min_value=1, max_value=self.MAX_LANES_PER_TEAM)
+            lanes_count = 0
+            while lanes_count < number_of_lanes:
+                lane = self.try_create_lane(lanes_count, team)
+                if lane is not None:
+                    number_of_tasks = self.faker.pyint(min_value=1, max_value=self.MAX_TASKS_PER_LANE)
+                    tasks = self.generate_random_tasks_for_lane(lane, number_of_tasks, team)
+                    self.set_dependencies_for_tasks(tasks)
+                    lanes_count += 1
+        print("Lane seeding complete.      ")
+        
+# Random Task Generation
+        
+    def generate_valid_task_name(self, validator):
+        while True:
+            task_name = self.faker.word()
+            try:
+                validator(task_name) 
+                return task_name
+            except ValidationError:
+                pass
+        
+    def try_create_task(self, lane, team):
+        alphanumeric = RegexValidator(
+        regex=r'^[a-zA-Z0-9 ]{3,}$',
+        message='Enter a valid word with at least 3 alphanumeric characters (no special characters allowed).',
+        code='invalid_word',
+        )
+        
+        try:
+            name = self.generate_valid_lane_name(alphanumeric)
+            name = name[:30]
+            description=self.faker.paragraph()
+            description = description[:200]
+            due_date = self.faker.date_time_this_decade(after_now=True, before_now=False, tzinfo=timezone.utc) + timedelta(days=100)
+            task_priority = self.faker.random_element(['low', 'medium', 'high'])
+            
+            task = Task.objects.create(
+                name=name,
+                description = description,
+                due_date = due_date,
+                assigned_team=team,
+                lane = lane,
+                priority = task_priority
+            )
+            
+            return task
+        except:
+            return None
+        
+    def generate_random_tasks_for_lane(self, lane, number_of_tasks, team):
+        task_count = 0
+        tasks = []
+        while task_count < number_of_tasks:
+            print(f"Seeding tasks {task_count}/{number_of_tasks}", end='\r')
+            task = self.try_create_task(lane, team)
+            if task is not None:
+                tasks.append(task)
+                task_count += 1
+        print(f"Task seeding for {lane.lane_id} lane complete.      ")
+        return tasks
+        
+    def set_dependencies_for_tasks(self, tasks):
+        all_tasks = list(tasks)
+        for task in all_tasks:
+            exclude_current = all_tasks.copy()
+            exclude_current.remove(task)
+            
+            if exclude_current:
+                dependencies = self.faker.random_elements(exclude_current, length=self.faker.pyint(min_value=0,max_value=len(exclude_current)-1), unique=True)
+                for x in dependencies:
+                    if x not in task.dependencies.all():
+                        task.dependencies.add(x)
+            
+    # def generate_random_teams(self, users, number_of_teams):
+    #     teams = []
+    #     for i in range(number_of_teams):
+    #         team_creator = self.faker.random_element(users)
+    #         team = Team.objects.create(
+    #             team_name = self.faker.word(),
+    #             team_creator = team_creator,
+    #             description = self.faker.paragraph()
+    #         )
+            
+    #         team.add_invited_member(team_creator)
+            
+    #         num_members = self.faker.random_int(min=1, max=10)
+    #         for x in self.faker.random_elements(users, num_members, unique=True):
+    #             team.add_invited_member(x)
+                
+    #         teams.append(team)
+    #         # team.members.add(*self.faker.random_elements(users, num_members, unique=True))
+            
+    #     return teams
+    
+    # def create_tasks_for_user(self, user, team):
+    #     task_name = self.faker.sentence()
+    #     num_assigned_users = random.randint(1, min(5, self.USER_COUNT))  # Assign up to 5 users to a task
+    #     assigned_users = random.sample(list(team.get_team_members), num_assigned_users)
+    #     task = Task.objects.create(name=task_name, team=team)
+    #     task.assigned_to.set(assigned_users)
+    #     task.save()
+    #     return task
 
 
 def create_username(first_name, last_name):
@@ -132,4 +307,6 @@ def create_username(first_name, last_name):
 
 def create_email(first_name, last_name):
     return first_name + '.' + last_name + '@example.org'
+
+
 

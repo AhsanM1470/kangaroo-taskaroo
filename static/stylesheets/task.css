@@ -1,0 +1,54 @@
+.task-info-container {
+    font-family: Arial, sans-serif;
+    max-width: 600px;
+    margin: 50px auto;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    padding: 20px;
+}
+
+.task-info h2 {
+    color: #000000;
+    margin-right:auto;
+}
+
+.task-details {
+    margin-top: 20px;
+}
+
+.field-label {
+    font-weight: bold;
+}
+
+.field-value {
+    max-width:420px;word-wrap:break-word;
+    margin-bottom: 10px;
+}
+.edit-button,
+.back-button{
+    display: inline-block;
+    background-color: #a55a37;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    z-index: 2;
+    width: 5em;
+    height: 2.5em;
+    box-sizing: border-box;
+    vertical-align: top;
+    text-align: center;
+}
+
+.edit-button:hover,
+.back-button:hover{
+  background: #28242c;
+  color: white;
+}
+
+.task-header {
+    display: flex;
+}

@@ -80,7 +80,7 @@ class DashboardView(LoginRequiredMixin, View):
             Task.objects.none()
         assign_task_form = AssignTaskForm(team=current_team)
         create_task_form = TaskForm(team=current_team)
-        invite_form = InviteForm(user=current_user, team=current_team)
+        invite_form = InviteForm()
         create_team_form = CreateTeamForm()
 
         detect_keydates()
@@ -199,12 +199,16 @@ def autocomplete_user(request):
 
         # Exclude the current user from query
         queried_users.append(request.user.username) 
+
+        # Exclude all members who are already a part of the team
+        current_team = Team.objects.get(id=request.session["current_team_id"])
+        user_set = User.objects.exclude(id__in=current_team.get_team_members())
         
         # Exclude all users already part of string
         if len(queried_users) > 1:
-            data = User.objects.exclude(username__in=queried_users).filter(username__icontains=new_query).values_list('username', flat=True)
+            data = user_set.exclude(username__in=queried_users).filter(username__icontains=new_query).values_list('username', flat=True)
         else:
-            data = User.objects.filter(username__icontains=new_query).values_list('username', flat=True)
+            data = user_set.filter(username__icontains=new_query).values_list('username', flat=True)
         
         json = list(data)
         return JsonResponse(json, safe=False)
@@ -228,27 +232,6 @@ def create_team(request):
             messages.add_message(request, messages.ERROR, "That team name has already been taken!")
     
     return render(request, "create_team.html", {"team_form": team})
-
-@login_required
-def my_teams(request):
-    """Display the user's teams page and their invites"""
-
-    current_user = request.user
-    user_teams = current_user.get_teams()
-    user_invites = current_user.get_invites()
-    team_form = CreateTeamForm()
-
-    """Only show the invite and remove form for creators of teams"""
-    if len(current_user.get_created_teams()) > 0:
-        invite_form = InviteForm(user=current_user)
-        remove_form = RemoveMemberForm()
-        return render(request, 'my_teams.html', {'teams': user_teams, 'invites': user_invites, 
-                                                 'team_form': team_form, "invite_form" : invite_form,
-                                                 "remove_form": remove_form})
-    else:
-        return render(request, 'my_teams.html', 
-                      {'teams': user_teams, 'invites': user_invites, 
-                       'team_form': team_form})
 
 # @login_required
 # def remove_member(request):
@@ -704,15 +687,15 @@ def notif_delete(request,notif_id):
 class InviteView(LoginRequiredMixin, FormView):
     """Functionality for using the invite form"""
 
-    template_name = 'my_teams.html'
+    template_name = 'invite.html'
     form_class = InviteForm
 
-    def get_form_kwargs(self, **kwargs):
-        """Pass the current user to the invite form."""
+    # def get_form_kwargs(self, **kwargs):
+    #     """Pass the current user to the invite form."""
 
-        kwargs = super().get_form_kwargs(**kwargs)
-        kwargs.update({'user': self.request.user})
-        return kwargs
+    #     kwargs = super().get_form_kwargs(**kwargs)
+    #     kwargs.update({'user': self.request.user})
+    #     return kwargs
 
     def form_valid(self, form):
         
