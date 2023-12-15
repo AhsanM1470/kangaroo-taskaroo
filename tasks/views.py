@@ -644,10 +644,17 @@ class InviteView(LoginRequiredMixin, FormView):
     form_class = InviteForm
 
     def form_valid(self, form):
+        """Send invite to the respective users"""
         
         inviting_team = Team.objects.get(id=self.request.session["current_team_id"])
         form.send_invite(inviting_team=inviting_team)
         return super().form_valid(form)
+
+    def form_invalid(self, form):
+        """Go back to dashboard"""
+        
+        messages.add_message(self.request, messages.ERROR, "Users to invite cannot be blank!")
+        return redirect("dashboard")
 
     def get_success_url(self):
         """Redirect the user after successful password change."""

@@ -64,9 +64,8 @@ class InviteViewTestCase(TestCase, LogInTester):
         response = self.client.post(self.url, data=bad_input, follow=True)
         after_count = Invite.objects.count()
         self.assertEqual(after_count, before_count)
-        self.assertEqual(response.status_code, 200)
-        form = response.context['form']
-        self.assertTrue(isinstance(form, InviteForm))
-        self.assertTrue(form.is_bound)
+        redirect_url = reverse('dashboard')
+        self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
+        self.assertTemplateUsed(response, 'dashboard.html')
         self.assertTrue(Invite.objects.all().first() is None)
         

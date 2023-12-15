@@ -230,8 +230,6 @@ class Task(models.Model):
        
         self.assigned_users.clear() # Reset the assigned users
 
-        # May need to delete notifications if previously assigned users are not reassigned to task
-
         # Reassign users
         for user in assigned_users:
             self.assigned_users.add(user)
@@ -250,6 +248,8 @@ class Task(models.Model):
                     current_notifs = list(filter(lambda notif: notif.as_task_notif() != None and notif.as_task_notif().task == self and notif.as_task_notif().notification_type=="DL",user.get_notifications()))
                     if len(current_notifs)>0:
                         current_notifs[0].delete()
+                    else:
+                        break
         if self.deadline_notif_sent <= datetime.today().date():
             for user in self.assigned_team.team_members.all():
                 current_notifs = list(filter(lambda notif: notif.as_task_notif() != None and notif.as_task_notif().task == self and notif.as_task_notif().notification_type=="DL",user.get_notifications()))

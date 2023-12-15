@@ -14,21 +14,21 @@
             {% if form.is_bound %}
               {% if field.errors %}
                 {% if field.name == "users_to_invite" %}
-                  {% render_field field class="basicAutoComplete form-control is-invalid" %}
+                  {% render_field field class="basicAutoCompleteInvite form-control is-invalid" %}
                 {% else %}
                   {% render_field field class="form-control is-invalid" %}
                 {% endif %}
               {% else %}
                 {% if field.name == "users_to_invite" %}
                     
-                    {% render_field field class="basicAutoComplete form-control is-valid" %}
+                    {% render_field field class="basicAutoCompleteInvite form-control is-valid" %}
                 {% else %}
                     {% render_field field class="form-control is-valid" %}
                 {% endif %}
               {% endif %}
             {% else %}
               {% if field.name == "users_to_invite" %}
-                  {% render_field field class="basicAutoComplete form-control" %}
+                  {% render_field field class="basicAutoCompleteInvite form-control" %}
               {% else %}
                   {% render_field field class="form-control" %}
               {% endif %}
@@ -52,6 +52,6 @@
 {% block script %}
 <!-- Autocomplete for long forms -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
-<script src="../../static/bootstrap-autocomplete.js"></script>
-<script src="../../static/basic_autocomplete.js"> </script>
+<script src="../../static/javascript/bootstrap-autocomplete.js"></script>
+<script src="../../static/javascript/basic_autocomplete.js"> </script>
 {% endblock %}  

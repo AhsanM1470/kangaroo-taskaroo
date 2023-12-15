@@ -268,7 +268,7 @@ class InviteForm(forms.ModelForm):
     users_to_invite = forms.CharField(required=True, max_length=300, widget=forms.Select(
                     attrs={
                         'height' : 80,
-                        'class': 'basicAutoComplete',
+                        'class': 'basicAutoCompleteInvite',
                         'data-url': '/autocomplete_user/',
                         'data-noresults-text': "No users matching query",
                         'autocomplete': 'off'} 
