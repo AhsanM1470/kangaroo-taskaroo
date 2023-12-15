@@ -17,13 +17,6 @@
   margin-top: 20px;
 }
 
-.field-label {
-  font-weight: bold;
-}
-
-.field-value {
-  margin-bottom: 10px;
-}
 .submit-edit-btn{
   display: inline-block;
   background-color: #a55a37;

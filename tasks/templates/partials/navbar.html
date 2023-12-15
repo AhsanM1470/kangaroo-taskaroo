@@ -8,13 +8,13 @@
     </div>
 
     <!-- View team info -->
-    <button type="button" name="view_team" class="image" data-bs-toggle="collapse" data-bs-target="#team_info" aria-expanded="false" aria-controls="team_info">
+    <button type="button" name="view_team" class="navbar-image" data-bs-toggle="collapse" data-bs-target="#team_info" aria-expanded="false" aria-controls="team_info" style="border: none; background: transparent;">
       <img src="../../static/images/info-icon-blue.png" alt="Info Icon" title="Team Info">
     </button>
 
     <!--Invite Team Members if creator-->
     {% if user == current_team.team_creator %}
-    <button type="button" name="view_team" class="image" data-bs-toggle="collapse" data-bs-target="#invite_member" aria-expanded="false" aria-controls="invite_member">
+    <button type="button" name="view_team" class="navbar-image" data-bs-toggle="collapse" data-bs-target="#invite_member" aria-expanded="false" aria-controls="invite_member" style="border: none; background: transparent;">
       <img src="../../static/images/add-icon-grey.png" alt="Invite Members" title="Invite Members">
     </button>
     {% endif %}

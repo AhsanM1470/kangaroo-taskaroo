@@ -1,3 +1,4 @@
+
 .profile-row {
     display: flex;
     align-items: center;
@@ -8,10 +9,11 @@
 .profile-card {
     display: flex;
     flex-direction: column;
-    width: 100%;
+    width: 50vw;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
     border: 1px solid rgb(155, 140, 151);
     text-align: center;
+    height: 90vh;
     background: rgb(13, 84, 94);
     justify-content: flex-start;
     align-items: center;
@@ -24,7 +26,6 @@
     padding-bottom: 0.1em;
     padding-top: 0.1em;
     border-radius: 10px;
-    width: 60%;
     justify-content: center;
     align-items: center;
 }
