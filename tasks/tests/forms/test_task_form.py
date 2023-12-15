@@ -109,7 +109,7 @@ class TaskFormTestCase(TestCase):
         self.form_input['time_field'] = None
         form = TaskForm(data=self.form_input)
         self.assertTrue(form.is_valid())
-        target_due_date = datetime(2024, 12, 28)
+        target_due_date = datetime(2024, 12, 28,tzinfo=timezone.zoneinfo.ZoneInfo(key='UTC'))
         task = form.save(assigned_team_id = self.team.id)
         self.assertEqual(task.due_date,target_due_date)
     
