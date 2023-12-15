@@ -122,7 +122,7 @@ class Command(BaseCommand):
         num_assigned_users = random.randint(1, min(5, self.USER_COUNT))  # Assign up to 5 users to a task
         assigned_users = random.sample(list(team.get_team_members), num_assigned_users)
         task = Task.objects.create(name=task_name, team=team)
-        task.assigned_to.set(assigned_users)
+        task.set_assigned_users(assigned_users)
         task.save()
         return task
 
