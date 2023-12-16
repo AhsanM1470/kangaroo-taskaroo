@@ -25,7 +25,7 @@ class LaneDeleteViewTestCase(TestCase, LogInTester):
             'confirm_deletion': True
         }
 
-        self.url = reverse('lane_delete', kwargs={'lane_id': self.lane.lane_id})
+        self.url = reverse('lane_delete', kwargs={'lane_id': self.lane.id})
         self.client.login(username=self.user.username, password='Password123')
 
     # Test if user is successfuly logged in
@@ -35,7 +35,7 @@ class LaneDeleteViewTestCase(TestCase, LogInTester):
 
     # Test URL
     def test_delete_lane_url(self):
-        self.assertEqual(self.url, f'/lane_delete/{self.lane.lane_id}/')
+        self.assertEqual(self.url, f'/lane_delete/{self.lane.id}/')
 
     # Test getting the lane to delete
     def test_get_lane(self):

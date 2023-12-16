@@ -262,7 +262,7 @@ class Command(BaseCommand):
                 task.set_assigned_users(assigned_users)
                 tasks.append(task)
                 task_count += 1
-        #print(f"Task seeding for {lane.lane_id} lane complete.      ")
+        print(f"Task seeding for {lane.id} lane complete.      ")
         return tasks
         
     def set_dependencies_for_tasks(self, tasks):

@@ -67,12 +67,12 @@ class LaneModelTestCase(TestCase):
     # Lane ID
     
     def test_lane_id_must_be_unique(self):
-        self.lane.lane_id = 1
-        self.lane2.lane_id = 1
+        self.lane.id = 1
+        self.lane2.id = 1
         self._assert_lane_is_invalid
     
     def test_lane_id_cannot_be_blank(self):
-        self.lane.lane_id = None
+        self.lane.id = None
         self._assert_lane_is_invalid
 
     # Team

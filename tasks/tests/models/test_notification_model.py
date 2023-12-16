@@ -25,7 +25,7 @@ class TaskNotificationModelTestCase(TestCase):
         )
         self.team.add_invited_member(self.user)
         self.lane = Lane.objects.create(
-            lane_id = 1,
+            #lane_id = 1,
             team=self.team
         )
         self.task = Task.objects.create(

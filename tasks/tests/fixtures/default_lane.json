@@ -4,7 +4,6 @@
         "pk": 1,
         "fields": {
             "lane_name": "TestLane",
-            "lane_id": 1,
             "lane_order": 1,
             "team": 1
         }

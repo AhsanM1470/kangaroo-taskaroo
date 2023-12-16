@@ -180,7 +180,7 @@ class Lane(models.Model):
     )
 
     lane_name = models.CharField(max_length=50, blank=False, validators=[alphanumeric])
-    lane_id = models.AutoField(primary_key=True)
+    #lane_id = models.AutoField(primary_key=True)
     lane_order = models.IntegerField(default=0, blank=False)
     team = models.ForeignKey('Team', on_delete=models.CASCADE, related_name='lanes')
 

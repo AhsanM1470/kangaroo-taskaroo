@@ -132,7 +132,7 @@ class DashboardView(LoginRequiredMixin, View):
     def rename_lane(self, request, current_team):
         lane_id = request.POST.get('rename_lane')
         new_lane_name = request.POST.get('new_lane_name')
-        lane = Lane.objects.filter(lane_id=lane_id, team=current_team).first()
+        lane = Lane.objects.filter(id=lane_id, team=current_team).first()
         if lane:
             lane.lane_name = new_lane_name
             lane.save()
@@ -437,7 +437,7 @@ class DeleteLaneView(LoginRequiredMixin, View):
     
     def get(self, request, lane_id, *args, **kwargs):
         """Return the delete lane URL."""
-        lane = get_object_or_404(Lane, lane_id=lane_id)
+        lane = get_object_or_404(Lane, id=lane_id)
         delete_form = LaneDeleteForm()
         delete_url = '/lane_delete/'+str(lane_id)+'/'
         context = {'lane': lane, 'delete_form': delete_form, 'delete_url': delete_url, 'lane_id': lane_id}
