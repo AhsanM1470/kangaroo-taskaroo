@@ -13,7 +13,7 @@
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
     border: 1px solid rgb(155, 140, 151);
     text-align: center;
-    height: 90vh;
+    height: fit-content;
     background: rgb(13, 84, 94);
     justify-content: flex-start;
     align-items: center;
