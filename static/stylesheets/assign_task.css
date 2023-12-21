@@ -1,21 +1,22 @@
-.assign-task-card{
-    width: 90%;
-}
-
-.assign-task-row {
-    justify-content: center;
-}
-
 .assign-task-container {
-    border: 1px solid rgba(255, 255, 255, 0.623);
-    background: linear-gradient(to bottom right, #a55a37, rgba(207, 222, 220, 0.438));
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.589);
-    height: 100%;
-    width: 100%;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    padding: 2em;
+    max-width:40%;
+    max-height: 80%;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    margin:auto;
+    margin-top: 5em;
 }
 
 .team-info-container h2 {
-    padding: 10px;
+    padding: 1em;
     font-weight: bold;
 }
 

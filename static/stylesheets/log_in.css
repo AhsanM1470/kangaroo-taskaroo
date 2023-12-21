@@ -1,103 +1,97 @@
 .log-in-form a{
-    display: flex;
-    justify-content: center;
-    margin-top: 0.5em;
-    transition: ease-in 0.3s;
-  }
-
-  .log-in-form a:hover {
-    color: white;
-  }
-
-  .log-in-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
-  }
-
-  .log-in-row{
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 80vh;
-    width: 100%;
-    max-width: 700px;
-    height: 400px;
-    background-color: #a26e5a;
-    
-    box-shadow: 0 0 10px rgba(0,0,0,0.4);
-    border-radius: 4px;
-  }
-
-  .log-in-form{
-    padding-bottom: 1em;
-    padding-top: 1em;
-    border-radius: 2px;
-    width: 60%;
-    height: 90%;
-    background: transparent;
-    backdrop-filter: blur(300px);
-  }
-
-  .log-in-btn{
-    width:40%;
-    margin-top: 2%;
-    
-    background: rgb(24, 109, 121);
-    color: rgb(69, 197, 214);
-    transition: ease-in 0.3s;
-    margin-left: auto;
-    margin-right: auto;
-    display: block;
-    border-radius: 50px;
-    box-shadow: 0 0 5px rgba(0,0,0,0.5);
-  }
-
-  .log-in-btn:hover{
-    background: #28242c;
-    color: white;
-  }
-
-  .invalid-feedback {
-    color: red;
-    font-size: 0.8em;
+  display: flex;
+  justify-content: center;
+  margin-top: 0.5em;
+  transition: ease-in 0.3s;
 }
 
-.alert {
-  max-height: 50px;
+.log-in-form a:hover {
+  color: white;
+}
+
+.log-in-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100%;
+}
+
+.log-in-row{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 700px;
+  background-color: #a26e5a;
+  
+  box-shadow: 0 0 10px rgba(0,0,0,0.4);
+  border-radius: 4px;
+}
+
+.log-in-form{
+  padding-bottom: 1em;
+  padding-top: 1em;
+  border-radius: 2px;
+  width: 60%;
+  height: 100%;
+  background: transparent;
+  backdrop-filter: blur(300px);
+}
+
+.log-in-btn{
+  width:40%;
+  margin-top: 2%;
+  
+  background: rgb(24, 109, 121);
+  color: rgb(69, 197, 214);
+  transition: ease-in 0.3s;
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+  border-radius: 50px;
+  box-shadow: 0 0 5px rgba(0,0,0,0.5);
+}
+
+.log-in-btn:hover{
+  background: #28242c;
+  color: white;
+}
+
+.invalid-feedback {
+  color: red;
+  font-size: 0.8em;
 }
 
 .alert-success {
-  background-color: #d4edda;
-  border-color: #c3e6cb;
-  color: #155724;
+background-color: #d4edda;
+border-color: #c3e6cb;
+color: #155724;
 }
 
 .alert-info {
-  background-color: #d1ecf1;
-  border-color: #bee5eb;
-  color: #0c5460;
+background-color: #d1ecf1;
+border-color: #bee5eb;
+color: #0c5460;
 }
 
 .alert-warning {
-  background-color: #fff3cd;
-  border-color: #ffeeba;
-  color: #856404;
+background-color: #fff3cd;
+border-color: #ffeeba;
+color: #856404;
 }
 
 .alert-danger {
-  background-color: #f8d7da;
-  border-color: #f5c6cb;
-  color: #721c24;
+background-color: #f8d7da;
+border-color: #f5c6cb;
+color: #721c24;
 }
 
 .buttons {
-  display: flex; 
-  justify-content: space-between; 
-  align-items: center;
+display: flex; 
+justify-content: space-between; 
+align-items: center;
 }
 
 .signup-link {
-  color: #381d1d;
+color: #381d1d;
 }
